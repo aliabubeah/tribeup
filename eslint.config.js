@@ -33,6 +33,7 @@ export default defineConfig([
             "react/prop-types": "off",
             "react/jsx-no-target-blank": "off",
             "no-unused-vars": ["warn", { varsIgnorePattern: "^[A-Z_]" }],
+            "react-refresh/only-export-components": "warn",
         },
     },
 ]);

@@ -1,39 +1,44 @@
 import { useEffect, useState } from "react";
-import { register } from "./services/auth";
+import Login, { action as loginAction } from "./features/auth/Login";
+import Register, { action as registerAction } from "./features/auth/Register";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Feed from "./features/feed/Feed";
+import AppLayout from "./ui/AppLayout";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./features/feed/ProtectedRoute";
+
+const router = createBrowserRouter([
+    {
+        element: <AppLayout />,
+        children: [
+            {
+                path: "/",
+                element: (
+                    <ProtectedRoute>
+                        <Feed />,
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "login",
+                element: <Login />,
+                action: loginAction,
+            },
+            {
+                path: "register",
+                element: <Register />,
+                action: registerAction,
+            },
+        ],
+    },
+]);
 
 function App() {
-    const test = {
-        firstName: "string",
-        lastName: "string",
-        userName: "string",
-        email: "user@example.com",
-        phoneNumber: "string",
-        profilePicture: "string",
-        avatar: "string",
-        password: "string",
-        confirmPassword: "string",
-    };
-
-    useEffect(() => {
-        const test = {
-            firstName: "string",
-            lastName: "string",
-            userName: "string",
-            email: "user@example.com",
-            phoneNumber: "string",
-            profilePicture: "string",
-            avatar: "string",
-            password: "string",
-            confirmPassword: "string",
-        };
-        async function testApi() {
-            await register(test);
-        }
-
-        testApi();
-    }, []);
-
-    return <h1>hello world</h1>;
+    return (
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
+    );
 }
 
 export default App;
