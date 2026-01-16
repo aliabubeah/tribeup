@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import {
     Form,
     useActionData,
@@ -13,18 +12,20 @@ function Login() {
     const actionData = useActionData();
     const navigation = useNavigation();
     const navigate = useNavigate();
+
     const isSubmitting = navigation.state === "submitting";
-    const { isAuthenticated, setUser } = useAuth();
+    const { isAuthenticated, setAccessToken, accessToken } = useAuth();
 
     useEffect(() => {
         if (isAuthenticated) {
             navigate("/", { replace: true });
         }
-        if (actionData?.fullName) {
-            setUser(actionData);
+
+        if (actionData?.accessToken) {
+            setAccessToken(actionData);
             navigate("/", { replace: true });
         }
-    }, [isAuthenticated, setUser, actionData, navigate]);
+    }, [isAuthenticated, setAccessToken, actionData, navigate, accessToken]);
 
     return (
         <div>
@@ -61,12 +62,12 @@ export async function action({ request }) {
     const data = Object.fromEntries(formData);
 
     const result = await loginAPI(data);
-
+    console.log(result);
     if (result.error) {
         return result;
     }
 
-    localStorage.setItem("user", JSON.stringify(result));
+    localStorage.setItem("refreshToken", JSON.stringify(result.refreshToken));
     return result;
 }
 

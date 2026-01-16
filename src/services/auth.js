@@ -1,14 +1,18 @@
-const BASEURL = "http://tribeup.runasp.net/api/Authentication";
+import { BASEURL, getDeviceId } from "./http";
 
 export async function loginAPI(data) {
-    const res = await fetch(`${BASEURL}/Login`, {
+    const deviceId = getDeviceId();
+
+    const res = await fetch(`${BASEURL}/Authentication/Login`, {
         method: "post",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "X-Device-Id": deviceId,
+        },
         body: JSON.stringify(data),
     });
 
     const loginData = await res.json();
-    console.log(loginData);
 
     if (!res.ok) {
         let errorMessage = "Login failed";
@@ -36,7 +40,7 @@ export async function loginAPI(data) {
 }
 
 export async function registerAPI(data) {
-    const res = await fetch(`${BASEURL}/Register`, {
+    const res = await fetch(`${BASEURL}/Authentication/Register`, {
         method: "post",
         headers: {
             "Content-Type": "application/json",
@@ -62,4 +66,54 @@ export async function registerAPI(data) {
     }
 
     return registerdata;
+}
+
+export async function refreshAPI(refreshToken) {
+    const deviceId = getDeviceId();
+
+    const result = await fetch(`${BASEURL}/Authentication/Refresh`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Device-Id": deviceId,
+        },
+        body: JSON.stringify({
+            refreshToken,
+            deviceId,
+        }),
+    });
+
+    // 👇 READ THE BODY FIRST
+    let errorBody = null;
+    let data = null;
+
+    const contentType = result.headers.get("content-type");
+
+    if (contentType && contentType.includes("application/json")) {
+        data = await result.json();
+    } else {
+        errorBody = await result.text();
+    }
+
+    // 👇 HANDLE ERROR
+    if (!result.ok) {
+        console.error("Refresh failed:", {
+            status: result.status,
+            statusText: result.statusText,
+            body: data ?? errorBody,
+        });
+
+        throw new Error(
+            data?.Message ||
+                data?.error ||
+                "Refresh token is invalid or expired"
+        );
+    }
+
+    console.log("Refresh success:", data);
+
+    return {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+    };
 }

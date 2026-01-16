@@ -1,9 +1,13 @@
-import { Navigate, redirect } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 function Feed() {
     const { user } = useAuth();
-    return <div>welcome {user.fullName}</div>;
+    console.log(user);
+    return (
+        <div>
+            <p>welcome {user?.fullName}</p>
+        </div>
+    );
 }
 
 export default Feed;

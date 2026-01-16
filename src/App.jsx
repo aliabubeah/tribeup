@@ -6,6 +6,7 @@ import Feed from "./features/feed/Feed";
 import AppLayout from "./ui/AppLayout";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./features/feed/ProtectedRoute";
+import Profile from "./features/profile/Profile";
 
 const router = createBrowserRouter([
     {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
                 path: "register",
                 element: <Register />,
                 action: registerAction,
+            },
+            {
+                path: "profile",
+                element: <Profile />,
             },
         ],
     },
