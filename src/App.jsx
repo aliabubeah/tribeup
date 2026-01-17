@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Feed from "./features/feed/Feed";
 import AppLayout from "./ui/AppLayout";
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./features/feed/ProtectedRoute";
+import ProtectedRoute from "./ui/ProtectedRoute";
 import Profile from "./features/profile/Profile";
 
 const router = createBrowserRouter([
@@ -32,7 +32,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "profile",
-                element: <Profile />,
+                element: (
+                    <ProtectedRoute>
+                        <Profile />,
+                    </ProtectedRoute>
+                ),
             },
         ],
     },

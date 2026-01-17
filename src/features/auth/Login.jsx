@@ -50,7 +50,7 @@ function Login() {
                     required
                 />
                 <button type="submit" disabled={isSubmitting}>
-                    {isSubmitting.state ? "loggingin..." : "login"}
+                    {isSubmitting ? "loggingin..." : "login"}
                 </button>
             </Form>
         </div>

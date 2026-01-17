@@ -7,6 +7,10 @@ import {
 } from "react";
 import { getprofile } from "../services/profile";
 import { refreshAPI } from "../services/auth";
+import {
+    clearAccessToken,
+    setAccessToken as setHttpToken,
+} from "../services/http";
 
 const AuthContext = createContext();
 
@@ -20,6 +24,7 @@ const initialState = {
 function reducer(state, action) {
     switch (action.type) {
         case "login":
+            setHttpToken(action.payload);
             return {
                 ...state,
                 accessToken: action.payload,
@@ -55,10 +60,13 @@ function AuthProvider({ children }) {
     const [{ user, isAuthenticated, isLoading, accessToken }, dispatch] =
         useReducer(reducer, initialState);
 
+    // Handle Login
     async function handleLogin(accessToken) {
+        setHttpToken(accessToken);
+
         dispatch({ type: "login", payload: accessToken });
 
-        const profile = await getprofile(accessToken);
+        const profile = await getprofile();
         dispatch({ type: "setUser", payload: profile });
     }
 
@@ -76,10 +84,58 @@ function AuthProvider({ children }) {
     }
 
     function logout() {
+        clearAccessToken();
         dispatch({ type: "logout" });
     }
 
     // Checks if user exist
+    // useEffect(() => {
+    //     if (hasHydrated.current) return;
+    //     hasHydrated.current = true;
+
+    //     async function hydrate() {
+    //         const refreshToken = localStorage.getItem("refreshToken");
+
+    //         if (!refreshToken || refreshToken === "undefined") {
+    //             localStorage.removeItem("refreshToken");
+    //             dispatch({ type: "finishLoading" });
+    //             return;
+    //         }
+
+    //         try {
+    //             const response = await refreshAPI(refreshToken);
+
+    //             if (response.refreshToken) {
+    //                 localStorage.setItem("refreshToken", response.refreshToken);
+    //             }
+
+    //             await handleLogin(response.accessToken);
+    //         } catch (err) {
+    //             console.error(err);
+    //             localStorage.removeItem("refreshToken");
+    //             dispatch({ type: "finishLoading" });
+    //         }
+    //     }
+
+    //     hydrate();
+    // }, []);
+
+    // useEffect(() => {
+    //     if (hasHydrated.current) return;
+    //     hasHydrated.current = true;
+
+    //     const refreshToken = localStorage.getItem("refreshToken");
+
+    //     if (!refreshToken || refreshToken === "undefined") {
+    //         localStorage.removeItem("refreshToken");
+    //         dispatch({ type: "finishLoading" });
+    //         return;
+    //     }
+
+    //     // ✅ DO NOT refresh here
+    //     // Just mark app as ready
+    //     dispatch({ type: "finishLoading" });
+    // }, []);
     useEffect(() => {
         if (hasHydrated.current) return;
         hasHydrated.current = true;
@@ -87,26 +143,19 @@ function AuthProvider({ children }) {
         async function hydrate() {
             const refreshToken = localStorage.getItem("refreshToken");
 
-            if (
-                !refreshToken ||
-                refreshToken === "undefined" ||
-                refreshToken === "null"
-            ) {
-                localStorage.removeItem("refreshToken");
+            if (!refreshToken) {
                 dispatch({ type: "finishLoading" });
                 return;
             }
 
             try {
-                const response = await refreshAPI(refreshToken);
+                const { accessToken, refreshToken: newRefresh } =
+                    await refreshAPI(refreshToken);
 
-                if (response.refreshToken) {
-                    localStorage.setItem("refreshToken", response.refreshToken);
-                }
+                localStorage.setItem("refreshToken", newRefresh);
 
-                await handleLogin(response.accessToken);
-            } catch (err) {
-                console.error(err);
+                await handleLogin(accessToken);
+            } catch {
                 localStorage.removeItem("refreshToken");
                 dispatch({ type: "finishLoading" });
             }

@@ -1,16 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 function Header() {
     const { logout, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
     function handlesubmit() {
         logout();
+        navigate("/login");
     }
     return (
         <div>
-            Header
+            <Link to="/">Header</Link>
             {isAuthenticated ? (
-                <button onClick={handlesubmit}>Logout</button>
+                <div>
+                    <button onClick={handlesubmit}>Logout</button>
+                    <Link to="/profile">Profile</Link>
+                </div>
             ) : (
                 <div>
                     <Link to="/login">login</Link>

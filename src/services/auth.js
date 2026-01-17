@@ -17,12 +17,12 @@ export async function loginAPI(data) {
     if (!res.ok) {
         let errorMessage = "Login failed";
 
-        // ✅ 401 Unauthorized
+        // 401 Unauthorized
         if (loginData.Message) {
             errorMessage = loginData.Message;
         }
 
-        // ✅ 400 Validation error
+        // 400 Validation error
         else if (Array.isArray(loginData.errors)) {
             errorMessage = loginData.errors
                 .map(err => err.errors)
@@ -83,7 +83,6 @@ export async function refreshAPI(refreshToken) {
         }),
     });
 
-    // 👇 READ THE BODY FIRST
     let errorBody = null;
     let data = null;
 
