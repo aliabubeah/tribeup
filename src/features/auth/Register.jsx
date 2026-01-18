@@ -1,4 +1,10 @@
-import { Form, redirect, useActionData, useNavigation } from "react-router-dom";
+import {
+    Form,
+    Link,
+    redirect,
+    useActionData,
+    useNavigation,
+} from "react-router-dom";
 import { registerAPI } from "../../services/auth";
 
 function Register() {
@@ -6,63 +12,88 @@ function Register() {
     const navigation = useNavigation();
     const isSubmitting = navigation.state === "submitting";
     return (
-        <div>
-            <div>
-                <Form method="POST">
+        <div className="flex min-h-screen w-full flex-col lg:flex-row">
+            {/* left panel */}
+            <div className="hidden items-center bg-tribe-600 p-12 text-white lg:flex lg:w-1/2">
+                <div>
+                    <h1 className="mb-4 text-6xl font-semibold">
+                        Start your journey,
+                    </h1>
+                    <h1 className="mb-4 text-6xl font-semibold">
+                        join your tripes
+                    </h1>
+                    <p className="text-xl tracking-wide">
+                        Create your account and discover tripes that match your
+                        interests, passions, and goals.
+                    </p>
+                </div>
+            </div>
+            <div className="flex min-h-screen w-full items-center justify-center px-6 lg:w-1/2">
+                <Form
+                    method="POST"
+                    className="flex w-full max-w-sm flex-col gap-4"
+                >
                     {actionData?.errors &&
                         actionData.errors.map((err, i) => (
                             <p style={{ color: "red" }} key={i}>
                                 {err}
                             </p>
                         ))}
-                    <label>FirstName</label>
                     <input
+                        className="input"
                         type="text"
                         name="firstName"
-                        placeholder="Enter FirstName..."
+                        placeholder="FirstName"
                         required
                     />
-                    <label>lastName:</label>
                     <input
+                        className="input"
                         type="text"
                         name="lastName"
-                        placeholder="enter lastName"
+                        placeholder="LastName"
                         required
                     />
-                    <br></br>
-                    <br></br>
-                    <label>userName:</label>
                     <input
+                        className="input"
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                    />
+                    <input
+                        className="input"
                         type="text"
                         name="userName"
-                        placeholder="Enter userName..."
+                        placeholder="user name"
                         required
                     />
-                    <label>Email</label>
                     <input
-                        type="text"
-                        name="email"
-                        placeholder="Enter email..."
-                        required
-                    />
-                    <label>Password:</label>
-                    <input
+                        className="input"
                         type="text"
                         name="password"
-                        placeholder="Password.."
+                        placeholder="Password"
                         required
                     />
-                    <label>Confirm Password:</label>
                     <input
+                        className="input"
                         type="text"
                         name="confirmPassword"
-                        placeholder="Confirm Password.."
+                        placeholder="Confirm Password"
                         required
                     />
-
-                    <button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? "submitting" : "signup"}
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="rounded-md bg-tribe-500 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                        {isSubmitting ? "submitting" : "Create account"}
                     </button>
+                    <Link
+                        to="/login"
+                        className="rounded-md border-2 border-neutral-800 py-3 text-center text-sm font-semibold text-neutral-800"
+                    >
+                        Already have account
+                    </Link>
                 </Form>
             </div>
         </div>
@@ -74,7 +105,7 @@ export async function action({ request }) {
     const data = Object.fromEntries(formData);
 
     const result = await registerAPI(data);
-
+    console.log(result);
     if (result.errors) {
         return result;
     }

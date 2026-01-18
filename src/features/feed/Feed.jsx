@@ -4,7 +4,7 @@ function Feed() {
     const { user } = useAuth();
     return (
         <div>
-            <p>welcome {user?.fullName}</p>
+            <p className="text-xl">welcome {user?.fullName}</p>
         </div>
     );
 }

@@ -12,10 +12,6 @@ function ProtectedRoute({ children }) {
         return <Navigate to="/login" replace />;
     }
 
-    // if (!user?.fullName) {
-    //     return <h1>Loading...</h1>; // or spinner
-    // }
-
     return children;
 }
 

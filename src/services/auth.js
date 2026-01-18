@@ -25,7 +25,7 @@ export async function loginAPI(data) {
         // 400 Validation error
         else if (Array.isArray(loginData.errors)) {
             errorMessage = loginData.errors
-                .map(err => err.errors)
+                .map((err) => err.errors)
                 .flat()
                 .join(", ");
         }
@@ -40,10 +40,12 @@ export async function loginAPI(data) {
 }
 
 export async function registerAPI(data) {
+    const deviceId = getDeviceId();
     const res = await fetch(`${BASEURL}/Authentication/Register`, {
         method: "post",
         headers: {
             "Content-Type": "application/json",
+            "X-Device-Id": deviceId,
         },
         body: JSON.stringify(data),
     });
@@ -54,7 +56,7 @@ export async function registerAPI(data) {
         let errors = [];
 
         if (Array.isArray(registerdata.Errors)) {
-            errors = registerdata.Errors.map(err => err).flat();
+            errors = registerdata.Errors.map((err) => err).flat();
         } else if (registerdata.Message) {
             errors = registerdata.Message;
         }
@@ -94,7 +96,7 @@ export async function refreshAPI(refreshToken) {
         errorBody = await result.text();
     }
 
-    // 👇 HANDLE ERROR
+    // HANDLE ERROR
     if (!result.ok) {
         console.error("Refresh failed:", {
             status: result.status,
@@ -105,11 +107,9 @@ export async function refreshAPI(refreshToken) {
         throw new Error(
             data?.Message ||
                 data?.error ||
-                "Refresh token is invalid or expired"
+                "Refresh token is invalid or expired",
         );
     }
-
-    console.log("Refresh success:", data);
 
     return {
         accessToken: data.accessToken,

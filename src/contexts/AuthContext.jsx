@@ -88,54 +88,6 @@ function AuthProvider({ children }) {
         dispatch({ type: "logout" });
     }
 
-    // Checks if user exist
-    // useEffect(() => {
-    //     if (hasHydrated.current) return;
-    //     hasHydrated.current = true;
-
-    //     async function hydrate() {
-    //         const refreshToken = localStorage.getItem("refreshToken");
-
-    //         if (!refreshToken || refreshToken === "undefined") {
-    //             localStorage.removeItem("refreshToken");
-    //             dispatch({ type: "finishLoading" });
-    //             return;
-    //         }
-
-    //         try {
-    //             const response = await refreshAPI(refreshToken);
-
-    //             if (response.refreshToken) {
-    //                 localStorage.setItem("refreshToken", response.refreshToken);
-    //             }
-
-    //             await handleLogin(response.accessToken);
-    //         } catch (err) {
-    //             console.error(err);
-    //             localStorage.removeItem("refreshToken");
-    //             dispatch({ type: "finishLoading" });
-    //         }
-    //     }
-
-    //     hydrate();
-    // }, []);
-
-    // useEffect(() => {
-    //     if (hasHydrated.current) return;
-    //     hasHydrated.current = true;
-
-    //     const refreshToken = localStorage.getItem("refreshToken");
-
-    //     if (!refreshToken || refreshToken === "undefined") {
-    //         localStorage.removeItem("refreshToken");
-    //         dispatch({ type: "finishLoading" });
-    //         return;
-    //     }
-
-    //     // ✅ DO NOT refresh here
-    //     // Just mark app as ready
-    //     dispatch({ type: "finishLoading" });
-    // }, []);
     useEffect(() => {
         if (hasHydrated.current) return;
         hasHydrated.current = true;
