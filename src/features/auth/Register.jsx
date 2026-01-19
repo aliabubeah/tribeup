@@ -39,20 +39,27 @@ function Register() {
                                 {err}
                             </p>
                         ))}
-                    <input
-                        className="input"
-                        type="text"
-                        name="firstName"
-                        placeholder="FirstName"
-                        required
-                    />
-                    <input
-                        className="input"
-                        type="text"
-                        name="lastName"
-                        placeholder="LastName"
-                        required
-                    />
+                    <div className="w-full">
+                        <h1 className="text-center text-3xl font-bold text-tribe-600 lg:text-4xl">
+                            TribeUp
+                        </h1>
+                    </div>
+                    <div className="flex gap-3">
+                        <input
+                            className="input flex-1"
+                            type="text"
+                            name="firstName"
+                            placeholder="FirstName"
+                            required
+                        />
+                        <input
+                            className="input flex-1"
+                            type="text"
+                            name="lastName"
+                            placeholder="LastName"
+                            required
+                        />
+                    </div>
                     <input
                         className="input"
                         type="email"

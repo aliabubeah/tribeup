@@ -4,6 +4,23 @@
 
 @layer components {
     .input {
-        @apply rounded border-2 border-neutral-200 px-3 py-2 placeholder:text-neutral-600 focus:border-tribe-500 focus:outline-none;
+        @apply w-full rounded border-2 border-neutral-200 px-3 py-2 placeholder:text-neutral-600 focus:border-tribe-500 focus:outline-none;
     }
+}
+
+.icon-outlined {
+    font-family: "Material Symbols Outlined";
+    font-variation-settings:
+        "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
+}
+
+.icon-filled {
+    font-variation-settings:
+        "FILL" 1,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
 }

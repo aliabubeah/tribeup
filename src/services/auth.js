@@ -1,8 +1,9 @@
+import { useAuth } from "../contexts/AuthContext";
 import { BASEURL, getDeviceId } from "./http";
 
-export async function loginAPI(data) {
-    const deviceId = getDeviceId();
+const deviceId = getDeviceId();
 
+export async function loginAPI(data) {
     const res = await fetch(`${BASEURL}/Authentication/Login`, {
         method: "post",
         headers: {
@@ -40,7 +41,6 @@ export async function loginAPI(data) {
 }
 
 export async function registerAPI(data) {
-    const deviceId = getDeviceId();
     const res = await fetch(`${BASEURL}/Authentication/Register`, {
         method: "post",
         headers: {
@@ -68,6 +68,19 @@ export async function registerAPI(data) {
     }
 
     return registerdata;
+}
+
+export async function logoutAPI(accessToken) {
+    const result = await fetch(`${BASEURL}/Authentication/Logout`, {
+        method: "post",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Device-Id": deviceId,
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    console.log(result);
+    return result;
 }
 
 export async function refreshAPI(refreshToken) {

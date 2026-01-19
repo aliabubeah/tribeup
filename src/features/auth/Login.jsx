@@ -52,6 +52,11 @@ function Login() {
                             {actionData.error}
                         </p>
                     )}
+                    <div className="w-full">
+                        <h1 className="text-center text-3xl font-bold text-tribe-600 lg:text-4xl">
+                            TribeUp
+                        </h1>
+                    </div>
                     <input
                         type="email"
                         name="email"
@@ -74,7 +79,7 @@ function Login() {
                         disabled={isSubmitting}
                         className="rounded-md bg-tribe-500 py-3 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {isSubmitting ? "loggingin..." : "login"}
+                        {isSubmitting ? "Login...." : "login"}
                     </button>
                     <Link
                         to="/register"

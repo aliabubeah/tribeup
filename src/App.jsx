@@ -10,24 +10,21 @@ import NotFound from "./ui/NotFound";
 
 const router = createBrowserRouter([
     {
-        element: <AppLayout />,
+        element: (
+            <ProtectedRoute>
+                <AppLayout />
+            </ProtectedRoute>
+        ),
         errorElement: <NotFound />,
         children: [
             {
+                index: true,
                 path: "/",
-                element: (
-                    <ProtectedRoute>
-                        <Feed />,
-                    </ProtectedRoute>
-                ),
+                element: <Feed />,
             },
             {
                 path: "profile",
-                element: (
-                    <ProtectedRoute>
-                        <Profile />,
-                    </ProtectedRoute>
-                ),
+                element: <Profile />,
             },
         ],
     },

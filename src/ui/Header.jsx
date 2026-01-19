@@ -1,11 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { logoutAPI } from "../services/auth";
 
 function Header() {
     const { logout, isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     function handlesubmit() {
+        logoutAPI();
         logout();
         navigate("/login");
     }
