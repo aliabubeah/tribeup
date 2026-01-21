@@ -24,3 +24,35 @@
         "GRAD" 0,
         "opsz" 24;
 }
+
+.post-swiper {
+    --swiper-navigation-size: 14px;
+}
+
+.post-swiper .swiper-pagination-bullet {
+    background: white;
+    opacity: 0.4;
+}
+
+.post-swiper .swiper-pagination-bullet-active {
+    opacity: 1;
+}
+
+.post-swiper .swiper-button-next,
+.post-swiper .swiper-button-prev {
+    width: 36px;
+    height: 36px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+    color: white;
+}
+
+.post-swiper .swiper-button-next:hover,
+.post-swiper .swiper-button-prev:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.post-swiper .swiper-button-next svg,
+.post-swiper .swiper-button-prev svg {
+    width: 10px;
+}

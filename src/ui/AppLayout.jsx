@@ -5,14 +5,14 @@ import MobileNav from "./MobileNav";
 
 function AppLayout() {
     return (
-        <div className="min-h-screen bg-neutral-50">
-            <div className="mx-auto flex max-w-7xl">
+        <div className="flex min-h-screen flex-col bg-neutral-100">
+            <div className="mx-auto flex w-full max-w-7xl flex-1">
                 {/* SideBar */}
                 <aside className="hidden w-16 shrink-0 border border-blue-400 md:block lg:w-64">
                     <Sidebar />
                 </aside>
                 {/* Main Content */}
-                <main className="w-full flex-1 border border-black md:max-w-[600px]">
+                <main className="w-full flex-1 border border-black md:max-w-[600px] px-4">
                     <Outlet />
                 </main>
                 {/* Right Column */}

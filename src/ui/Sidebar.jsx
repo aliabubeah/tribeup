@@ -13,12 +13,16 @@ function Sidebar() {
     return (
         <div className="h-full px-4 py-6">
             {/* Profile */}
-            <div className="mb-8 flex items-center gap-3">
+            <div className="mb-8 flex justify-center gap-2 lg:justify-normal">
                 <img
                     src={user.profilePicture}
                     alt="profile"
-                    className="h-10 min-w-10 rounded-full"
+                    className="h-12 min-w-12 rounded-full"
                 />
+                <div className="hidden flex-col lg:flex">
+                    <h1 className="font-semibold">{user.fullName}</h1>
+                    <p className="text-sm text-neutral-700">@userName</p>
+                </div>
             </div>
 
             <ul className="flex flex-col gap-6">

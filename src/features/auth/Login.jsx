@@ -53,7 +53,7 @@ function Login() {
                         </p>
                     )}
                     <div className="w-full">
-                        <h1 className="text-center text-3xl font-bold text-tribe-600 lg:text-4xl">
+                        <h1 className="text-center text-3xl font-bold text-tribe-600 lg:text-4xl tracking-wide">
                             TribeUp
                         </h1>
                     </div>
