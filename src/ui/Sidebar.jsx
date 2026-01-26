@@ -8,7 +8,7 @@ function Sidebar() {
     function handleClick() {
         logoutAPI(accessToken);
         logout();
-        navigate("/login");
+        navigate("/auth/login");
     }
     return (
         <div className="h-full px-4 py-6">

@@ -1,12 +1,26 @@
 import Login, { action as loginAction } from "./features/auth/Login";
 import Register, { action as registerAction } from "./features/auth/Register";
+import ResetPassword, {
+    action as resetAction,
+} from "./features/auth/ResetPassword";
+import ChangePassword, {
+    action as changePasswordAction,
+} from "./features/auth/ChangePassword";
+import ForgetPassword from "./features/auth/ForgetPassword";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Feed from "./features/feed/Feed";
 import AppLayout from "./ui/AppLayout";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import Profile from "./features/profile/Profile";
-import NotFound from "./ui/NotFound";
+import Error from "./ui/Error";
+import Settings from "./features/settings/Settings";
+import Account from "./features/settings/Account";
+import Privacy from "./features/settings/Privacy";
+import Avatar from "./features/settings/Avatar";
+import About from "./features/settings/About";
+import AuthLayout from "./features/auth/AuthLayout";
+import { Toaster } from "react-hot-toast";
 
 const router = createBrowserRouter([
     {
@@ -15,7 +29,7 @@ const router = createBrowserRouter([
                 <AppLayout />
             </ProtectedRoute>
         ),
-        errorElement: <NotFound />,
+        errorElement: <Error />,
         children: [
             {
                 index: true,
@@ -26,25 +40,62 @@ const router = createBrowserRouter([
                 path: "profile",
                 element: <Profile />,
             },
+            {
+                path: "settings",
+                element: <Settings />,
+            },
+            { path: "settings/account", element: <Account /> },
+            { path: "settings/privacy", element: <Privacy /> },
+            { path: "settings/avatar", element: <Avatar /> },
+            {
+                path: "settings/about",
+                element: <About />,
+            },
+            {
+                path: "auth/change",
+                element: <ChangePassword />,
+                action: changePasswordAction,
+            },
         ],
     },
     {
-        path: "login",
-        element: <Login />,
-        action: loginAction,
-    },
-    {
-        path: "register",
-        element: <Register />,
-        action: registerAction,
+        element: <AuthLayout />,
+        errorElement: <Error />,
+        children: [
+            {
+                path: "/auth/login",
+                element: <Login />,
+                action: loginAction,
+            },
+            {
+                path: "/auth/register",
+                element: <Register />,
+                action: registerAction,
+            },
+            {
+                path: "/auth/forgetpassword",
+                element: <ForgetPassword />,
+            },
+        ],
     },
 ]);
 
 function App() {
     return (
-        <AuthProvider>
-            <RouterProvider router={router} />
-        </AuthProvider>
+        <>
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>
+            <Toaster
+                position="bottom-right"
+                toastOptions={{
+                    duration: 2000,
+                    style: {
+                        fontSize: "14px",
+                    },
+                }}
+            />
+        </>
     );
 }
 

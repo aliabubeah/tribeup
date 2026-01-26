@@ -1,14 +1,3 @@
-// import PostImg from "../../assets/PostImg.jpeg";
-// function PostMedia() {
-//     return (
-//         <div className="overflow-hidden rounded-xl">
-//             <img src={PostImg} className="w-full object-cover" />
-//         </div>
-//     );
-// }
-
-// export default PostMedia;
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { useState } from "react";
@@ -17,7 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-function PostMedia({ img }) {
+function PostMedia({ media }) {
     return (
         <div className="overflow-hidden rounded-xl">
             <Swiper
@@ -26,9 +15,9 @@ function PostMedia({ img }) {
                 pagination={{ clickable: true }}
                 className="post-swiper"
             >
-                {img.map((src, index) => (
+                {media.map((img, index) => (
                     <SwiperSlide key={index}>
-                        <MediaImage src={src} />
+                        <MediaImage src={img.mediaURL} />
                     </SwiperSlide>
                 ))}
             </Swiper>

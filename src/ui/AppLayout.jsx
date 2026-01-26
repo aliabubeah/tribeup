@@ -2,8 +2,11 @@ import { NavLink, Outlet } from "react-router-dom";
 // import Header from "./Header";
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
+import { useAuth } from "../contexts/AuthContext";
 
 function AppLayout() {
+    const { accessToken } = useAuth();
+    // console.log(accessToken);
     return (
         <div className="flex min-h-screen flex-col bg-neutral-100">
             <div className="mx-auto flex w-full max-w-7xl flex-1">
@@ -12,7 +15,7 @@ function AppLayout() {
                     <Sidebar />
                 </aside>
                 {/* Main Content */}
-                <main className="w-full flex-1 border border-black md:max-w-[600px] px-4">
+                <main className="w-full flex-1 border border-black px-4 py-8 md:max-w-[600px]">
                     <Outlet />
                 </main>
                 {/* Right Column */}

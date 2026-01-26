@@ -6,6 +6,7 @@ import {
     useNavigation,
 } from "react-router-dom";
 import { registerAPI } from "../../services/auth";
+import Button from "../../ui/Button";
 
 function Register() {
     const actionData = useActionData();
@@ -28,6 +29,7 @@ function Register() {
                     </p>
                 </div>
             </div>
+
             <div className="flex min-h-screen w-full items-center justify-center px-6 lg:w-1/2">
                 <Form
                     method="POST"
@@ -88,19 +90,10 @@ function Register() {
                         placeholder="Confirm Password"
                         required
                     />
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="rounded-md bg-tribe-500 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-                    >
+                    <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? "submitting" : "Create account"}
-                    </button>
-                    <Link
-                        to="/login"
-                        className="rounded-md border-2 border-neutral-800 py-3 text-center text-sm font-semibold text-neutral-800"
-                    >
-                        Already have account
-                    </Link>
+                    </Button>
+                    <Button to="/auth/login">Already have account</Button>
                 </Form>
             </div>
         </div>
@@ -117,6 +110,6 @@ export async function action({ request }) {
         return result;
     }
 
-    return redirect("/login");
+    return redirect("/auth/login");
 }
 export default Register;

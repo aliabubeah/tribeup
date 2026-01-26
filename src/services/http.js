@@ -1,6 +1,6 @@
 import { refreshAPI } from "./auth";
 
-export const BASEURL = "http://tribeup.runasp.net/api";
+export const BASEURL = "http://tribeup.runasp.net";
 
 export function getDeviceId() {
     let deviceId = localStorage.getItem("deviceId");
@@ -25,7 +25,7 @@ export function clearAccessToken() {
 }
 
 function resolveQueue(error, token = null) {
-    queue.forEach(p => (error ? p.reject(error) : p.resolve(token)));
+    queue.forEach((p) => (error ? p.reject(error) : p.resolve(token)));
     queue = [];
 }
 
@@ -53,7 +53,7 @@ export async function authFetch(url, options = {}) {
     if (isRefreshing) {
         return new Promise((resolve, reject) => {
             queue.push({
-                resolve: token => {
+                resolve: (token) => {
                     resolve(
                         fetch(`${BASEURL}${url}`, {
                             ...options,
@@ -61,7 +61,7 @@ export async function authFetch(url, options = {}) {
                                 ...baseHeaders,
                                 Authorization: `Bearer ${token}`,
                             },
-                        })
+                        }),
                     );
                 },
                 reject,

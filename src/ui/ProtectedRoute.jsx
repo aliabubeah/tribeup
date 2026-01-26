@@ -9,7 +9,7 @@ function ProtectedRoute({ children }) {
     }
 
     if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/auth/login" replace />;
     }
     if (!user) {
         return <h1>Fetching Profile</h1>;

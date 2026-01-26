@@ -1,7 +1,7 @@
-function PostContent({ children }) {
+function PostContent({ caption }) {
     return (
         <div>
-            <p className="leading-relaxed">{children}</p>
+            <p className="leading-relaxed">{caption}</p>
         </div>
     );
 }

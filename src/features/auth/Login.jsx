@@ -8,6 +8,7 @@ import {
 import { loginAPI } from "../../services/auth";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect } from "react";
+import Button from "../../ui/Button";
 
 function Login() {
     const actionData = useActionData();
@@ -42,6 +43,7 @@ function Login() {
                     </p>
                 </div>
             </div>
+
             <div className="flex min-h-screen w-full items-center justify-center px-6 lg:w-1/2">
                 <Form
                     method="POST"
@@ -53,7 +55,7 @@ function Login() {
                         </p>
                     )}
                     <div className="w-full">
-                        <h1 className="text-center text-3xl font-bold text-tribe-600 lg:text-4xl tracking-wide">
+                        <h1 className="text-center text-3xl font-bold tracking-wide text-tribe-600 lg:text-4xl">
                             TribeUp
                         </h1>
                     </div>
@@ -74,19 +76,10 @@ function Login() {
                     <button className="w-fit border-b-2 border-neutral-700 text-left text-sm font-semibold text-neutral-700">
                         Forget password?
                     </button>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="rounded-md bg-tribe-500 py-3 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60"
-                    >
+                    <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? "Login...." : "login"}
-                    </button>
-                    <Link
-                        to="/register"
-                        className="rounded-md border-2 border-neutral-800 py-3 text-center text-sm font-semibold text-neutral-800"
-                    >
-                        Create an account
-                    </Link>
+                    </Button>
+                    <Button to="/auth/register">Create an account</Button>
                 </Form>
             </div>
         </div>
