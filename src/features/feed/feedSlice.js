@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { feedAPI } from "../../services/posts";
+import { toggleLikeAPI, feedAPI } from "../../services/posts";
 
 /* ============================= */
 /* Initial State */
@@ -18,7 +18,7 @@ const initialState = {
 /* ============================= */
 export const fetchFeed = createAsyncThunk(
     "feed/fetchFeed",
-    async (accessToken, { getState, rejectWithValue }) => {
+    async ({ accessToken, page }, { getState, rejectWithValue }) => {
         const { hasMore } = getState().feed;
 
         if (!hasMore) {
@@ -26,8 +26,21 @@ export const fetchFeed = createAsyncThunk(
         }
 
         try {
-            const res = await feedAPI(accessToken);
+            const res = await feedAPI(accessToken, page);
             return res;
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    },
+);
+
+// add user Like
+export const toggleLike = createAsyncThunk(
+    "feed/toggleLike",
+    async ({ accessToken, postId }, { rejectWithValue }) => {
+        try {
+            await toggleLikeAPI(accessToken, postId);
+            return postId;
         } catch (err) {
             return rejectWithValue(err.message);
         }
@@ -52,8 +65,13 @@ const feedSlice = createSlice({
 
         likePostOptimistic(state, action) {
             const post = state.entities[action.payload];
-            
-            if (post && !post.isLikedByCurrentUser) {
+
+            if (!post) return;
+
+            if (post.isLikedByCurrentUser) {
+                post.likesCount -= 1;
+                post.isLikedByCurrentUser = false;
+            } else {
                 post.likesCount += 1;
                 post.isLikedByCurrentUser = true;
             }

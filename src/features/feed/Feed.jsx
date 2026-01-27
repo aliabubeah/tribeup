@@ -8,7 +8,7 @@ import { ClipLoader } from "react-spinners";
 function Feed() {
     const dispatch = useDispatch();
     const { accessToken } = useAuth();
-    const { ids, entities, hasMore, isLoading } = useSelector(
+    const { ids, entities, hasMore, isLoading, page } = useSelector(
         (state) => state.feed,
     );
     const observerRef = useRef(null);
@@ -17,9 +17,9 @@ function Feed() {
     /* Initial load */
     useEffect(() => {
         if (!isLoading) {
-            dispatch(fetchFeed());
+            dispatch(fetchFeed({ accessToken }));
         }
-    }, [dispatch]);
+    }, [dispatch, accessToken]);
 
     /* Infinite scroll */
     useEffect(() => {
@@ -27,7 +27,7 @@ function Feed() {
 
         observerRef.current = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
-                dispatch(fetchFeed(accessToken));
+                dispatch(fetchFeed({ accessToken, page }));
             }
         });
 

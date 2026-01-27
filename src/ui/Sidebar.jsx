@@ -21,7 +21,7 @@ function Sidebar() {
                 />
                 <div className="hidden flex-col lg:flex">
                     <h1 className="font-semibold">{user.fullName}</h1>
-                    <p className="text-sm text-neutral-700">@userName</p>
+                    <p className="text-sm text-neutral-700">@username</p>
                 </div>
             </div>
 

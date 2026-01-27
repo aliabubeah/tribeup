@@ -14,6 +14,7 @@ function Post({ post }) {
             {post.media.length > 0 && <PostMedia media={post.media} />}
             <PostContent caption={post.caption} />
             <PostActions
+                isLikedByCurrentUser={post.isLikedByCurrentUser}
                 postId={post.postId}
                 likesCount={post.likesCount}
                 commentCount={post.commentCount}

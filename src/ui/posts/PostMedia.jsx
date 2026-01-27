@@ -5,19 +5,23 @@ import { useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import Video from "../Video";
 
 function PostMedia({ media }) {
+    if (!media || media.length === 0) return null;
+
     return (
         <div className="overflow-hidden rounded-xl">
             <Swiper
                 modules={[Navigation, Pagination]}
                 navigation
+                autoHeight
                 pagination={{ clickable: true }}
                 className="post-swiper"
             >
-                {media.map((img, index) => (
+                {media.map((item, index) => (
                     <SwiperSlide key={index}>
-                        <MediaImage src={img.mediaURL} />
+                        <MediaItem media={item} />
                     </SwiperSlide>
                 ))}
             </Swiper>
@@ -25,6 +29,21 @@ function PostMedia({ media }) {
     );
 }
 
+/* ============================= */
+/* Media Switcher */
+/* ============================= */
+function MediaItem({ media }) {
+    if (media.type === "Video") {
+        return <MediaVideo src={media.mediaURL} />;
+    }
+
+    // Default to image
+    return <MediaImage src={media.mediaURL} />;
+}
+
+/* ============================= */
+/* Image Renderer */
+/* ============================= */
 function MediaImage({ src }) {
     const [isPortrait, setIsPortrait] = useState(false);
 
@@ -43,8 +62,16 @@ function MediaImage({ src }) {
                         ? "h-full object-contain"
                         : "h-full w-full object-cover"
                 }
-                alt=""
+                alt="Post media"
             />
+        </div>
+    );
+}
+
+function MediaVideo({ src }) {
+    return (
+        <div className="aspect-video w-full bg-black">
+            <Video src={src} />
         </div>
     );
 }

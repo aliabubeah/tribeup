@@ -1,13 +1,26 @@
 import { useState } from "react";
 import { formatPostDate } from "../../utils/helper";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { useAuth } from "../../contexts/AuthContext";
+import { likePostOptimistic, toggleLike } from "../../features/feed/feedSlice";
 
-function PostActions({ likesCount, commentCount, createdAt, postId }) {
-    const [favoriteToggle, setFavoriteToggle] = useState(false);
+function PostActions({
+    likesCount,
+    commentCount,
+    createdAt,
+    postId,
+    isLikedByCurrentUser,
+}) {
+    const [favoriteToggle, setFavoriteToggle] = useState(isLikedByCurrentUser);
     const [copy, setCopy] = useState(false);
+    const dispatch = useDispatch();
+    const { accessToken } = useAuth();
 
     function handleToggle() {
+        dispatch(likePostOptimistic(postId));
         setFavoriteToggle((e) => !e);
+        dispatch(toggleLike({ accessToken, postId }));
     }
 
     async function handleSharePost() {

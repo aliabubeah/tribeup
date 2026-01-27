@@ -1,11 +1,14 @@
 import { BASEURL } from "./http";
 
-export async function feedAPI(accessToken) {
-    const res = await fetch(`${BASEURL}/api/Posts/feed`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
+export async function feedAPI(accessToken, page = 1) {
+    const res = await fetch(
+        `${BASEURL}/api/Posts/Feed?page=${page}&pageSize=20`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
         },
-    });
+    );
 
     let data;
     try {
@@ -31,7 +34,8 @@ export async function feedAPI(accessToken) {
     return data;
 }
 
-export async function addLikeAPI(accessToken, postId) {
+export async function toggleLikeAPI(accessToken, postId) {
+    // console.log(postId);
     const res = await fetch(`${BASEURL}/api/Posts/${postId}/AddLike`, {
         method: "post",
         headers: {
@@ -40,5 +44,10 @@ export async function addLikeAPI(accessToken, postId) {
         },
     });
 
-    return res;
+    if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || "Failed to toggle like");
+    }
+
+    return true;
 }
