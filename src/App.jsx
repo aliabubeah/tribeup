@@ -46,13 +46,13 @@ const router = createBrowserRouter([
             },
             { path: "settings/account", element: <Account /> },
             { path: "settings/privacy", element: <Privacy /> },
-            { path: "settings/avatar", element: <Avatar /> },
+            { path: "avatar", element: <Avatar /> },
             {
-                path: "settings/about",
+                path: "about",
                 element: <About />,
             },
             {
-                path: "auth/change",
+                path: "/auth/change-password",
                 element: <ChangePassword />,
                 action: changePasswordAction,
             },

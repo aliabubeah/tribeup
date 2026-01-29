@@ -25,6 +25,12 @@ function Settings() {
                 title="About"
                 description="Edit your profile information"
             />
+            <SettingCard
+                to="/auth/change-password"
+                iconName="password"
+                title="changePassword"
+                description="change your Password "
+            />
         </div>
     );
 }

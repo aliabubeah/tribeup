@@ -1,0 +1,5 @@
+TODO: 
+Refactor Button Component (split into 2 components)
+post modal 
+reset password
+save the user info when calling the login api not the profile api 

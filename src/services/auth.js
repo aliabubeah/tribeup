@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 import { BASEURL, getDeviceId } from "./http";
+import { handleApiError } from "../utils/helper";
 const deviceId = getDeviceId();
 
 export async function loginAPI(data) {
@@ -15,27 +16,9 @@ export async function loginAPI(data) {
     const loginData = await res.json();
 
     if (!res.ok) {
-        let errorMessage = "Login failed";
-
-        // 401 Unauthorized
-        if (loginData.Message) {
-            errorMessage = loginData.Message;
-        }
-
-        // 400 Validation error
-        else if (Array.isArray(loginData.errors)) {
-            errorMessage = loginData.errors
-                .map((err) => err.errors)
-                .flat()
-                .join(", ");
-        }
-
-        return {
-            error: errorMessage,
-            statusCode: res.status,
-        };
+        console.log(handleApiError(loginData));
+        return handleApiError(loginData);
     }
-
     return loginData;
 }
 
@@ -52,18 +35,8 @@ export async function registerAPI(data) {
     const registerdata = await res.json();
 
     if (!res.ok) {
-        let errors = [];
-
-        if (Array.isArray(registerdata.Errors)) {
-            errors = registerdata.Errors.map((err) => err).flat();
-        } else if (registerdata.Message) {
-            errors = registerdata.Message;
-        }
-
-        return {
-            errors: errors,
-            status: res.status,
-        };
+        console.log(handleApiError(registerdata));
+        return handleApiError(registerdata);
     }
 
     return registerdata;
@@ -78,7 +51,7 @@ export async function logoutAPI(accessToken) {
             Authorization: `Bearer ${accessToken}`,
         },
     });
-    console.log(result);
+
     return result;
 }
 
@@ -167,25 +140,8 @@ export async function resetPasswordAPI(
     const data = await result.json();
 
     if (!result.ok) {
-        let errorMessage = "Reset Failed";
-
-        // 401 Unauthorized
-        if (data.Message) {
-            errorMessage = data.Message;
-        }
-
-        // 400 Validation error
-        else if (Array.isArray(data.errors)) {
-            errorMessage = data.errors
-                .map((err) => err.errors)
-                .flat()
-                .join(", ");
-        }
-
-        return {
-            error: errorMessage,
-            statusCode: result.status,
-        };
+        console.log(handleApiError(data));
+        handleApiError(data);
     }
     console.log(result);
     console.log(data);
@@ -220,25 +176,8 @@ export async function changePasswordAPI(
     }
 
     if (!result.ok) {
-        let errorMessage = "changePassworrd Failed";
-
-        // 400 Validation error
-        if (Array.isArray(data.Errors)) {
-            errorMessage = data.Errors.map((err) => err)
-                .flat()
-                .join(", ");
-        }
-
-        // 401 Unauthorized
-        else if (data.Message) {
-            errorMessage = data.Message;
-        }
-
-        // return result;
-        return {
-            error: errorMessage,
-            statusCode: result.status,
-        };
+        console.log(handleApiError(data));
+        return handleApiError(data);
     }
     toast.success("passwordChanged Successfully");
     return result;

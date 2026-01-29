@@ -9,6 +9,8 @@ import { loginAPI } from "../../services/auth";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect } from "react";
 import Button from "../../ui/Button";
+import Auth from "./Auth";
+import AuthBrand from "./AuthBrand";
 
 function Login() {
     const actionData = useActionData();
@@ -30,59 +32,39 @@ function Login() {
     }, [isAuthenticated, setAccessToken, actionData, navigate, accessToken]);
 
     return (
-        <div className="flex min-h-screen w-full flex-col lg:flex-row">
-            {/* left panel */}
-            <div className="hidden items-center bg-tribe-600 p-12 text-white lg:flex lg:w-1/2">
-                <div>
-                    <h1 className="mb-4 text-6xl font-semibold">
-                        Welcome back to your community
-                    </h1>
-                    <p className="text-xl tracking-wide">
-                        Your tribes are waiting for you. Continue connecting,
-                        sharing, and growing together.
-                    </p>
-                </div>
-            </div>
-
-            <div className="flex min-h-screen w-full items-center justify-center px-6 lg:w-1/2">
-                <Form
-                    method="POST"
-                    className="flex w-full max-w-sm flex-col gap-4"
-                >
-                    {actionData?.error && (
-                        <p className="text-sm text-red-600">
-                            {actionData.error}
-                        </p>
-                    )}
-                    <div className="w-full">
-                        <h1 className="text-center text-3xl font-bold tracking-wide text-tribe-600 lg:text-4xl">
-                            TribeUp
-                        </h1>
-                    </div>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        required
-                        className="input"
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        required
-                        className="input"
-                    />
-                    <button className="w-fit border-b-2 border-neutral-700 text-left text-sm font-semibold text-neutral-700">
-                        Forget password?
-                    </button>
-                    <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? "Login...." : "login"}
-                    </Button>
-                    <Button to="/auth/register">Create an account</Button>
-                </Form>
-            </div>
-        </div>
+        <Auth
+            leftDescription="Your tribes are waiting for you. Continue connecting,sharing, and growing together."
+            leftTitle="Welcome back to your community"
+        >
+            <AuthBrand />
+            {actionData?.message && (
+                <p className="text-sm text-red-600">{actionData.message}</p>
+            )}
+            <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                required
+                className="input"
+            />
+            <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+                className="input"
+            />
+            <Link
+                to="/auth/forgetpassword"
+                className="w-fit border-b-2 border-neutral-700 text-left text-sm font-semibold text-neutral-700"
+            >
+                Forget password?
+            </Link>
+            <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Login...." : "login"}
+            </Button>
+            <Button to="/auth/register">Create an account</Button>
+        </Auth>
     );
 }
 

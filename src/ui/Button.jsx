@@ -17,7 +17,7 @@ function Button({ type, to, children, disabled, onClick, className }) {
             type={type}
             disabled={disabled}
             onClick={onClick}
-            className={`rounded-md bg-tribe-500 py-3 text-sm text-white transition-all duration-300 hover:bg-tribe-400 active:bg-tribe-600 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+            className={`rounded-md bg-tribe-500 py-3 text-sm text-white transition-all duration-300 hover:bg-tribe-400 active:bg-tribe-600 disabled:cursor-not-allowed disabled:opacity-60 disabled:bg-neutral-500 font-semibold tracking-wide ${className}`}
         >
             {children}
         </button>
