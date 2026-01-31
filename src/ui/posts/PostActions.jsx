@@ -11,6 +11,7 @@ function PostActions({
     createdAt,
     postId,
     isLikedByCurrentUser,
+    onCommentClick,
 }) {
     const [favoriteToggle, setFavoriteToggle] = useState(isLikedByCurrentUser);
     const [copy, setCopy] = useState(false);
@@ -49,7 +50,10 @@ function PostActions({
                         </span>
                         {likesCount}
                     </button>
-                    <button className="flex items-center gap-1">
+                    <button
+                        className="flex items-center gap-1 outline-none"
+                        onClick={onCommentClick}
+                    >
                         <span className="icon-outlined text-xl">
                             add_comment
                         </span>
@@ -65,7 +69,7 @@ function PostActions({
                 </button>
             </div>
 
-            <p className="mt-2 text-xs text-neutral-600">
+            <p className="mt-2 text-start text-xs text-neutral-600">
                 {formatPostDate(createdAt)}
             </p>
         </footer>

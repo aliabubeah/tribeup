@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+import { handleApiError } from "../utils/helper";
 import { BASEURL } from "./http";
 
 export async function feedAPI(accessToken, page = 1) {
@@ -50,4 +52,25 @@ export async function toggleLikeAPI(accessToken, postId) {
     }
 
     return true;
+}
+
+export async function deletePostAPI(postId, accessToken) {
+    const res = await fetch(`${BASEURL}/api/Posts/${postId}/DeletePost`, {
+        method: "delete",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const data = await res.json();
+    console.log(data);
+    console.log(res);
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        toast.error("couldn't delete post ");
+
+        return handleApiError(data);
+    }
+    toast.success("successfully deleted post ");
+    return data;
 }

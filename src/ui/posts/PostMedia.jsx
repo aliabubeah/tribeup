@@ -7,11 +7,11 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Video from "../Video";
 
-function PostMedia({ media }) {
+function PostMedia({ media, rounded = true }) {
     if (!media || media.length === 0) return null;
 
     return (
-        <div className="overflow-hidden rounded-xl">
+        <div className={`overflow-hidden ${rounded ? "rounded-xl" : ""} `}>
             <Swiper
                 modules={[Navigation, Pagination]}
                 navigation

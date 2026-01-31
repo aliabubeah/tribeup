@@ -4,7 +4,7 @@
 
 @layer components {
     .input {
-        @apply w-full rounded border-2 border-neutral-200 px-3 py-2 font-normal transition-all duration-300 placeholder:text-neutral-600 hover:bg-[#ccc] focus:border-tribe-500 focus:outline-none disabled:bg-neutral-200 disabled:text-neutral-600 disabled:cursor-not-allowed;
+        @apply w-full rounded border-2 border-neutral-200 px-3 py-2 font-normal transition-all duration-300 placeholder:text-neutral-600 hover:bg-[#ccc] focus:border-tribe-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-600;
     }
 }
 
@@ -25,21 +25,21 @@
         "opsz" 24;
 }
 
-.post-swiper {
+.swiper {
     --swiper-navigation-size: 14px;
 }
 
-.post-swiper .swiper-pagination-bullet {
+.swiper .swiper-pagination-bullet {
     background: white;
     opacity: 0.4;
 }
 
-.post-swiper .swiper-pagination-bullet-active {
+.swiper .swiper-pagination-bullet-active {
     opacity: 1;
 }
 
-.post-swiper .swiper-button-next,
-.post-swiper .swiper-button-prev {
+.swiper .swiper-button-next,
+.swiper .swiper-button-prev {
     width: 36px;
     height: 36px;
     background-color: rgba(0, 0, 0, 0.4);
@@ -47,12 +47,46 @@
     color: white;
 }
 
-.post-swiper .swiper-button-next:hover,
-.post-swiper .swiper-button-prev:hover {
+.swiper .swiper-button-next:hover,
+.swiper .swiper-button-prev:hover {
     background-color: rgba(0, 0, 0, 0.6);
 }
 
-.post-swiper .swiper-button-next svg,
-.post-swiper .swiper-button-prev svg {
+.swiper .swiper-button-next svg,
+.swiper .swiper-button-prev svg {
     width: 10px;
+}
+
+/* scroll bar  */
+
+html {
+    scrollbar-gutter: stable overlay;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.35);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.55);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
+}
+/* Remove scrollbar arrows (Chrome / Edge / Safari) */
+::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
 }

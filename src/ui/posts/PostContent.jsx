@@ -1,7 +1,9 @@
 function PostContent({ caption }) {
     return (
         <div>
-            <p className="leading-relaxed">{caption}</p>
+            <p className="whitespace-pre-wrap break-words leading-relaxed">
+                {caption}
+            </p>
         </div>
     );
 }
