@@ -1,6 +1,6 @@
 import { refreshAPI } from "./auth";
 
-export const BASEURL = "http://tribeup.runasp.net";
+export const BASEURL = import.meta.env.VITE_API_BASE;
 
 export function getDeviceId() {
     let deviceId = localStorage.getItem("deviceId");
