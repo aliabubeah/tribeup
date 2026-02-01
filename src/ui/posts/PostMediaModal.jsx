@@ -5,6 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Video from "../Video";
+import { getCleanImageUrl } from "../../services/http";
 
 function PostMediaModal({ media }) {
     if (!media || media.length === 0) return null;
@@ -31,10 +32,10 @@ export default PostMediaModal;
 
 function ModalMediaItem({ media }) {
     if (media.type === "Video") {
-        return <ModalMediaVideo src={media.mediaURL} />;
+        return <ModalMediaVideo src={getCleanImageUrl(media.mediaURL)} />;
     }
 
-    return <ModalMediaImage src={media.mediaURL} />;
+    return <ModalMediaImage src={getCleanImageUrl(media.mediaURL)} />;
 }
 
 function ModalMediaImage({ src }) {
