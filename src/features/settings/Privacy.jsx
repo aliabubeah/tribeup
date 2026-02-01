@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import Button from "../../ui/Button";
 import coverImg from "../../assets/PostImg.jpeg";
 import { useAuth } from "../../contexts/AuthContext";
+import { getCleanImageUrl } from "../../services/http";
 function Privacy() {
     const [disabled, setDisabled] = useState(true);
     const { user } = useAuth();
@@ -43,7 +44,7 @@ function Privacy() {
                         onClick={openFileDialog}
                     >
                         <img
-                            src={user.profilePicture}
+                            src={getCleanImageUrl(user.profilePicture)}
                             className="h-12 w-12 rounded-full"
                         />
                         <span className="icon-outlined absolute bottom-2 right-0">

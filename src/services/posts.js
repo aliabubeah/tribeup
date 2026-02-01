@@ -38,7 +38,7 @@ export async function feedAPI(accessToken, page = 1) {
 
 export async function toggleLikeAPI(accessToken, postId) {
     // console.log(postId);
-    const res = await fetch(`${BASEURL}/api/Posts/${postId}/AddLike`, {
+    const res = await fetch(`${BASEURL}/api/posts/${postId}/ToggleLike`, {
         method: "post",
         headers: {
             "Content-Type": "application/json",

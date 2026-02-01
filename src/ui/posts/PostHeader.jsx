@@ -1,4 +1,5 @@
 import { useAuth } from "../../contexts/AuthContext";
+import { getCleanImageUrl } from "../../services/http";
 import { deletePostAPI } from "../../services/posts";
 import PostActionsMenu from "./PostActionMenu";
 
@@ -13,7 +14,7 @@ function PostHeader({ userName, groupName, groupPicture, postId }) {
         <div className="flex items-center justify-between">
             <div className="flex gap-2">
                 <img
-                    src={user.profilePicture}
+                    src={getCleanImageUrl(user.profilePicture)}
                     className="h-12 min-w-12 rounded-full"
                 />
                 <div>
