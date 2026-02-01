@@ -25,7 +25,7 @@ function PostActions({
     }
 
     async function handleSharePost() {
-        const postLink = `${window.location.origin}/posts?$id=${postId}`;
+        const postLink = `${window.location.origin}/posts/${postId}`;
         try {
             await navigator.clipboard.writeText(postLink);
             setTimeout(() => setCopy(false), 2000);

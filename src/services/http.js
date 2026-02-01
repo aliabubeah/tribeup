@@ -2,6 +2,19 @@ import { refreshAPI } from "./auth";
 
 export const BASEURL = import.meta.env.VITE_API_BASE;
 
+export function getCleanImageUrl(serverUrl) {
+    if (!serverUrl) return "/default-avatar.png"; // Fallback
+
+    // If we are on Netlify (Production), strip the domain!
+    if (BASEURL === "") {
+        // Replaces "http://tribeup.runasp.net/images/..." with "/images/..."
+        return serverUrl.replace("http://tribeup.runasp.net", "");
+    }
+
+    // If on Localhost, keep it as is
+    return serverUrl;
+}
+
 export function getDeviceId() {
     let deviceId = localStorage.getItem("deviceId");
 

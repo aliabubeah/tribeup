@@ -6,6 +6,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Video from "../Video";
+import { getCleanImageUrl } from "../../services/http";
 
 function PostMedia({ media, rounded = true }) {
     if (!media || media.length === 0) return null;
@@ -34,11 +35,11 @@ function PostMedia({ media, rounded = true }) {
 /* ============================= */
 function MediaItem({ media }) {
     if (media.type === "Video") {
-        return <MediaVideo src={media.mediaURL} />;
+        return <MediaVideo src={getCleanImageUrl(media.mediaURL)} />;
     }
 
     // Default to image
-    return <MediaImage src={media.mediaURL} />;
+    return <MediaImage src={getCleanImageUrl(media.mediaURL)} />;
 }
 
 /* ============================= */

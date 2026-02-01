@@ -1,10 +1,4 @@
-import {
-    Form,
-    Link,
-    redirect,
-    useActionData,
-    useNavigation,
-} from "react-router-dom";
+import { redirect, useActionData, useNavigation } from "react-router-dom";
 import { registerAPI } from "../../services/auth";
 import Button from "../../ui/Button";
 import Auth from "./Auth";
@@ -24,11 +18,13 @@ function Register() {
 
             {actionData?.errors && (
                 <div>
-                    {Object.entries(actionData.errors).map((error, i) => (
-                        <p key={i} className="text-sm text-red-600">
-                            *{error}
-                        </p>
-                    ))}
+                    {Object.values(actionData.errors)
+                        .flat()
+                        .map((msg, i) => (
+                            <p key={i} className="text-sm text-red-600">
+                                • {msg}
+                            </p>
+                        ))}
                 </div>
             )}
 
@@ -64,7 +60,7 @@ function Register() {
             />
             <input
                 className="input"
-                type="text"
+                type="password"
                 name="password"
                 placeholder="Password"
                 required
@@ -72,7 +68,7 @@ function Register() {
 
             <input
                 className="input"
-                type="text"
+                type="password"
                 name="confirmPassword"
                 placeholder="Confirm Password"
                 required

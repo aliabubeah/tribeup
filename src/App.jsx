@@ -37,6 +37,10 @@ const router = createBrowserRouter([
                 element: <Feed />,
             },
             {
+                path: "/posts/:postId",
+                element: <Feed />,
+            },
+            {
                 path: "profile",
                 element: <Profile />,
             },

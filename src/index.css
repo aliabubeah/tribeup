@@ -59,7 +59,7 @@
 
 /* scroll bar  */
 
-html {
+/* html {
     scrollbar-gutter: stable overlay;
 }
 
@@ -85,8 +85,8 @@ html {
     scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
 }
 /* Remove scrollbar arrows (Chrome / Edge / Safari) */
-::-webkit-scrollbar-button {
+/* ::-webkit-scrollbar-button {
     display: none;
     height: 0;
     width: 0;
-}
+} */

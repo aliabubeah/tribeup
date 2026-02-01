@@ -42,7 +42,7 @@ function ModalMediaImage({ src }) {
         <div className="relative h-full w-full">
             <img
                 src={src}
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-contain lg:object-cover"
                 alt="Post media"
             />
         </div>

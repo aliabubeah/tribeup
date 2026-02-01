@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { logoutAPI } from "../services/auth";
+import { getCleanImageUrl } from "../services/http";
 
 function Sidebar() {
     const { user, logout, accessToken } = useAuth();
@@ -11,11 +12,11 @@ function Sidebar() {
         navigate("/auth/login");
     }
     return (
-        <div className="h-full px-4 py-6">
+        <div className="fixed h-full px-4 py-6">
             {/* Profile */}
             <div className="mb-8 flex justify-center gap-2 lg:justify-normal">
                 <img
-                    src={user.profilePicture}
+                    src={getCleanImageUrl(user.profilePicture)}
                     alt="profile"
                     className="h-12 min-w-12 rounded-full"
                 />

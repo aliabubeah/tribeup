@@ -26,19 +26,19 @@ function ChangePassword() {
                     </div>
                 )}
                 <input
-                    type="text"
+                    type="password"
                     name="currentPassword"
                     placeholder="currentPassword"
                     className="input"
                 />
                 <input
-                    type="text"
+                    type="password"
                     name="newPassword"
                     placeholder="newPassword"
                     className="input"
                 />
                 <input
-                    type="text"
+                    type="password"
                     name="confirmPassword"
                     placeholder="confirmPassword"
                     className="input"

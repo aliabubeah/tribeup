@@ -4,13 +4,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed } from "./feedSlice.js";
 import { useAuth } from "../../contexts/AuthContext.jsx";
 import { ClipLoader } from "react-spinners";
+import { useNavigate, useParams } from "react-router-dom";
+import PostModal from "../../ui/posts/PostModal.jsx";
 
 function Feed() {
     const dispatch = useDispatch();
     const { accessToken } = useAuth();
+    const { postId } = useParams();
+    const navigate = useNavigate();
+
     const { ids, entities, hasMore, isLoading, page } = useSelector(
         (state) => state.feed,
     );
+
+    const selectedPost = postId ? entities[postId] : null;
     const observerRef = useRef(null);
     const loadMoreRef = useRef(null);
 
@@ -53,6 +60,14 @@ function Feed() {
                 <div className="flex justify-center py-2">
                     <ClipLoader size={28} />
                 </div>
+            )}
+
+            {selectedPost && (
+                <PostModal
+                    post={selectedPost}
+                    isOpen={true}
+                    onClose={() => navigate("/")}
+                />
             )}
         </>
     );

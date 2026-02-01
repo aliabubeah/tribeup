@@ -1,10 +1,17 @@
+import { useNavigate } from "react-router-dom";
 import PostActions from "./PostActions";
 import PostContent from "./PostContent";
 import PostHeader from "./PostHeader";
 import PostMedia from "./PostMedia";
-import PostModal from "./PostModal";
+import React from "react";
 
 function Post({ post }) {
+    const navigate = useNavigate();
+    function handleOpenComments(e) {
+        e.stopPropagation();
+        navigate(`/posts/${post.postId}?focus=comments`);
+    }
+
     return (
         <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
             <PostHeader
@@ -13,26 +20,19 @@ function Post({ post }) {
                 groupName={post.groupName}
                 groupPicture={post.groupName}
             />
-            <PostModal post={post}>
-                {({ openModal }) => (
-                    <>
-                        {post.media.length > 0 && (
-                            <PostMedia media={post.media} />
-                        )}
-                        <PostContent caption={post.caption} />
-                        <PostActions
-                            isLikedByCurrentUser={post.isLikedByCurrentUser}
-                            postId={post.postId}
-                            likesCount={post.likesCount}
-                            commentCount={post.commentCount}
-                            createdAt={post.createdAt}
-                            onCommentClick={openModal}
-                        />
-                    </>
-                )}
-            </PostModal>
+
+            {post.media.length > 0 && <PostMedia media={post.media} />}
+            <PostContent caption={post.caption} />
+            <PostActions
+                isLikedByCurrentUser={post.isLikedByCurrentUser}
+                postId={post.postId}
+                likesCount={post.likesCount}
+                commentCount={post.commentCount}
+                createdAt={post.createdAt}
+                onCommentClick={handleOpenComments}
+            />
         </div>
     );
 }
 
-export default Post;
+export default React.memo(Post);
