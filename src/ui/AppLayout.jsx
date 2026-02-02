@@ -2,8 +2,42 @@ import { NavLink, Outlet } from "react-router-dom";
 // import Header from "./Header";
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
-
+import avatar from "../assets/avatar.jpeg";
+import ChatDrawer from "../features/messaging/ChatDrawer";
+import { useEffect, useRef, useState } from "react";
 function AppLayout() {
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const drawerRef = useRef(null);
+
+    // close the drawer when press esc key
+    useEffect(() => {
+        if (!isChatOpen) return;
+
+        function handleKeyDown(e) {
+            if (e.key === "Escape") {
+                setIsChatOpen(false);
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isChatOpen]);
+
+    // close the drawer when click outside
+    useEffect(() => {
+        if (!isChatOpen) return;
+
+        function handleClickOutside(e) {
+            if (drawerRef.current && !drawerRef.current.contains(e.target)) {
+                setIsChatOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
+    }, [isChatOpen]);
+
     return (
         <div className="flex min-h-screen flex-col bg-neutral-100">
             <div className="mx-auto flex w-full max-w-7xl flex-1">
@@ -17,6 +51,28 @@ function AppLayout() {
                 </main>
                 {/* Right Column */}
                 <aside className="hidden w-80 shrink-0 border border-green-100 xl:block"></aside>
+            </div>
+
+            {/* message Drawer appears only on the big screens */}
+            <div className="fixed bottom-20 right-20 z-20 hidden md:block">
+                <div
+                    className={`absolute bottom-full right-0 mb-4 transform transition-all duration-200 ease-in-out ${
+                        isChatOpen
+                            ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+                            : "pointer-events-none translate-y-4 scale-95 opacity-0"
+                    } `}
+                    ref={drawerRef}
+                >
+                    <ChatDrawer onClose={() => setIsChatOpen(false)} />
+                </div>
+
+                <button
+                    className="icon-outlined rounded-full bg-tribe-500 px-4 py-3 text-2xl text-white shadow-lg outline-none"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={() => setIsChatOpen((e) => !e)}
+                >
+                    mail
+                </button>
             </div>
 
             {/* Mobile Bottom Navigation only on small screens*/}

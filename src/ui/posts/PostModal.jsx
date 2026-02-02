@@ -47,7 +47,7 @@ function PostModal({ post, isOpen = false, onClose }) {
                                     </div>
 
                                     {/* RIGHT */}
-                                    <div className="flex h-full flex-col border-l outline-none">
+                                    <div className="flex h-full flex-col overflow-y-auto border-l outline-none">
                                         <div className="flex flex-col gap-3 border-b p-4">
                                             <PostHeader
                                                 userName={post.username}

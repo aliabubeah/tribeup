@@ -21,6 +21,10 @@ import Avatar from "./features/settings/Avatar";
 import About from "./features/settings/About";
 import AuthLayout from "./features/auth/AuthLayout";
 import { Toaster } from "react-hot-toast";
+import Mesaage from "./features/messaging/Mesaage";
+import Tribes from "./features/tribes/Tribes";
+import Notifications from "./features/notification/Notifications";
+import Search from "./features/search/Search";
 
 const router = createBrowserRouter([
     {
@@ -43,6 +47,22 @@ const router = createBrowserRouter([
             {
                 path: "profile",
                 element: <Profile />,
+            },
+            {
+                path: "messages",
+                element: <Mesaage />,
+            },
+            {
+                path: "tribes",
+                element: <Tribes />,
+            },
+            {
+                path: "notifications",
+                element: <Notifications />,
+            },
+            {
+                path: "search",
+                element: <Search />,
             },
             {
                 path: "settings",

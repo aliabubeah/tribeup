@@ -34,7 +34,7 @@ function Sidebar() {
                     label="Notification"
                 />
                 <SidebarItem to="/search" icon="search" label="Search" />
-                <SidebarItem to="/messaging" icon="mail" label="Chat" />
+                <SidebarItem to="/messages" icon="mail" label="Chat" />
                 <SidebarItem to="/tribes" icon="groups" label="My tribes" />
                 <SidebarItem to="/settings" icon="settings" label="Settings" />
                 <SidebarItem
@@ -64,7 +64,7 @@ function SidebarItem({ to, icon, label, end }) {
             <NavLink
                 to={to}
                 end={end}
-                className="flex items-center gap-3 text-lg"
+                className="flex items-center gap-3 rounded-xl text-lg transition-all duration-100 ease-out hover:bg-neutral-300"
             >
                 {({ isActive }) => (
                     <>
