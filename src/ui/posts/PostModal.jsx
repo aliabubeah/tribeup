@@ -9,7 +9,7 @@ import PostMediaModal from "./PostMediaModal";
 function PostModal({ post, isOpen = false, onClose }) {
     return (
         <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={onClose}>
+            <Dialog as="div" className="relative z-50" onClose={onClose}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -33,21 +33,19 @@ function PostModal({ post, isOpen = false, onClose }) {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel
-                                className={`${post.media.length === 0 ? "w-full lg:w-1/2" : "w-full"} h-[80vh] max-w-5xl overflow-hidden bg-white shadow-xl`}
-                            >
+                            <Dialog.Panel className="h-[90vh] w-full max-w-5xl overflow-y-auto bg-white shadow-xl sm:h-[85vh] lg:h-[80vh]">
                                 <div
-                                    className={`${post.media.length === 0 ? "" : "lg:grid-cols-2"} grid h-full grid-cols-1`}
+                                    className={`grid grid-cols-1 ${post.media.length === 0 ? "" : "lg:grid-cols-2"} h-full overflow-y-auto lg:overflow-hidden`}
                                 >
                                     {/* LEFT */}
                                     <div
-                                        className={`${post.media.length === 0 ? "hidden " : ""}h-full bg-black`}
+                                        className={` ${post.media.length === 0 ? "hidden" : ""} h-[60vh] bg-black sm:h-[65vh] lg:h-full`}
                                     >
                                         <PostMediaModal media={post.media} />
                                     </div>
 
                                     {/* RIGHT */}
-                                    <div className="flex h-full flex-col overflow-y-auto border-l outline-none">
+                                    <div className="flex flex-col border-l outline-none">
                                         <div className="flex flex-col gap-3 border-b p-4">
                                             <PostHeader
                                                 userName={post.username}

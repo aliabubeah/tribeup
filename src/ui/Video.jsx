@@ -1,25 +1,15 @@
 import { Plyr } from "plyr-react";
 import "plyr-react/plyr.css";
-import { useRef } from "react";
+import { forwardRef } from "react";
 
-function Video({ src }) {
-    const wrapperRef = useRef(null);
+const Video = forwardRef(function Video({ src, onReady }, ref) {
     return (
-        <div
-            ref={wrapperRef}
-            tabIndex={0}
-            onClick={() => wrapperRef.current?.focus()}
-            className="outline-none"
-        >
+        <div className="video-root h-full w-full">
             <Plyr
+                ref={ref}
                 source={{
                     type: "video",
-                    sources: [
-                        {
-                            src,
-                            type: "video/mp4",
-                        },
-                    ],
+                    sources: [{ src, type: "video/mp4" }],
                 }}
                 options={{
                     controls: [
@@ -31,28 +21,19 @@ function Video({ src }) {
                         "settings",
                         "fullscreen",
                     ],
-                    settings: ["speed"],
-                    speed: {
-                        selected: 1,
-                        options: [0.5, 1, 1.25, 1.5, 2],
-                    },
-
                     autoplay: false,
-                    muted: false,
-                    displayDuration: true,
-                    toggleInvert: true,
-                    hideControls: true,
-                    seekTime: 10,
-                    clickToPlay: true,
-                    keyboard: {
-                        focused: true,
-                        global: false,
-                    },
-                    autopause: true,
+                    muted: true,
+                    hideControls: false,
+                }}
+                onReady={() => {
+                    // wait one frame so controls are laid out
+                    requestAnimationFrame(() => {
+                        onReady?.();
+                    });
                 }}
             />
         </div>
     );
-}
+});
 
 export default Video;

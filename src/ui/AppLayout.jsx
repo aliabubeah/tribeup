@@ -67,7 +67,7 @@ function AppLayout() {
                 </div>
 
                 <button
-                    className="icon-outlined rounded-full bg-tribe-500 px-4 py-3 text-2xl text-white shadow-lg outline-none"
+                    className="icon-outlined rounded-full bg-tribe-500 px-4 py-3 text-2xl text-white shadow-lg outline-none transition-all duration-150 ease-in-out hover:bg-tribe-700 active:bg-tribe-400"
                     onMouseDown={(e) => e.stopPropagation()}
                     onClick={() => setIsChatOpen((e) => !e)}
                 >

@@ -1,6 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -9,6 +9,8 @@ import Video from "../Video";
 import { getCleanImageUrl } from "../../services/http";
 
 function PostMedia({ media, rounded = true }) {
+    // const swiperRef = useRef(null);
+
     if (!media || media.length === 0) return null;
 
     return (
@@ -16,13 +18,19 @@ function PostMedia({ media, rounded = true }) {
             <Swiper
                 modules={[Navigation, Pagination]}
                 navigation
-                autoHeight
                 pagination={{ clickable: true }}
+                // onSwiper={(swiper) => (swiperRef.current = swiper)}
                 className="post-swiper"
             >
-                {media.map((item, index) => (
-                    <SwiperSlide key={index}>
-                        <MediaItem media={item} />
+                {media.map((item) => (
+                    <SwiperSlide key={item.mediaURL}>
+                        <MediaItem
+                            media={item}
+                            // onResize={() => {
+                            //     const swiper = swiperRef.current;
+                            //     if (!swiper) return;
+                            // }}
+                        />
                     </SwiperSlide>
                 ))}
             </Swiper>
@@ -46,11 +54,13 @@ function MediaItem({ media }) {
 /* Image Renderer */
 /* ============================= */
 function MediaImage({ src }) {
-    const [isPortrait, setIsPortrait] = useState(false);
+    const [orientation, setOrientation] = useState(null);
 
     function handleLoad(e) {
         const { naturalWidth, naturalHeight } = e.target;
-        setIsPortrait(naturalHeight > naturalWidth);
+        setOrientation(
+            naturalHeight > naturalWidth ? "portrait" : "landscape"
+        );
     }
 
     return (
@@ -58,21 +68,55 @@ function MediaImage({ src }) {
             <img
                 src={src}
                 onLoad={handleLoad}
-                className={
-                    isPortrait
-                        ? "h-full object-contain"
-                        : "h-full w-full object-cover"
-                }
+                className={`h-full w-full transition-opacity duration-150 ${
+                    orientation
+                        ? "opacity-100"
+                        : "opacity-0"
+                } ${
+                    orientation === "portrait"
+                        ? "object-contain"
+                        : "object-cover"
+                }`}
                 alt="Post media"
             />
         </div>
     );
 }
 
-function MediaVideo({ src }) {
+
+function MediaVideo({ src, onResize }) {
+    const plyrRef = useRef(null);
+    const [orientation, setOrientation] = useState(null);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const video = plyrRef.current?.plyr?.media;
+            if (video?.videoWidth && video?.videoHeight) {
+                setOrientation(
+                    video.videoHeight > video.videoWidth
+                        ? "portrait"
+                        : "landscape",
+                );
+                clearInterval(interval);
+            }
+        }, 50);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
-        <div className="aspect-video w-full bg-black">
-            <Video src={src} />
+        <div
+            className={`flex w-full items-center justify-center bg-black ${
+                orientation === "portrait" ? "h-[420px]" : "h-[300px]"
+            }`}
+        >
+            <Video
+                ref={plyrRef}
+                src={src}
+                onReady={() => {
+                    onResize?.();
+                }}
+            />
         </div>
     );
 }
