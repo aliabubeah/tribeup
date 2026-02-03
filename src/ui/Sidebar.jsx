@@ -11,6 +11,7 @@ function Sidebar() {
         logout();
         navigate("/auth/login");
     }
+
     return (
         <div className="fixed h-full px-4 py-6">
             {/* Profile */}
@@ -20,7 +21,7 @@ function Sidebar() {
                     alt="profile"
                     className="h-12 min-w-12 rounded-full"
                 />
-                <div className="hidden flex-col lg:flex">
+                <div className="flex-col md:hidden lg:flex">
                     <h1 className="font-semibold">{user.fullName}</h1>
                     <p className="text-sm text-neutral-700">@username</p>
                 </div>
@@ -50,7 +51,7 @@ function Sidebar() {
                         className="flex items-center gap-3 text-lg text-red-500"
                     >
                         <span className="icon-outlined text-3xl">logout</span>
-                        <span className="hidden lg:inline">Logout</span>
+                        <span className="md:hidden lg:inline">Logout</span>
                     </button>
                 </li>
             </ul>
@@ -58,7 +59,7 @@ function Sidebar() {
     );
 }
 
-function SidebarItem({ to, icon, label, end }) {
+function SidebarItem({ to, icon, label, end, labelhidden }) {
     return (
         <li>
             <NavLink
@@ -76,7 +77,7 @@ function SidebarItem({ to, icon, label, end }) {
                             {icon}
                         </span>
                         <span
-                            className={`hidden text-xl lg:inline ${
+                            className={`text-xl md:hidden lg:inline ${
                                 isActive ? "font-semibold" : ""
                             }`}
                         >
