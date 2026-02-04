@@ -18,7 +18,7 @@ function PostContent({ caption }) {
         <div>
             <p
                 ref={textRef}
-                className={`${!expanded ? `line-clamp-[3]` : ""} whitespace-pre-wrap break-words leading-relaxed`}
+                className={`${!expanded ? `line-clamp-[3]` : ""} whitespace-pre-wrap break-words leading-normal`}
             >
                 {caption}
             </p>

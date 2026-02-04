@@ -119,7 +119,7 @@ export async function forgetPasswordAPI(email) {
 }
 
 export async function resetPasswordAPI(
-    accessToken,
+    token,
     email,
     newPassword,
     confirmPassword,
@@ -127,25 +127,27 @@ export async function resetPasswordAPI(
     const result = await fetch(`${BASEURL}/api/Authentication/Reset-Password`, {
         method: "post",
         headers: {
-            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({
+            token,
             email,
-            token: accessToken,
             newPassword,
             confirmPassword,
         }),
     });
 
+    if (result.ok) {
+        toast.success("succesfully reset password");
+        return true;
+    }
+
     const data = await result.json();
 
     if (!result.ok) {
         console.log(handleApiError(data));
-        handleApiError(data);
+        return handleApiError(data);
     }
-    console.log(result);
-    console.log(data);
-    return data;
 }
 
 export async function changePasswordAPI(

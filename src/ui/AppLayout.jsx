@@ -77,7 +77,7 @@ function AppLayout() {
             <div className="pt-14 md:p-0">
                 <div className="mx-auto flex w-full max-w-7xl flex-1">
                     {/* SideBar */}
-                    <aside className="relative hidden w-16 shrink-0 border-r-2 border-neutral-200 md:block lg:w-64">
+                    <aside className="relative hidden w-16 shrink-0 border-r-2 border-neutral-200 pt-8 md:block lg:w-64">
                         <Sidebar />
                     </aside>
                     {/* Main Content */}

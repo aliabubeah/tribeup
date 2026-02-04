@@ -27,56 +27,59 @@ function Register() {
                         ))}
                 </div>
             )}
-
-            <div className="flex gap-3">
+            <div className="mt-2 flex flex-col gap-3">
+                <div className="flex gap-3">
+                    <input
+                        className="input flex-1"
+                        type="text"
+                        name="firstName"
+                        placeholder="FirstName"
+                        required
+                    />
+                    <input
+                        className="input flex-1"
+                        type="text"
+                        name="lastName"
+                        placeholder="LastName"
+                        required
+                    />
+                </div>
                 <input
-                    className="input flex-1"
-                    type="text"
-                    name="firstName"
-                    placeholder="FirstName"
+                    className="input"
+                    type="email"
+                    name="email"
+                    placeholder="Email"
                     required
                 />
                 <input
-                    className="input flex-1"
+                    className="input"
                     type="text"
-                    name="lastName"
-                    placeholder="LastName"
+                    name="userName"
+                    placeholder="user name"
+                    required
+                />
+                <input
+                    className="input"
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                />
+
+                <input
+                    className="input"
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
                     required
                 />
             </div>
-            <input
-                className="input"
-                type="email"
-                name="email"
-                placeholder="Email"
-                required
-            />
-            <input
-                className="input"
-                type="text"
-                name="userName"
-                placeholder="user name"
-                required
-            />
-            <input
-                className="input"
-                type="password"
-                name="password"
-                placeholder="Password"
-                required
-            />
-
-            <input
-                className="input"
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                required
-            />
-            <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "submitting" : "Create account"}
-            </Button>
-            <Button to="/auth/login">Already have account</Button>
+            <div className="flex flex-col gap-3">
+                <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "submitting" : "Create account"}
+                </Button>
+                <Button to="/auth/login">Already have account</Button>
+            </div>
         </Auth>
     );
 }

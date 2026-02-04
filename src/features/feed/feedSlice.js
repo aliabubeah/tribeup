@@ -1,21 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toggleLikeAPI, feedAPI } from "../../services/posts";
 
-/* ============================= */
-/* Initial State */
-/* ============================= */
 const initialState = {
-    entities: {}, // postId -> post
-    ids: [], // ordered postIds
+    entities: {},
+    ids: [],
     page: 1,
     hasMore: true,
     isLoading: false,
     error: null,
 };
 
-/* ============================= */
-/* Async Thunk (Feed API) */
-/* ============================= */
 export const fetchFeed = createAsyncThunk(
     "feed/fetchFeed",
     async ({ accessToken, page }, { getState, rejectWithValue }) => {
@@ -34,7 +28,6 @@ export const fetchFeed = createAsyncThunk(
     },
 );
 
-// add user Like
 export const toggleLike = createAsyncThunk(
     "feed/toggleLike",
     async ({ accessToken, postId }, { rejectWithValue }) => {
@@ -47,9 +40,6 @@ export const toggleLike = createAsyncThunk(
     },
 );
 
-/* ============================= */
-/* Slice */
-/* ============================= */
 const feedSlice = createSlice({
     name: "feed",
     initialState,
@@ -80,13 +70,11 @@ const feedSlice = createSlice({
 
     extraReducers: (builder) => {
         builder
-            /* ---------- PENDING ---------- */
             .addCase(fetchFeed.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
             })
 
-            /* ---------- FULFILLED ---------- */
             .addCase(fetchFeed.fulfilled, (state, action) => {
                 const { items, hasMore } = action.payload;
 
@@ -102,7 +90,6 @@ const feedSlice = createSlice({
                 state.isLoading = false;
             })
 
-            /* ---------- REJECTED ---------- */
             .addCase(fetchFeed.rejected, (state, action) => {
                 state.isLoading = false;
 

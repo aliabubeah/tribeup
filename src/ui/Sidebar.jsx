@@ -13,9 +13,9 @@ function Sidebar() {
     }
 
     return (
-        <div className="fixed h-full px-4 py-6">
+        <div className="fixed h-full">
             {/* Profile */}
-            <div className="mb-8 flex justify-center gap-2 lg:justify-normal">
+            <div className="mb-8 flex justify-center gap-2 px-2 lg:justify-normal">
                 <img
                     src={getCleanImageUrl(user.profilePicture)}
                     alt="profile"
@@ -27,7 +27,7 @@ function Sidebar() {
                 </div>
             </div>
 
-            <ul className="flex flex-col gap-6">
+            <ul className="flex flex-col items-start gap-4 md:items-center lg:items-start">
                 <SidebarItem to="/" end icon="home" label="Home" />
                 <SidebarItem
                     to="/notifications"
@@ -48,7 +48,7 @@ function Sidebar() {
                 <li>
                     <button
                         onClick={handleClick}
-                        className="flex items-center gap-3 text-lg text-red-500"
+                        className="flex items-center gap-3 rounded-3xl px-3 py-1 text-lg text-red-500 transition-all duration-100 ease-out hover:bg-neutral-200"
                     >
                         <span className="icon-outlined text-3xl">logout</span>
                         <span className="md:hidden lg:inline">Logout</span>
@@ -59,13 +59,13 @@ function Sidebar() {
     );
 }
 
-function SidebarItem({ to, icon, label, end, labelhidden }) {
+function SidebarItem({ to, icon, label, end }) {
     return (
         <li>
             <NavLink
                 to={to}
                 end={end}
-                className="flex items-center gap-3 rounded-xl text-lg transition-all duration-100 ease-out hover:bg-neutral-300"
+                className="flex items-center gap-3 rounded-3xl px-3 py-1 text-start text-lg transition-all duration-100 ease-out hover:bg-neutral-200"
             >
                 {({ isActive }) => (
                     <>

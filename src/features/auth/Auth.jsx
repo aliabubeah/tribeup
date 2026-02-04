@@ -15,7 +15,7 @@ function Auth({ leftTitle, leftDescription, children, formMethod = "post" }) {
             <div className="flex min-h-screen w-full items-center justify-center px-6 lg:w-1/2">
                 <Form
                     method={formMethod}
-                    className="flex w-full max-w-sm flex-col gap-4"
+                    className="flex w-full max-w-sm flex-col gap-6"
                 >
                     {children}
                 </Form>

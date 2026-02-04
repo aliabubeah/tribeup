@@ -1,6 +1,9 @@
+import { useSelector } from "react-redux";
 import ConversationItem from "./ConversationItem";
 
 function ConversationList() {
+    const data = useSelector((state) => state.chat);
+    console.log(data);
     return (
         <div className="flex flex-col gap-[10px] divide-y">
             <ConversationItem />
