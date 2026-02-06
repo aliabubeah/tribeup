@@ -2,7 +2,7 @@ import { Plyr } from "plyr-react";
 import "plyr-react/plyr.css";
 import { forwardRef } from "react";
 
-const Video = forwardRef(function Video({ src, onReady }, ref) {
+const Video = forwardRef(function Video({ src }, ref) {
     return (
         <div className="video-root h-full w-full">
             <Plyr
@@ -24,12 +24,6 @@ const Video = forwardRef(function Video({ src, onReady }, ref) {
                     autoplay: false,
                     muted: true,
                     hideControls: false,
-                }}
-                onReady={() => {
-                    // wait one frame so controls are laid out
-                    requestAnimationFrame(() => {
-                        onReady?.();
-                    });
                 }}
             />
         </div>

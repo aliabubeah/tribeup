@@ -1,18 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { chatInboxAPI } from "../../services/chat";
+import { chatInboxAPI, getMessagesAPI } from "../../services/chat";
 
 const initialState = {
     inbox: [],
     isLoading: false,
     error: null,
+
+    rooms: {},
+    activeGroupId: null,
 };
 
 export const fetchChatInbox = createAsyncThunk(
     "chat/fetchChatInbox",
-    async (_, { rejectWithValue }) => {
+    async ({ accessToken }, { rejectWithValue }) => {
         try {
-            const res = await chatInboxAPI();
+            const res = await chatInboxAPI(accessToken);
             return res;
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    },
+);
+
+export const fetchRoomMessages = createAsyncThunk(
+    "chat/fetchRoomMessages",
+    async ({ accessToken, groupId, page }, { rejectWithValue }) => {
+        try {
+            const res = await getMessagesAPI(accessToken, groupId, page);
+
+            return { groupId, ...res };
         } catch (err) {
             return rejectWithValue(err.message);
         }
@@ -46,6 +62,19 @@ const chatSlice = createSlice({
                 ...state.inbox.filter((c) => c.groupId !== message.groupId),
             ];
         },
+
+        setActiveGroup(state, action) {
+            state.activeGroupId = action.payload;
+        },
+
+        addRealtimeMessage(state, action) {
+            const msg = action.payload;
+            const room = state.rooms[msg.groupId];
+
+            if (room) {
+                room.messages.push(msg);
+            }
+        },
     },
 
     extraReducers: (builder) => {
@@ -64,6 +93,40 @@ const chatSlice = createSlice({
             .addCase(fetchChatInbox.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
+            })
+
+            .addCase(fetchRoomMessages.pending, (state, action) => {
+                const { groupId } = action.meta.arg;
+
+                if (!state.rooms[groupId]) {
+                    state.rooms[groupId] = {
+                        messages: [],
+                        page: 1,
+                        hasMore: true,
+                        isLoading: true,
+                    };
+                } else {
+                    state.rooms[groupId].isLoading = true;
+                }
+            })
+
+            .addCase(fetchRoomMessages.fulfilled, (state, action) => {
+                const { groupId, items, hasMore } = action.payload;
+                const room = state.rooms[groupId];
+
+                // prepend older messages
+                room.messages.unshift(...items);
+
+                room.page += 1;
+                room.hasMore = hasMore;
+                room.isLoading = false;
+            })
+
+            .addCase(fetchRoomMessages.rejected, (state, action) => {
+                const { groupId } = action.meta.arg;
+                if (state.rooms[groupId]) {
+                    state.rooms[groupId].isLoading = false;
+                }
             });
     },
 });

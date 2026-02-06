@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext.jsx";
 import { ClipLoader } from "react-spinners";
 import { useNavigate, useParams } from "react-router-dom";
 import PostModal from "../../ui/posts/PostModal.jsx";
+import { fetchChatInbox } from "../messaging/chatSlice.js";
 
 function Feed() {
     const dispatch = useDispatch();
@@ -25,6 +26,7 @@ function Feed() {
     useEffect(() => {
         if (!isLoading) {
             dispatch(fetchFeed({ accessToken }));
+            dispatch(fetchChatInbox({ accessToken }));
         }
     }, [dispatch, accessToken]);
 

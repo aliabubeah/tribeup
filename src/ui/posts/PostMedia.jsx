@@ -58,9 +58,7 @@ function MediaImage({ src }) {
 
     function handleLoad(e) {
         const { naturalWidth, naturalHeight } = e.target;
-        setOrientation(
-            naturalHeight > naturalWidth ? "portrait" : "landscape"
-        );
+        setOrientation(naturalHeight > naturalWidth ? "portrait" : "landscape");
     }
 
     return (
@@ -69,9 +67,7 @@ function MediaImage({ src }) {
                 src={src}
                 onLoad={handleLoad}
                 className={`h-full w-full transition-opacity duration-150 ${
-                    orientation
-                        ? "opacity-100"
-                        : "opacity-0"
+                    orientation ? "opacity-100" : "opacity-0"
                 } ${
                     orientation === "portrait"
                         ? "object-contain"
@@ -82,7 +78,6 @@ function MediaImage({ src }) {
         </div>
     );
 }
-
 
 function MediaVideo({ src, onResize }) {
     const plyrRef = useRef(null);
@@ -110,13 +105,7 @@ function MediaVideo({ src, onResize }) {
                 orientation === "portrait" ? "h-[420px]" : "h-[300px]"
             }`}
         >
-            <Video
-                ref={plyrRef}
-                src={src}
-                onReady={() => {
-                    onResize?.();
-                }}
-            />
+            <Video ref={plyrRef} src={src} />
         </div>
     );
 }

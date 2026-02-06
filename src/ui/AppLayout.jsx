@@ -64,7 +64,7 @@ function AppLayout() {
     }, []);
 
     return (
-        <div className="flex min-h-screen flex-col bg-neutral-100">
+        <div className="flex min-h-screen flex-col bg-neutral-50">
             <MobileHeader
                 hidden={hideHeader}
                 onProfileClick={() => setIsMobileSidebarOpen(true)}
