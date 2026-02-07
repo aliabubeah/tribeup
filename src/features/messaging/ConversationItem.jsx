@@ -1,10 +1,25 @@
+import { useDispatch } from "react-redux";
 import { getCleanImageUrl } from "../../services/http";
+import { setActiveGroup } from "./chatSlice";
 
-function ConversationItem({ groupName, userName, msg, grouppic, onChatRoom }) {
+function ConversationItem({
+    groupId,
+    groupName,
+    userName,
+    msg,
+    grouppic,
+    onChatRoom,
+}) {
+    const dispatch = useDispatch();
+    async function handleClick() {
+        dispatch(setActiveGroup(groupId));
+        onChatRoom(true);
+    }
+
     return (
         <div
             className="flex cursor-pointer gap-3 px-3 py-2 transition-all duration-300 ease-in-out hover:bg-tribe-100"
-            onClick={(e) => onChatRoom(true)}
+            onClick={(e) => handleClick()}
         >
             <img
                 src={getCleanImageUrl(grouppic)}

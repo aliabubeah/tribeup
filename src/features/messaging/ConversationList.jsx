@@ -10,6 +10,7 @@ function ConversationList({ onChatRoom }) {
             {inbox.map((item, i) => (
                 <ConversationItem
                     onChatRoom={onChatRoom}
+                    groupId={item.groupId}
                     key={i}
                     groupName={item.groupName}
                     userName={item.lastMessageSenderName}

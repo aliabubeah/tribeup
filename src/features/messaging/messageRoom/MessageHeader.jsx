@@ -1,6 +1,6 @@
 import avatar from "../../../assets/avatar.jpeg";
 
-function MessageHeader({ onClose, onChatRoom }) {
+function MessageHeader({ onClose, onChatRoom, groupName }) {
     return (
         <div className="flex h-[60px] items-center justify-between bg-tribe-500 p-3 text-white">
             <div className="flex items-center gap-2">
@@ -19,7 +19,7 @@ function MessageHeader({ onClose, onChatRoom }) {
                         className="h-10 w-10 rounded-full"
                     />
                     <div className="flex flex-col">
-                        <h1 className="font-semibold">TribeUp</h1>
+                        <h1 className="font-semibold">{groupName}</h1>
                         <p className="text-sm text-tribe-100">Active now</p>
                     </div>
                 </div>

@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { chatInboxAPI, getMessagesAPI } from "../../services/chat";
+import {
+    chatInboxAPI,
+    getMessagesAPI,
+    sendMessageAPI,
+} from "../../services/chat";
 
 const initialState = {
     inbox: [],
@@ -29,6 +33,18 @@ export const fetchRoomMessages = createAsyncThunk(
             const res = await getMessagesAPI(accessToken, groupId, page);
 
             return { groupId, ...res };
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    },
+);
+
+export const sendMessage = createAsyncThunk(
+    "chat/sendMessage",
+    async ({ accessToken, groupId, content }, { rejectWithValue }) => {
+        try {
+            await sendMessageAPI(accessToken, groupId, content);
+            return { groupId, content };
         } catch (err) {
             return rejectWithValue(err.message);
         }
@@ -98,6 +114,10 @@ const chatSlice = createSlice({
             .addCase(fetchRoomMessages.pending, (state, action) => {
                 const { groupId } = action.meta.arg;
 
+                if (state.rooms[groupId]?.isLoading) {
+                    return;
+                }
+
                 if (!state.rooms[groupId]) {
                     state.rooms[groupId] = {
                         messages: [],
@@ -114,11 +134,13 @@ const chatSlice = createSlice({
                 const { groupId, items, hasMore } = action.payload;
                 const room = state.rooms[groupId];
 
-                // prepend older messages
-                room.messages.unshift(...items);
+                const existingIds = new Set(room.messages.map((m) => m.id));
+                const uniqueItems = items.filter((m) => !existingIds.has(m.id));
 
-                room.page += 1;
+                room.messages.unshift(...uniqueItems);
                 room.hasMore = hasMore;
+                if (!hasMore) return;
+                room.page += 1;
                 room.isLoading = false;
             })
 
@@ -131,6 +153,7 @@ const chatSlice = createSlice({
     },
 });
 
-export const { resetChat, updateInboxLastMessage } = chatSlice.actions;
+export const { resetChat, updateInboxLastMessage, setActiveGroup } =
+    chatSlice.actions;
 
 export default chatSlice.reducer;
