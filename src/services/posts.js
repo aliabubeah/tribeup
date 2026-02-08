@@ -62,10 +62,8 @@ export async function deletePostAPI(postId, accessToken) {
     });
 
     const data = await res.json();
-    console.log(data);
-    console.log(res);
+
     if (!res.ok) {
-        console.log(handleApiError(data));
         toast.error("couldn't delete post ");
 
         return handleApiError(data);

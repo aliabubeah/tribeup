@@ -66,7 +66,6 @@ export async function action({ request }) {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
     const { newPassword, confirmPassword, email, token } = data;
-    console.log(data);
 
     const resetPassword = await resetPasswordAPI(
         token,

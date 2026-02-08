@@ -26,8 +26,6 @@ function Privacy() {
         // - upload
         if (!file.type.startsWith("image/")) return;
         if (file.size > 2 * 1024 * 1024) return; // 2MB
-
-        console.log(file);
     }
 
     return (

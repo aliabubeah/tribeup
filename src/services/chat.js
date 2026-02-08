@@ -53,7 +53,6 @@ export async function sendMessageAPI(accessToken, groupId, content) {
     const data = await res.json();
 
     if (!res.ok) {
-        console.log(handleApiError(data));
         return handleApiError(data);
     }
 }

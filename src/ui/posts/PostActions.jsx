@@ -33,7 +33,6 @@ function PostActions({
             toast.success("Link copied to clipboard");
         } catch (err) {
             toast.error("Failed to copy link");
-            console.log("Failed to copy link", err);
         }
     }
 

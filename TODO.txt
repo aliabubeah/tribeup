@@ -1,8 +1,0 @@
-TODO: 
-reset password
-input spacing
- 
-save the user info when calling the login api not the profile api 
-Refactor Button Component (split into 2 components)
-
-remove comments and consolelogs

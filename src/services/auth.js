@@ -16,7 +16,6 @@ export async function loginAPI(data) {
     const loginData = await res.json();
 
     if (!res.ok) {
-        console.log(handleApiError(loginData));
         return handleApiError(loginData);
     }
     return loginData;
@@ -35,7 +34,6 @@ export async function registerAPI(data) {
     const registerdata = await res.json();
 
     if (!res.ok) {
-        console.log(handleApiError(registerdata));
         return handleApiError(registerdata);
     }
 
@@ -145,7 +143,6 @@ export async function resetPasswordAPI(
     const data = await result.json();
 
     if (!result.ok) {
-        console.log(handleApiError(data));
         return handleApiError(data);
     }
 }
@@ -178,7 +175,6 @@ export async function changePasswordAPI(
     }
 
     if (!result.ok) {
-        console.log(handleApiError(data));
         return handleApiError(data);
     }
     toast.success("passwordChanged Successfully");

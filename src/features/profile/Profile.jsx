@@ -4,7 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 function Profile() {
     const { user } = useAuth();
-    // console.log(user);
+
     return (
         <div>
             <p>iam : {user?.fullName}</p>

@@ -12,7 +12,7 @@ function MobileSidebarDrawer({ open, onClose }) {
 
             {/* Drawer */}
             <div
-                className={`absolute inset-y-0 left-0 w-full max-w-[85%] bg-white transition-transform duration-300 ease-out ${open ? "translate-x-0" : "-translate-x-full"}`}
+                className={`absolute inset-y-0 left-0 w-full max-w-[85%] bg-white transition-transform duration-300 ease-out ${open ? "translate-x-0" : "-translate-x-full"} px-4 py-8`}
             >
                 <Sidebar labelhidden={true} />
             </div>

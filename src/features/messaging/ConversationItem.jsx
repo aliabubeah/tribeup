@@ -25,9 +25,12 @@ function ConversationItem({
                 src={getCleanImageUrl(grouppic)}
                 className="h-12 w-12 rounded-full"
             />
-            <div>
+            <div className="min-w-0">
                 <h1 className="text-lg font-semibold">{groupName}</h1>
-                <p className="text-sm text-neutral-600">
+                <p
+                    className="max-w-full truncate text-sm text-neutral-600"
+                    title={msg}
+                >
                     {userName}:{msg}
                 </p>
             </div>

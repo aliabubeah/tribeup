@@ -2,9 +2,10 @@ import { useAuth } from "../../contexts/AuthContext";
 import { getCleanImageUrl } from "../../services/http";
 import { deletePostAPI } from "../../services/posts";
 import PostActionsMenu from "./PostActionMenu";
+import groupPfp from "../../assets/GroupPfp.png";
 
-function PostHeader({ userName, groupName, groupPicture, postId }) {
-    const { user, accessToken } = useAuth();
+function PostHeader({ userName, groupName, postId }) {
+    const { accessToken } = useAuth();
 
     function handleDelete() {
         deletePostAPI(postId, accessToken);
@@ -14,7 +15,7 @@ function PostHeader({ userName, groupName, groupPicture, postId }) {
         <div className="flex items-center justify-between">
             <div className="flex gap-2">
                 <img
-                    src={getCleanImageUrl(user.profilePicture)}
+                    src={getCleanImageUrl(groupPfp)}
                     className="h-12 min-w-12 rounded-full"
                 />
                 <div>
