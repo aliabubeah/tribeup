@@ -6,7 +6,13 @@ import avatar from "../assets/avatar.jpeg";
 import ChatDrawer from "../features/messaging/ChatDrawer";
 import { useEffect, useRef, useState } from "react";
 import MobileSidebarDrawer from "./MobileSideBarDrawer";
+import { useAuth } from "../contexts/AuthContext";
+import { createGroupChatConnection } from "../services/siganlR";
+import { useDispatch } from "react-redux";
+import { receiveGroupMessage } from "../features/messaging/chatSlice";
 function AppLayout() {
+    const dispatch = useDispatch();
+    const { accessToken } = useAuth();
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const drawerRef = useRef(null);
@@ -62,6 +68,28 @@ function AppLayout() {
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
+    // connect to signalR
+    useEffect(() => {
+        if (!accessToken) return;
+
+        const connection = createGroupChatConnection(accessToken);
+
+        connection
+            .start()
+            .then(() => {
+                console.log("SignalR connected");
+
+                connection.on("ReceiveGroupMessage", (message) => {
+                    dispatch(receiveGroupMessage(message));
+                    console.log("RECEIVED:", message);
+                });
+            })
+            .catch((err) => console.error("SignalR error:", err));
+
+        return () => {
+            connection.stop();
+        };
+    }, [accessToken]);
 
     return (
         <div className="flex min-h-screen flex-col bg-neutral-50">

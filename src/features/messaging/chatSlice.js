@@ -91,6 +91,19 @@ const chatSlice = createSlice({
                 room.messages.push(msg);
             }
         },
+
+        receiveGroupMessage(state, action) {
+            const msg = action.payload;
+            const room = state.rooms[msg.groupId];
+
+            if (!room) return;
+
+            // deduplicate by id
+            const exists = room.messages.some((m) => m.id === msg.id);
+            if (exists) return;
+
+            room.messages.push(msg);
+        },
     },
 
     extraReducers: (builder) => {
@@ -153,7 +166,11 @@ const chatSlice = createSlice({
     },
 });
 
-export const { resetChat, updateInboxLastMessage, setActiveGroup } =
-    chatSlice.actions;
+export const {
+    resetChat,
+    updateInboxLastMessage,
+    setActiveGroup,
+    receiveGroupMessage,
+} = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { fetchRoomMessages } from "./chatSlice";
 import MessageContent from "./messageRoom/MessageContent";
+import { getConnection } from "../../services/siganlR";
 
 function MessageRoom({ onChatRoom, onClose }) {
     const { accessToken } = useAuth();
@@ -87,6 +88,22 @@ function MessageRoom({ onChatRoom, onClose }) {
     // reset the anchor when the room changes
     useEffect(() => {
         didInitialScrollRef.current = false;
+    }, [activeGroupId]);
+
+    // signalR
+    useEffect(() => {
+        if (!activeGroupId) return;
+
+        const connection = getConnection();
+        if (!connection) return;
+
+        connection
+            .invoke("JoinGroupChat", activeGroupId)
+            .catch((err) => console.error("JoinGroup error:", err));
+
+        return () => {
+            connection.invoke("LeaveGroupChat", activeGroupId).catch(() => {});
+        };
     }, [activeGroupId]);
 
     if (!room || !room.messages.length) {
