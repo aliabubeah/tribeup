@@ -79,13 +79,14 @@ function SideMessageRoom({ onChatRoom, onClose }) {
         const el = scrollRef.current;
         if (!el || !room) return;
 
-        // First load of room
-        if (room.page === 1 && room.messages.length) {
+        // Only run once per room
+        if (!didInitialScrollRef.current && room.messages.length) {
             el.scrollTop = el.scrollHeight;
+            didInitialScrollRef.current = true;
             return;
         }
 
-        // New messages case
+        // New message auto scroll (only if near bottom)
         const isNearBottom =
             el.scrollHeight - el.scrollTop - el.clientHeight < 80;
 
@@ -124,7 +125,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
     }
 
     return (
-        <div className="flex h-[92vh] w-full flex-col rounded-lg bg-neutral-50 shadow-xl">
+        <div className="flex h-[92vh] min-h-0 w-full flex-col rounded-lg bg-neutral-50 shadow-xl">
             {/* Header */}
             <MessageHeader
                 onChatRoom={onChatRoom}

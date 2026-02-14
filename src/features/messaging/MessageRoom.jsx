@@ -16,7 +16,7 @@ function MessageRoom({ onChatRoom, onClose }) {
     const dispatch = useDispatch();
     const activeGroupId = useSelector((state) => state.chat.activeGroupId);
     const room = useSelector((state) => state.chat.rooms[activeGroupId]);
-
+    console.log(room);
     // initial Load
     useEffect(() => {
         if (!activeGroupId) return;
@@ -130,6 +130,7 @@ function MessageRoom({ onChatRoom, onClose }) {
                 onChatRoom={onChatRoom}
                 onClose={onClose}
                 groupName={room.messages[0].groupName}
+                groupPic={room.messages[0].groupProfilePicture}
             />
 
             {/* MainContent */}
@@ -144,13 +145,23 @@ function MessageRoom({ onChatRoom, onClose }) {
                 )}
 
                 {room.messages.map(
-                    ({ content, senderName, senderUserId, sentAt }, i) => (
+                    (
+                        {
+                            content,
+                            senderName,
+                            senderUserId,
+                            sentAt,
+                            senderProfilePicture,
+                        },
+                        i,
+                    ) => (
                         <MessageContent
                             key={i}
                             content={content}
                             senderName={senderName}
                             senderUserId={senderUserId}
                             sentAt={sentAt}
+                            senderProfilePic={senderProfilePicture}
                         />
                     ),
                 )}

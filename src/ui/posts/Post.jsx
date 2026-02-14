@@ -18,7 +18,7 @@ function Post({ post }) {
                 postId={post.postId}
                 userName={post.username}
                 groupName={post.groupName}
-                groupPicture={post.groupName}
+                groupPicture={post.groupProfilePicture}
             />
 
             {post.media.length > 0 && <PostMedia media={post.media} />}

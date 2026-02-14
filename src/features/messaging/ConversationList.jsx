@@ -15,7 +15,7 @@ function ConversationList({ onChatRoom }) {
                     groupName={item.groupName}
                     userName={item.lastMessageSenderName}
                     msg={item.lastMessageContent}
-                    grouppic={avatar}
+                    grouppic={item.groupProfilePicture}
                 />
             ))}
         </div>

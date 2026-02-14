@@ -1,6 +1,6 @@
 import avatar from "../../../assets/avatar.jpeg";
 
-function MessageHeader({ onClose, onChatRoom, groupName }) {
+function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
     return (
         <div className="flex h-[60px] items-center justify-between bg-tribe-500 p-3 text-white">
             <div className="flex items-center gap-2">
@@ -14,7 +14,7 @@ function MessageHeader({ onClose, onChatRoom, groupName }) {
                 </button>
                 <div className="flex items-center gap-2">
                     <img
-                        src={avatar}
+                        src={groupPic}
                         alt=""
                         className="h-10 w-10 rounded-full"
                     />

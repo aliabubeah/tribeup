@@ -3,7 +3,13 @@ import { useAuth } from "../../../contexts/AuthContext";
 import avatar from "../../../assets/avatar.jpeg";
 import { formatTimeOnly } from "../../../utils/helper";
 
-function MessageContent({ content, senderName, senderUserId, sentAt }) {
+function MessageContent({
+    content,
+    senderName,
+    senderUserId,
+    sentAt,
+    senderProfilePic,
+}) {
     const { accessToken } = useAuth();
 
     const decoded = jwtDecode(accessToken);
@@ -27,7 +33,11 @@ function MessageContent({ content, senderName, senderUserId, sentAt }) {
                 </div>
             ) : (
                 <div className="mb-3 flex gap-2">
-                    <img src={avatar} alt="" className="h-9 w-9 rounded-full" />
+                    <img
+                        src={senderProfilePic}
+                        alt=""
+                        className="h-9 w-9 rounded-full"
+                    />
                     <div className="flex flex-col">
                         <p className="text-[10px] font-medium text-neutral-700">
                             {senderName}

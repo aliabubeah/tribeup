@@ -4,7 +4,7 @@ import { deletePostAPI } from "../../services/posts";
 import PostActionsMenu from "./PostActionMenu";
 import groupPfp from "../../assets/GroupPfp.png";
 
-function PostHeader({ userName, groupName, postId }) {
+function PostHeader({ userName, groupName, postId, groupPicture }) {
     const { accessToken } = useAuth();
 
     function handleDelete() {
@@ -15,8 +15,8 @@ function PostHeader({ userName, groupName, postId }) {
         <div className="flex items-center justify-between">
             <div className="flex gap-2">
                 <img
-                    src={getCleanImageUrl(groupPfp)}
-                    className="h-12 min-w-12 rounded-full"
+                    src={getCleanImageUrl(groupPicture)}
+                    className="h-12 w-12 rounded-full"
                 />
                 <div>
                     <h1 className="font-semibold">{groupName}</h1>
