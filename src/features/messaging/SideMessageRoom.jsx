@@ -7,7 +7,7 @@ import { fetchRoomMessages } from "./chatSlice";
 import MessageContent from "./messageRoom/MessageContent";
 import { getConnection } from "../../services/siganlR";
 
-function MessageRoom({ onChatRoom, onClose }) {
+function SideMessageRoom({ onChatRoom, onClose }) {
     const { accessToken } = useAuth();
     const scrollRef = useRef(null);
     const prevScrollHeightRef = useRef(0);
@@ -124,18 +124,18 @@ function MessageRoom({ onChatRoom, onClose }) {
     }
 
     return (
-        <div className="flex h-[60vh] max-h-[60vh] w-[364px] flex-col rounded-lg bg-neutral-50 shadow-xl">
-            {/* room Head */}
+        <div className="flex h-[92vh] w-full flex-col rounded-lg bg-neutral-50 shadow-xl">
+            {/* Header */}
             <MessageHeader
                 onChatRoom={onChatRoom}
                 onClose={onClose}
                 groupName={room.messages[0].groupName}
             />
 
-            {/* MainContent */}
+            {/* Messages */}
             <div
                 ref={scrollRef}
-                className="grow gap-3 overflow-y-auto px-4 py-3 text-white"
+                className="min-h-0 flex-1 gap-3 overflow-y-auto px-4 py-3 text-white"
             >
                 {room.isLoading && (
                     <div className="py-2 text-center text-xs text-neutral-400">
@@ -143,23 +143,16 @@ function MessageRoom({ onChatRoom, onClose }) {
                     </div>
                 )}
 
-                {room.messages.map(
-                    ({ content, senderName, senderUserId, sentAt }, i) => (
-                        <MessageContent
-                            key={i}
-                            content={content}
-                            senderName={senderName}
-                            senderUserId={senderUserId}
-                            sentAt={sentAt}
-                        />
-                    ),
-                )}
+                {room.messages.map((msg, i) => (
+                    <MessageContent key={i} {...msg} />
+                ))}
             </div>
 
-            {/* sendMeesage */}
+            {/* Input */}
+
             <MessageForm />
         </div>
     );
 }
 
-export default MessageRoom;
+export default SideMessageRoom;

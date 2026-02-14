@@ -2,6 +2,7 @@ import { useState } from "react";
 import Button from "../../ui/Button";
 import { forgetPasswordAPI } from "../../services/auth";
 import { Link, useNavigation } from "react-router-dom";
+import AuthBrand from "./AuthBrand";
 
 function ForgetPassword() {
     const [email, setEmail] = useState("");
@@ -40,12 +41,7 @@ function ForgetPassword() {
                         className="flex w-full max-w-sm flex-col gap-4"
                         onSubmit={handleSubmit}
                     >
-                        <div className="w-full">
-                            <h1 className="text-center text-3xl font-bold tracking-wide text-tribe-600 lg:text-4xl">
-                                TribeUp
-                            </h1>
-                        </div>
-
+                        <AuthBrand />
                         <input
                             type="email"
                             className="input h-11"

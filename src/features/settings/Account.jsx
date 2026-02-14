@@ -1,90 +1,138 @@
-// import useState from 'react';
+import { getCleanImageUrl } from "../../services/http";
+import { useRef, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import coverImg from "../../assets/PostImg.jpeg";
+import avatar from "../../assets/avatar.jpeg";
+import Button from "../../ui/Button";
+import ProfileFieldInfo from "./ProfileFieldInfo";
+import AccountFieldModal from "./AccountFieldModal";
 
-// function EditProfileForm({ currentUser }) {
-//   // Text fields
-//   const [bio, setBio] = useState(currentUser.bio || '');
+const ACCOUNT_FIELDS = {
+    fullName: {
+        label: "Full name",
+        modalTitle: "Update your name",
+        modalDesc: "Enter your new first and last name.",
+        type: "fullName",
+    },
+    phone: {
+        label: "Phone number",
+        modalTitle: "Update your phone number",
+        modalDesc: "Enter your new phone number.",
+        type: "phone",
+    },
+    bio: {
+        label: "Bio",
+        modalTitle: "Update your bio",
+        modalDesc: "Change your current bio",
+        type: "bio",
+    },
+    password: {
+        label: "Password",
+        modalTitle: "Update your password",
+        modalDesc: "Enter your current password and a new password.",
+        type: "password",
+    },
+};
 
-//   // --- Image Handling Strategy ---
-
-//   // 1. The existing URL to display in the UI right now
-//   const [profilePicPreviewUrl, setProfilePicPreviewUrl] = useState(currentUser.profilePicUrl);
-
-//   // 2. The actual browser File object if they select a new one on their computer
-//   const [newProfilePicFile, setNewProfilePicFile] = useState(null);
-
-//   // 3. A flag indicating intent to delete existing image
-//   const [isDeleteProfilePicRequested, setIsDeleteProfilePicRequested] = useState(false);
-
-//   // --- Handlers ---
-
-//   // When user selects a new file via input type="file"
-//   const handleFileChange = (e) => {
-//      const file = e.target.files[0];
-//      if (file) {
-//        setNewProfilePicFile(file);
-//        // Create a temporary URL just for previewing the new image immediately
-//        setProfilePicPreviewUrl(URL.createObjectURL(file));
-//        // Ensure delete flag is off if they picked a new file
-//        setIsDeleteProfilePicRequested(false);
-//      }
-//   };
-
-//   // YOU NEED THIS IN YOUR UI: A "Remove Photo" button handler
-//   const handleRemovePhoto = () => {
-//      setProfilePicPreviewUrl(defaultPlaceholderImage); // Show placeholder
-//      setNewProfilePicFile(null); // Clear any newly selected file
-//      setIsDeleteProfilePicRequested(true); // Set the crucial flag
-//   };
-
-//   // --- THE SUBMIT HANDLER (The Magic Part) ---
-//   const handleSubmit = async () => {
-//     const formData = new FormData();
-
-//     // --- 1. Handle Text Fields ---
-//     // Only append if changed. For 'bio', sending empty string means delete.
-//     if (bio !== currentUser.bio) {
-//        formData.append('bio', bio);
-//     }
-
-//     // --- 2. Handle Images (The Core Solution) ---
-
-//     // CASE A: New file was uploaded
-//     if (newProfilePicFile) {
-//       // The backend sees a file object and knows to upload it
-//       formData.append('profile_pic', newProfilePicFile);
-//     }
-//     // CASE B: User specifically requested deletion
-//     else if (isDeleteProfilePicRequested) {
-//       // We send a specific signal. Sending explicit 'null' works well
-//       // if your backend is set up to interpret text "null" as deletion for files.
-//       // Alternatively, append an empty string: formData.append('profile_pic', '');
-//       // You must agree with your backend developer on this signal.
-//       formData.append('profile_pic', null);
-//     }
-//     // CASE C: No Change
-//     else {
-//       // Do absolutely nothing.
-//       // We do NOT append 'profile_pic' to formData.
-//       // The PATCH request sends nothing for this field, backend makes no changes.
-//     }
-
-//     // Repeat image logic for cover_pic...
-
-//     // Send request
-//     await fetch('/api/user/profile', {
-//       method: 'PATCH',
-//       body: formData, // Let browser set content-type header automatically
-//     });
-//   };
-
-//   return (
-//     // ... your JSX form ...
-//     // Need an input type="file" hidden, triggered by clicking the avatar icon
-//     // Need a "Remove" button if profilePicPreviewUrl is not the default placeholder
-//   );
-// }
 function Account() {
-    return <div></div>;
+    const [activeField, setActiveField] = useState(null);
+    const { user } = useAuth();
+    function openModal(fieldKey) {
+        setActiveField(ACCOUNT_FIELDS[fieldKey]);
+    }
+
+    function closeModal() {
+        setActiveField(null);
+    }
+
+    const fileInputRef = useRef(null);
+
+    function openFileDialog() {
+        fileInputRef.current?.click();
+    }
+
+    function handleFileChange(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // later:
+        // - validate
+        // - preview
+        // - upload
+        if (!file.type.startsWith("image/")) return;
+        if (file.size > 2 * 1024 * 1024) return; // 2MB
+    }
+
+    return (
+        <div className="flex flex-col rounded-lg bg-white">
+            <div>
+                <div className="relative">
+                    <img
+                        src={coverImg}
+                        alt=""
+                        className="h-44 w-full rounded-t-lg object-cover"
+                    />
+                    <div
+                        className="absolute -bottom-6 left-6 flex cursor-pointer"
+                        onClick={openFileDialog}
+                    >
+                        <img
+                            src={getCleanImageUrl(user.profilePicture)}
+                            className="h-24 w-24 rounded-full"
+                        />
+                        <span className="icon-outlined absolute bottom-3 right-1 text-xl text-neutral-50">
+                            add_a_photo
+                        </span>
+                    </div>
+
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleFileChange}
+                    />
+                </div>
+
+                <div className="relative p-6 pt-12">
+                    <h1 className="font-semibold">FullName</h1>
+                    <p className="text-neutral-500">@username</p>
+                </div>
+            </div>
+            <div className="flex flex-col gap-3 px-4 pb-4">
+                <ProfileFieldInfo
+                    title="Full name"
+                    info="karimatef"
+                    onEdit={() => openModal("fullName")}
+                />
+
+                <ProfileFieldInfo
+                    title="Phone number"
+                    info="+201007058504"
+                    remove
+                    onEdit={() => openModal("phone")}
+                />
+
+                <ProfileFieldInfo
+                    title="Bio"
+                    info="bla bla bla bla"
+                    remove
+                    onEdit={() => openModal("bio")}
+                />
+
+                <ProfileFieldInfo
+                    title="Password"
+                    info="************"
+                    onEdit={() => openModal("password")}
+                />
+            </div>
+            <AccountFieldModal
+                field={activeField}
+                isOpen={!!activeField}
+                onClose={closeModal}
+            />
+        </div>
+    );
 }
 
 export default Account;
