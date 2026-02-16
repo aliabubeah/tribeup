@@ -3,7 +3,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useState } from "react";
 import { sendMessage } from "../chatSlice";
 
-function MessageForm() {
+function MessageForm({ className }) {
     const [content, setContent] = useState("");
     const dispatch = useDispatch();
     const { accessToken } = useAuth();
@@ -26,7 +26,10 @@ function MessageForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="flex h-14 gap-2 border-t p-2">
+        <form
+            onSubmit={handleSubmit}
+            className={`flex h-14 gap-2 border-t p-2 ${className}`}
+        >
             <input
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -35,7 +38,7 @@ function MessageForm() {
             />
             <button
                 type="submit"
-                className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl"
+                className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl hover:bg-neutral-200 active:bg-neutral-400"
             >
                 send
             </button>

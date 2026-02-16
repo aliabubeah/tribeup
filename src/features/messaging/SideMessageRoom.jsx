@@ -126,7 +126,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
     }
 
     return (
-        <div className="flex h-[91vh] min-h-0 w-full flex-col rounded-lg bg-neutral-50 shadow-xl md:h-screen">
+        <div className="flex h-full min-h-0 w-full flex-col rounded-lg bg-neutral-50 shadow-xl">
             {/* Header */}
             <MessageHeader
                 onChatRoom={onChatRoom}
@@ -185,7 +185,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
 
             {/* Input */}
 
-            <MessageForm />
+            <MessageForm className="mb-[63px] md:mb-0" />
         </div>
     );
 }

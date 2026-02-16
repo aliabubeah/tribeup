@@ -81,7 +81,11 @@ const router = createBrowserRouter([
         ],
     },
     {
-        element: <FullScreenLayout />,
+        element: (
+            <ProtectedRoute>
+                <FullScreenLayout />
+            </ProtectedRoute>
+        ),
         errorElement: <Error />,
         children: [
             {

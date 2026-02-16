@@ -8,9 +8,7 @@ function Mesaage() {
     const [isChatRoom, setIsChatRoom] = useState(false);
 
     return isChatRoom ? (
-        <div className="h-[91vh]">
-            <SideMessageRoom onChatRoom={setIsChatRoom} />
-        </div>
+        <SideMessageRoom onChatRoom={setIsChatRoom} />
     ) : (
         <div className="flex flex-col divide-y divide-neutral-400">
             <div className="px-3 py-6 text-center text-xl font-semibold">
