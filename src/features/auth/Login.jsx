@@ -77,7 +77,6 @@ export async function action({ request }) {
     const data = Object.fromEntries(formData);
 
     const result = await loginAPI(data);
-    console.log(result);
     if (result.error) {
         return result;
     }

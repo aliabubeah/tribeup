@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { fetchRoomMessages } from "./chatSlice";
 import MessageContent from "./messageRoom/MessageContent";
 import { getConnection } from "../../services/siganlR";
+import { getDateLabel } from "../../utils/helper";
 
 function MessageRoom({ onChatRoom, onClose }) {
     const { accessToken } = useAuth();
@@ -16,7 +17,6 @@ function MessageRoom({ onChatRoom, onClose }) {
     const dispatch = useDispatch();
     const activeGroupId = useSelector((state) => state.chat.activeGroupId);
     const room = useSelector((state) => state.chat.rooms[activeGroupId]);
-    console.log(room);
     // initial Load
     useEffect(() => {
         if (!activeGroupId) return;
@@ -79,13 +79,14 @@ function MessageRoom({ onChatRoom, onClose }) {
         const el = scrollRef.current;
         if (!el || !room) return;
 
-        // First load of room
-        if (room.page === 1 && room.messages.length) {
+        // Only run once per room
+        if (!didInitialScrollRef.current && room.messages.length) {
             el.scrollTop = el.scrollHeight;
+            didInitialScrollRef.current = true;
             return;
         }
 
-        // New messages case
+        // New message auto scroll (only if near bottom)
         const isNearBottom =
             el.scrollHeight - el.scrollTop - el.clientHeight < 80;
 
@@ -138,33 +139,47 @@ function MessageRoom({ onChatRoom, onClose }) {
                 ref={scrollRef}
                 className="grow gap-3 overflow-y-auto px-4 py-3 text-white"
             >
-                {room.isLoading && (
+                {room.isLoading && room.hasMore && (
                     <div className="py-2 text-center text-xs text-neutral-400">
-                        {/* Loading… */}
+                        Loading…
                     </div>
                 )}
 
-                {room.messages.map(
-                    (
-                        {
-                            content,
-                            senderName,
-                            senderUserId,
-                            sentAt,
-                            senderProfilePicture,
-                        },
-                        i,
-                    ) => (
-                        <MessageContent
-                            key={i}
-                            content={content}
-                            senderName={senderName}
-                            senderUserId={senderUserId}
-                            sentAt={sentAt}
-                            senderProfilePic={senderProfilePicture}
-                        />
-                    ),
-                )}
+                {room.messages.map((msg, i) => {
+                    const prevMsg = room.messages[i - 1];
+
+                    const isFirstMessageOfDay =
+                        !prevMsg ||
+                        new Date(prevMsg.sentAt).toDateString() !==
+                            new Date(msg.sentAt).toDateString();
+
+                    const isFirstInSenderGroup =
+                        !prevMsg ||
+                        isFirstMessageOfDay ||
+                        prevMsg.senderUserId !== msg.senderUserId;
+
+                    return (
+                        <div key={i}>
+                            {/* Date Separator */}
+                            {isFirstMessageOfDay && (
+                                <div className="my-3 flex justify-center">
+                                    <span className="rounded-full px-3 py-1 text-xs font-semibold text-neutral-900">
+                                        {getDateLabel(msg.sentAt)}
+                                    </span>
+                                </div>
+                            )}
+
+                            <MessageContent
+                                content={msg.content}
+                                senderName={msg.senderName}
+                                senderUserId={msg.senderUserId}
+                                sentAt={msg.sentAt}
+                                senderProfilePic={msg.senderProfilePicture}
+                                showAvatar={isFirstInSenderGroup}
+                            />
+                        </div>
+                    );
+                })}
             </div>
 
             {/* sendMeesage */}

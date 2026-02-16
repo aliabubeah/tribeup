@@ -1,6 +1,10 @@
-import avatar from "../../../assets/avatar.jpeg";
+import { useLocation } from "react-router-dom";
+// import avatar from "../../../assets/avatar.jpeg";
 
 function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
+    const location = useLocation();
+    const inMessages = location.pathname !== "/messages";
+
     return (
         <div className="flex h-[60px] items-center justify-between bg-tribe-500 p-3 text-white">
             <div className="flex items-center gap-2">
@@ -12,6 +16,7 @@ function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
                 >
                     arrow_back
                 </button>
+
                 <div className="flex items-center gap-2">
                     <img
                         src={groupPic}
@@ -25,9 +30,11 @@ function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
                 </div>
             </div>
             <div>
-                <button className="icon-outlined" onClick={onClose}>
-                    close
-                </button>
+                {inMessages && (
+                    <button className="icon-outlined" onClick={onClose}>
+                        close
+                    </button>
+                )}
             </div>
         </div>
     );

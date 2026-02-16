@@ -13,7 +13,7 @@ function Sidebar() {
     }
 
     return (
-        <div className="fixed h-full">
+        <div className="fixed h-full ">
             {/* Profile */}
             <div className="mb-8 flex justify-center gap-2 px-2 lg:justify-normal">
                 <img

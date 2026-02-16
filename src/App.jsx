@@ -25,6 +25,7 @@ import Mesaage from "./features/messaging/Mesaage";
 import Tribes from "./features/tribes/Tribes";
 import Notifications from "./features/notification/Notifications";
 import Search from "./features/search/Search";
+import FullScreenLayout from "./ui/FullScreenLayout";
 
 const router = createBrowserRouter([
     {
@@ -48,10 +49,7 @@ const router = createBrowserRouter([
                 path: "profile",
                 element: <Profile />,
             },
-            {
-                path: "messages",
-                element: <Mesaage />,
-            },
+
             {
                 path: "tribes",
                 element: <Tribes />,
@@ -79,6 +77,16 @@ const router = createBrowserRouter([
                 path: "/auth/change-password",
                 element: <ChangePassword />,
                 action: changePasswordAction,
+            },
+        ],
+    },
+    {
+        element: <FullScreenLayout />,
+        errorElement: <Error />,
+        children: [
+            {
+                path: "/messages",
+                element: <Mesaage />,
             },
         ],
     },

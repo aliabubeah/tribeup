@@ -89,7 +89,6 @@ export async function action({ request }) {
     const data = Object.fromEntries(formData);
 
     const result = await registerAPI(data);
-    console.log(result);
     if (result.errors) {
         return result;
     }

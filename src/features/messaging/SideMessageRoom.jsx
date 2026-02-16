@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { fetchRoomMessages } from "./chatSlice";
 import MessageContent from "./messageRoom/MessageContent";
 import { getConnection } from "../../services/siganlR";
+import { getDateLabel } from "../../utils/helper";
 
 function SideMessageRoom({ onChatRoom, onClose }) {
     const { accessToken } = useAuth();
@@ -125,12 +126,13 @@ function SideMessageRoom({ onChatRoom, onClose }) {
     }
 
     return (
-        <div className="flex h-[92vh] min-h-0 w-full flex-col rounded-lg bg-neutral-50 shadow-xl">
+        <div className="flex h-[91vh] min-h-0 w-full flex-col rounded-lg bg-neutral-50 shadow-xl md:h-screen">
             {/* Header */}
             <MessageHeader
                 onChatRoom={onChatRoom}
                 onClose={onClose}
                 groupName={room.messages[0].groupName}
+                groupPic={room.messages[0].groupProfilePicture}
             />
 
             {/* Messages */}
@@ -138,15 +140,47 @@ function SideMessageRoom({ onChatRoom, onClose }) {
                 ref={scrollRef}
                 className="min-h-0 flex-1 gap-3 overflow-y-auto px-4 py-3 text-white"
             >
-                {room.isLoading && (
+                {room.isLoading && room.hasMore && (
                     <div className="py-2 text-center text-xs text-neutral-400">
-                        {/* Loading… */}
+                        Loading…
                     </div>
                 )}
 
-                {room.messages.map((msg, i) => (
-                    <MessageContent key={i} {...msg} />
-                ))}
+                {room.messages.map((msg, i) => {
+                    const prevMsg = room.messages[i - 1];
+
+                    const isFirstMessageOfDay =
+                        !prevMsg ||
+                        new Date(prevMsg.sentAt).toDateString() !==
+                            new Date(msg.sentAt).toDateString();
+
+                    const isFirstInSenderGroup =
+                        !prevMsg ||
+                        isFirstMessageOfDay ||
+                        prevMsg.senderUserId !== msg.senderUserId;
+
+                    return (
+                        <div key={i}>
+                            {/* Date Separator */}
+                            {isFirstMessageOfDay && (
+                                <div className="my-3 flex justify-center">
+                                    <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-900">
+                                        {getDateLabel(msg.sentAt)}
+                                    </span>
+                                </div>
+                            )}
+
+                            <MessageContent
+                                content={msg.content}
+                                senderName={msg.senderName}
+                                senderUserId={msg.senderUserId}
+                                sentAt={msg.sentAt}
+                                senderProfilePic={msg.senderProfilePicture}
+                                showAvatar={isFirstInSenderGroup}
+                            />
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Input */}

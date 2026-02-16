@@ -38,16 +38,64 @@ export function formatPostDate(isoString) {
     return `${time} · ${fullDate}`;
 }
 
-export function formatTimeOnly(isoDate) {
-    if (!isoDate) return "";
+export function getDateLabel(dateString, locale = navigator.language) {
+    const messageDate = new Date(dateString);
 
-    const date = new Date(isoDate);
+    // Normalize all dates to midnight (prevents timezone edge bugs)
+    const normalize = (date) => {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    };
 
-    return date.toLocaleTimeString("en-US", {
-        hour: "numeric",
+    const today = normalize(new Date());
+    const yesterday = normalize(new Date(today));
+    yesterday.setDate(today.getDate() - 1);
+
+    const msgDate = normalize(messageDate);
+
+    if (msgDate.getTime() === today.getTime()) {
+        return "Today";
+    }
+
+    if (msgDate.getTime() === yesterday.getTime()) {
+        return "Yesterday";
+    }
+
+    // Localized date formatting
+    const formatter = new Intl.DateTimeFormat(locale, {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+
+    return formatter.format(messageDate);
+}
+
+export function groupMessagesByDate(messages) {
+    const groups = {};
+
+    messages.forEach((msg) => {
+        const dateKey = new Date(msg.createdAt).toDateString();
+
+        if (!groups[dateKey]) {
+            groups[dateKey] = [];
+        }
+
+        groups[dateKey].push(msg);
+    });
+
+    return Object.entries(groups);
+}
+
+export function formatTimeOnly(dateString, locale = navigator.language) {
+    const date = new Date(dateString + "Z");
+
+    return new Intl.DateTimeFormat(locale, {
+        hour: "2-digit",
         minute: "2-digit",
         hour12: true,
-    });
+    }).format(date);
 }
 
 export function handleApiError(errorResponse) {
@@ -102,27 +150,3 @@ export function handleApiError(errorResponse) {
         message: title || "Something went wrong.",
     };
 }
-
-// export async function apiClient(url, options = {}) {
-//     try {
-//         const res = await fetch(url, {
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 ...options.headers,
-//             },
-//             ...options,
-//         });
-
-//         const data = await res.json();
-
-//         if (!res.ok) {
-//             throw handleApiError(data);
-//         }
-
-//         return data;
-//     } catch (error) {
-//         if (error?.status) throw error;
-
-//         throw handleApiError(null);
-//     }
-// }

@@ -81,7 +81,6 @@ function AppLayout() {
 
                 connection.on("ReceiveGroupMessage", (message) => {
                     dispatch(receiveGroupMessage(message));
-                    console.log("RECEIVED:", message);
                 });
             })
             .catch((err) => console.error("SignalR error:", err));
