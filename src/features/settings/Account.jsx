@@ -1,11 +1,13 @@
 import { getCleanImageUrl } from "../../services/http";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import coverImg from "../../assets/PostImg.jpeg";
 import avatar from "../../assets/avatar.jpeg";
 import Button from "../../ui/Button";
 import ProfileFieldInfo from "./ProfileFieldInfo";
 import AccountFieldModal from "./AccountFieldModal";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProfileInfo } from "./settingsSlice";
 
 const ACCOUNT_FIELDS = {
     fullName: {
@@ -35,8 +37,21 @@ const ACCOUNT_FIELDS = {
 };
 
 function Account() {
+    const { accessToken } = useAuth();
+    const dispatch = useDispatch();
+    const { account, isLoading, error } = useSelector(
+        (state) => state.settings,
+    );
+
     const [activeField, setActiveField] = useState(null);
-    const { user } = useAuth();
+    const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (!account && accessToken) {
+            dispatch(fetchProfileInfo({ accessToken }));
+        }
+    }, [account, accessToken, dispatch]);
+
     function openModal(fieldKey) {
         setActiveField(ACCOUNT_FIELDS[fieldKey]);
     }
@@ -44,8 +59,6 @@ function Account() {
     function closeModal() {
         setActiveField(null);
     }
-
-    const fileInputRef = useRef(null);
 
     function openFileDialog() {
         fileInputRef.current?.click();
@@ -63,21 +76,42 @@ function Account() {
         if (file.size > 2 * 1024 * 1024) return; // 2MB
     }
 
+    if (isLoading) return <div>loading...</div>;
+    if (error) return <div className="text-red-500">{error}</div>;
+    if (!account) return null;
+
+    const {
+        firstName,
+        lastName,
+        userName,
+        bio,
+        phoneNumber,
+        profilePicture,
+        coverPicture,
+    } = account;
+
+    const fullName = `${firstName}${lastName}`;
+    const displayBio = bio || "You don't have bio yet.";
+    const displayPhoneNumber =
+        phoneNumber || "You don't have Phone number yet.";
+
     return (
         <div className="flex flex-col rounded-lg bg-white">
             <div>
-                <div className="relative">
+                <div className="relative rounded-t-lg bg-neutral-200">
                     <img
-                        src={coverImg}
-                        alt=""
+                        src={coverPicture}
                         className="h-44 w-full rounded-t-lg object-cover"
                     />
+                    <span className="icon-outlined absolute left-1/2 top-1/2 cursor-pointer text-xl text-neutral-950">
+                        add_a_photo
+                    </span>
                     <div
                         className="absolute -bottom-6 left-6 flex cursor-pointer"
                         onClick={openFileDialog}
                     >
                         <img
-                            src={getCleanImageUrl(user.profilePicture)}
+                            src={getCleanImageUrl(profilePicture)}
                             className="h-24 w-24 rounded-full"
                         />
                         <span className="icon-outlined absolute bottom-3 right-1 text-xl text-neutral-50">
@@ -95,29 +129,31 @@ function Account() {
                 </div>
 
                 <div className="relative p-6 pt-12">
-                    <h1 className="font-semibold">FullName</h1>
-                    <p className="text-neutral-500">@username</p>
+                    <h1 className="font-semibold">{fullName}</h1>
+                    <p className="text-neutral-500">@{userName}</p>
                 </div>
             </div>
             <div className="flex flex-col gap-3 px-4 pb-4">
                 <ProfileFieldInfo
                     title="Full name"
-                    info="karimatef"
+                    info={`${fullName}`}
                     onEdit={() => openModal("fullName")}
                 />
 
                 <ProfileFieldInfo
                     title="Phone number"
-                    info="+201007058504"
+                    info={`${displayPhoneNumber}`}
                     remove
                     onEdit={() => openModal("phone")}
+                    isNull={phoneNumber}
                 />
 
                 <ProfileFieldInfo
                     title="Bio"
-                    info="bla bla bla bla"
+                    info={`${displayBio}`}
                     remove
                     onEdit={() => openModal("bio")}
+                    isNull={bio}
                 />
 
                 <ProfileFieldInfo

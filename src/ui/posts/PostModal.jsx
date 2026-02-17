@@ -50,7 +50,9 @@ function PostModal({ post, isOpen = false, onClose }) {
                                             <PostHeader
                                                 userName={post.username}
                                                 groupName={post.groupName}
-                                                groupPicture={post.groupName}
+                                                groupPicture={
+                                                    post.groupProfilePicture
+                                                }
                                             />
 
                                             <div className="min-w-0 text-start">

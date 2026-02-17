@@ -10,9 +10,11 @@ function MessageContent({
     sentAt,
     senderProfilePic,
     showAvatar,
+    isSameSenderAsPrev,
 }) {
     const { accessToken } = useAuth();
-
+    const spacingClass = isSameSenderAsPrev ? "mt-1" : "mt-3";
+    console.log(content + " ", isSameSenderAsPrev);
     const decoded = jwtDecode(accessToken);
     const userId =
         decoded[
@@ -22,9 +24,9 @@ function MessageContent({
     return (
         <div className="flex flex-col">
             {userId === senderUserId ? (
-                <div className="mb-3 flex flex-col items-end">
+                <div className={`${spacingClass} flex flex-col items-end`}>
                     <div className="rounded-xl bg-tribe-500 px-2 py-1">
-                        <p className="min-h-7 w-fit max-w-56 break-words text-sm font-light">
+                        <p className="w-fit max-w-56 break-words text-sm font-light">
                             {content}
                         </p>
                         <p className="text-end text-[9px] text-neutral-100">
@@ -33,7 +35,7 @@ function MessageContent({
                     </div>
                 </div>
             ) : (
-                <div className="mb-3 flex gap-2">
+                <div className={`${spacingClass} flex gap-2`}>
                     {showAvatar && (
                         <img
                             src={senderProfilePic}
@@ -51,7 +53,7 @@ function MessageContent({
                             className={`${!showAvatar ? "ml-11" : ""} rounded-xl bg-neutral-500 px-2 py-1`}
                         >
                             <p
-                                className={`min-h-7 w-fit max-w-56 break-words text-sm font-light`}
+                                className={`w-fit max-w-56 break-words text-sm font-light`}
                             >
                                 {content}
                             </p>

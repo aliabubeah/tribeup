@@ -158,6 +158,9 @@ function MessageRoom({ onChatRoom, onClose }) {
                         isFirstMessageOfDay ||
                         prevMsg.senderUserId !== msg.senderUserId;
 
+                    const isSameSenderAsPrev =
+                        prevMsg && prevMsg.senderUserId === msg.senderUserId;
+
                     return (
                         <div key={i}>
                             {/* Date Separator */}
@@ -176,6 +179,7 @@ function MessageRoom({ onChatRoom, onClose }) {
                                 sentAt={msg.sentAt}
                                 senderProfilePic={msg.senderProfilePicture}
                                 showAvatar={isFirstInSenderGroup}
+                                isSameSenderAsPrev={isSameSenderAsPrev}
                             />
                         </div>
                     );

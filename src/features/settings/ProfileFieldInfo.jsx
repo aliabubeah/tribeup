@@ -1,7 +1,8 @@
+import { useSelector } from "react-redux";
 import MainButton from "../../ui/Buttons/MainButton";
 import SecondaryButton from "../../ui/Buttons/SecondaryButton";
 
-function ProfileFieldInfo({ title, info, remove, onEdit }) {
+function ProfileFieldInfo({ title, info, remove, onEdit, isNull }) {
     if (title === "Password") {
         info = "************";
     }
@@ -15,6 +16,8 @@ function ProfileFieldInfo({ title, info, remove, onEdit }) {
             <div>
                 {title === "Password" ? (
                     <MainButton onClick={onEdit}>Change password</MainButton>
+                ) : isNull === null ? (
+                    <SecondaryButton onClick={onEdit}>Add</SecondaryButton>
                 ) : (
                     <div className="flex items-center gap-2">
                         {remove && (
