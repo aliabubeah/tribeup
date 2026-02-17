@@ -66,7 +66,7 @@ const router = createBrowserRouter([
                 path: "settings",
                 element: <Settings />,
             },
-            { path: "settings/account", element: <Account /> },
+
             { path: "settings/privacy", element: <Privacy /> },
             { path: "avatar", element: <Avatar /> },
             {
@@ -92,6 +92,7 @@ const router = createBrowserRouter([
                 path: "/messages",
                 element: <Mesaage />,
             },
+            { path: "settings/account", element: <Account /> },
         ],
     },
     {

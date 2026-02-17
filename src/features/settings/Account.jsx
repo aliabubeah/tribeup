@@ -8,6 +8,7 @@ import ProfileFieldInfo from "./ProfileFieldInfo";
 import AccountFieldModal from "./AccountFieldModal";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfileInfo } from "./settingsSlice";
+import BackButton from "../../ui/Buttons/BackButton";
 
 const ACCOUNT_FIELDS = {
     fullName: {
@@ -96,77 +97,80 @@ function Account() {
         phoneNumber || "You don't have Phone number yet.";
 
     return (
-        <div className="flex flex-col rounded-lg bg-white">
-            <div>
-                <div className="relative rounded-t-lg bg-neutral-200">
-                    <img
-                        src={coverPicture}
-                        className="h-44 w-full rounded-t-lg object-cover"
-                    />
-                    <span className="icon-outlined absolute left-1/2 top-1/2 cursor-pointer text-xl text-neutral-950">
-                        add_a_photo
-                    </span>
-                    <div
-                        className="absolute -bottom-6 left-6 flex cursor-pointer"
-                        onClick={openFileDialog}
-                    >
+        <div className="px-3 py-4">
+            <BackButton />
+            <div className="flex flex-col rounded-lg bg-white">
+                <div>
+                    <div className="relative rounded-t-lg bg-neutral-200">
                         <img
-                            src={getCleanImageUrl(profilePicture)}
-                            className="h-24 w-24 rounded-full"
+                            src={coverPicture}
+                            className="h-44 w-full rounded-t-lg object-cover"
                         />
-                        <span className="icon-outlined absolute bottom-3 right-1 text-xl text-neutral-50">
+                        <span className="icon-outlined absolute left-1/2 top-1/2 cursor-pointer text-xl text-neutral-950">
                             add_a_photo
                         </span>
+                        <div
+                            className="absolute -bottom-6 left-6 flex cursor-pointer"
+                            onClick={openFileDialog}
+                        >
+                            <img
+                                src={getCleanImageUrl(profilePicture)}
+                                className="h-24 w-24 rounded-full"
+                            />
+                            <span className="icon-outlined absolute bottom-3 right-1 text-xl text-neutral-50">
+                                add_a_photo
+                            </span>
+                        </div>
+
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleFileChange}
+                        />
                     </div>
 
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleFileChange}
+                    <div className="relative p-6 pt-12">
+                        <h1 className="font-semibold">{fullName}</h1>
+                        <p className="text-neutral-500">@{userName}</p>
+                    </div>
+                </div>
+                <div className="flex flex-col gap-3 px-4 pb-4">
+                    <ProfileFieldInfo
+                        title="Full name"
+                        info={`${fullName}`}
+                        onEdit={() => openModal("fullName")}
+                    />
+
+                    <ProfileFieldInfo
+                        title="Phone number"
+                        info={`${displayPhoneNumber}`}
+                        remove
+                        onEdit={() => openModal("phone")}
+                        isNull={phoneNumber}
+                    />
+
+                    <ProfileFieldInfo
+                        title="Bio"
+                        info={`${displayBio}`}
+                        remove
+                        onEdit={() => openModal("bio")}
+                        isNull={bio}
+                    />
+
+                    <ProfileFieldInfo
+                        title="Password"
+                        info="************"
+                        onEdit={() => openModal("password")}
                     />
                 </div>
-
-                <div className="relative p-6 pt-12">
-                    <h1 className="font-semibold">{fullName}</h1>
-                    <p className="text-neutral-500">@{userName}</p>
-                </div>
-            </div>
-            <div className="flex flex-col gap-3 px-4 pb-4">
-                <ProfileFieldInfo
-                    title="Full name"
-                    info={`${fullName}`}
-                    onEdit={() => openModal("fullName")}
-                />
-
-                <ProfileFieldInfo
-                    title="Phone number"
-                    info={`${displayPhoneNumber}`}
-                    remove
-                    onEdit={() => openModal("phone")}
-                    isNull={phoneNumber}
-                />
-
-                <ProfileFieldInfo
-                    title="Bio"
-                    info={`${displayBio}`}
-                    remove
-                    onEdit={() => openModal("bio")}
-                    isNull={bio}
-                />
-
-                <ProfileFieldInfo
-                    title="Password"
-                    info="************"
-                    onEdit={() => openModal("password")}
+                <AccountFieldModal
+                    field={activeField}
+                    isOpen={!!activeField}
+                    onClose={closeModal}
                 />
             </div>
-            <AccountFieldModal
-                field={activeField}
-                isOpen={!!activeField}
-                onClose={closeModal}
-            />
         </div>
     );
 }
