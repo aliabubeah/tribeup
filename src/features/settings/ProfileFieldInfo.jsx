@@ -1,10 +1,25 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MainButton from "../../ui/Buttons/MainButton";
 import SecondaryButton from "../../ui/Buttons/SecondaryButton";
+import { deleteBio, deletePhone, updatePhoneNumber } from "./settingsSlice";
+import { useAuth } from "../../contexts/AuthContext";
 
 function ProfileFieldInfo({ title, info, remove, onEdit, isNull }) {
+    const dispatch = useDispatch();
+    const { accessToken } = useAuth();
+
     if (title === "Password") {
         info = "************";
+    }
+
+    async function handleRemove() {
+        if (title === "Bio") {
+            dispatch(deleteBio({ accessToken }));
+            console.log("succedded");
+        } else if (title === "Phone number") {
+            dispatch(deletePhone({ accessToken }));
+            console.log("succedded");
+        }
     }
 
     return (
@@ -21,7 +36,10 @@ function ProfileFieldInfo({ title, info, remove, onEdit, isNull }) {
                 ) : (
                     <div className="flex items-center gap-2">
                         {remove && (
-                            <SecondaryButton className="border-red-500 text-red-500 hover:bg-red-50">
+                            <SecondaryButton
+                                className="border-red-500 text-red-500 hover:bg-red-50"
+                                onClick={handleRemove}
+                            >
                                 Remove
                             </SecondaryButton>
                         )}

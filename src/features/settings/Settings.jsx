@@ -6,7 +6,7 @@ import { fetchProfileInfo } from "./settingsSlice";
 
 function Settings() {
     return (
-        <div className="cursor-pointer divide-y divide-neutral-200 rounded-xl bg-white">
+        <div className="cursor-pointer divide-y divide-neutral-200 rounded-xl bg-white my-6 mx-4">
             <SettingCard
                 iconName="account_circle"
                 title="Account"

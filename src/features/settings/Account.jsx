@@ -7,7 +7,11 @@ import Button from "../../ui/Button";
 import ProfileFieldInfo from "./ProfileFieldInfo";
 import AccountFieldModal from "./AccountFieldModal";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProfileInfo } from "./settingsSlice";
+import {
+    fetchProfileInfo,
+    updateCoverPicture,
+    updateProfilePicture,
+} from "./settingsSlice";
 import BackButton from "../../ui/Buttons/BackButton";
 
 const ACCOUNT_FIELDS = {
@@ -46,6 +50,7 @@ function Account() {
 
     const [activeField, setActiveField] = useState(null);
     const fileInputRef = useRef(null);
+    const coverInputRef = useRef(null);
 
     useEffect(() => {
         if (!account && accessToken) {
@@ -64,17 +69,28 @@ function Account() {
     function openFileDialog() {
         fileInputRef.current?.click();
     }
+    function coverFileDialog() {
+        coverInputRef.current?.click();
+    }
 
-    function handleFileChange(e) {
+    async function handleFileChange(e) {
         const file = e.target.files[0];
         if (!file) return;
 
-        // later:
-        // - validate
-        // - preview
-        // - upload
         if (!file.type.startsWith("image/")) return;
-        if (file.size > 2 * 1024 * 1024) return; // 2MB
+        if (file.size > 2 * 1024 * 1024) return;
+
+        await dispatch(updateProfilePicture({ accessToken, file })).unwrap();
+    }
+
+    async function handleCoverPic(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) return;
+        if (file.size > 2 * 1024 * 1024) return;
+
+        await dispatch(updateCoverPicture({ accessToken, file })).unwrap();
     }
 
     if (isLoading) return <div>loading...</div>;
@@ -102,13 +118,25 @@ function Account() {
             <div className="flex flex-col rounded-lg bg-white">
                 <div>
                     <div className="relative rounded-t-lg bg-neutral-200">
-                        <img
-                            src={coverPicture}
-                            className="h-44 w-full rounded-t-lg object-cover"
-                        />
-                        <span className="icon-outlined absolute left-1/2 top-1/2 cursor-pointer text-xl text-neutral-950">
-                            add_a_photo
-                        </span>
+                        <div>
+                            <img
+                                src={coverPicture}
+                                className="h-44 w-full rounded-t-lg object-cover"
+                            />
+                            <span
+                                className="icon-outlined absolute left-1/2 top-1/2 cursor-pointer text-xl text-neutral-950"
+                                onClick={coverFileDialog}
+                            >
+                                add_a_photo
+                            </span>
+                            <input
+                                ref={coverInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleCoverPic}
+                            />
+                        </div>
                         <div
                             className="absolute -bottom-6 left-6 flex cursor-pointer"
                             onClick={openFileDialog}
