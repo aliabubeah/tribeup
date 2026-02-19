@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { formatPostDate } from "../../utils/helper";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../contexts/AuthContext";
 import { likePostOptimistic, toggleLike } from "../../features/feed/feedSlice";
+import { fetchComments } from "../../features/comments/commentsSlice";
 
 function PostActions({
     likesCount,
@@ -17,6 +18,7 @@ function PostActions({
     const [copy, setCopy] = useState(false);
     const dispatch = useDispatch();
     const { accessToken } = useAuth();
+    const { byPostId } = useSelector((state) => state.comments);
 
     function handleToggle() {
         dispatch(likePostOptimistic(postId));
@@ -35,6 +37,8 @@ function PostActions({
             toast.error("Failed to copy link");
         }
     }
+
+    
 
     return (
         <footer className="flex flex-col gap-3">

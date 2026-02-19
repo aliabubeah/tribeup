@@ -107,7 +107,7 @@ function Account() {
         coverPicture,
     } = account;
 
-    const fullName = `${firstName}${lastName}`;
+    const fullName = `${firstName} ${lastName}`;
     const displayBio = bio || "You don't have bio yet.";
     const displayPhoneNumber =
         phoneNumber || "You don't have Phone number yet.";

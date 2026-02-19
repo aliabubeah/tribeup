@@ -71,3 +71,43 @@ export async function deletePostAPI(postId, accessToken) {
     toast.success("successfully deleted post ");
     return data;
 }
+
+export async function getPostCommentsAPI(accessToken, postId, page, size = 20) {
+    const res = await fetch(
+        `${BASEURL}/api/Posts/${postId}/Comments?page=${page}&pageSize=${size}`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}
+
+export async function addCommentAPI(accessToken, postId, content) {
+    const res = await fetch(`${BASEURL}/api/Posts/${postId}/AddComment`, {
+        method: "post",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            content,
+        }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}

@@ -15,10 +15,8 @@ function ProfileFieldInfo({ title, info, remove, onEdit, isNull }) {
     async function handleRemove() {
         if (title === "Bio") {
             dispatch(deleteBio({ accessToken }));
-            console.log("succedded");
         } else if (title === "Phone number") {
             dispatch(deletePhone({ accessToken }));
-            console.log("succedded");
         }
     }
 

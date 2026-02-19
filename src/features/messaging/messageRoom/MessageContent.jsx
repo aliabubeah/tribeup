@@ -1,6 +1,5 @@
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../../contexts/AuthContext";
-import avatar from "../../../assets/avatar.jpeg";
 import { formatTimeOnly } from "../../../utils/helper";
 
 function MessageContent({
@@ -14,7 +13,6 @@ function MessageContent({
 }) {
     const { accessToken } = useAuth();
     const spacingClass = isSameSenderAsPrev ? "mt-1" : "mt-3";
-    console.log(content + " ", isSameSenderAsPrev);
     const decoded = jwtDecode(accessToken);
     const userId =
         decoded[

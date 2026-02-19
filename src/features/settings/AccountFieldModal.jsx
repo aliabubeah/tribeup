@@ -74,7 +74,7 @@ function AccountFieldModal({ field, isOpen, onClose }) {
         switch (field.type) {
             case "fullName":
                 return (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-3">
                         <input
                             placeholder="First name"
                             className="input"
@@ -132,7 +132,7 @@ function AccountFieldModal({ field, isOpen, onClose }) {
 
             case "password":
                 return (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-3">
                         <input
                             type="password"
                             placeholder="Current password"

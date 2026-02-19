@@ -5,8 +5,29 @@ import PostContent from "./PostContent";
 import PostActions from "./PostActions";
 import PostChat from "./PostChat";
 import PostMediaModal from "./PostMediaModal";
+import { useDispatch, useSelector } from "react-redux";
+import { useAuth } from "../../contexts/AuthContext";
+import { fetchComments } from "../../features/comments/commentsSlice";
 
 function PostModal({ post, isOpen = false, onClose }) {
+    const dispatch = useDispatch();
+    const { accessToken } = useAuth();
+
+    const commentsState = useSelector(
+        (state) => state.comments.byPostId[post.postId],
+    );
+
+    const page = commentsState?.page || 1;
+
+    useEffect(() => {
+        if (!isOpen || !post.postId) return;
+
+        if (!commentsState) {
+            dispatch(fetchComments({ accessToken, postId: post.postId, page }));
+        }
+        console.log(commentsState);
+    }, [isOpen, post.postId, accessToken, dispatch]);
+
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -35,17 +56,21 @@ function PostModal({ post, isOpen = false, onClose }) {
                         >
                             <Dialog.Panel className="h-[90vh] w-full max-w-5xl overflow-y-auto bg-white shadow-xl sm:h-[85vh] lg:h-[80vh]">
                                 <div
-                                    className={`grid grid-cols-1 ${post.media.length === 0 ? "" : "lg:grid-cols-2"} h-full overflow-y-auto lg:overflow-hidden`}
+                                    className={`grid grid-cols-1 ${
+                                        post.media.length === 0
+                                            ? ""
+                                            : "lg:grid-cols-[auto_1fr]"
+                                    } h-full overflow-y-auto lg:overflow-hidden`}
                                 >
                                     {/* LEFT */}
                                     <div
-                                        className={` ${post.media.length === 0 ? "hidden" : ""} h-[60vh] bg-black sm:h-[65vh] lg:h-full`}
+                                        className={` ${post.media.length === 0 ? "hidden" : ""} h-[60vh] overflow-hidden bg-black sm:h-[65vh] lg:h-full lg:min-h-0`}
                                     >
                                         <PostMediaModal media={post.media} />
                                     </div>
 
                                     {/* RIGHT */}
-                                    <div className="flex flex-col border-l outline-none">
+                                    <div className="flex h-full min-h-0 flex-col border-l outline-none">
                                         <div className="flex flex-col gap-3 border-b p-4">
                                             <PostHeader
                                                 userName={post.username}
@@ -71,7 +96,7 @@ function PostModal({ post, isOpen = false, onClose }) {
                                                 createdAt={post.createdAt}
                                             />
                                         </div>
-                                        <PostChat />
+                                        <PostChat postId={post.postId} />
                                     </div>
                                 </div>
                             </Dialog.Panel>
