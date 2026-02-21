@@ -8,7 +8,7 @@ export default {
 
         extend: {
             animation: {
-                "spin-slow": "spin 3s linear infinite",
+                "spin-slow": "spin 5s linear infinite",
                 "spin-fast": "spin 0.5s linear infinite",
             },
             colors: {
