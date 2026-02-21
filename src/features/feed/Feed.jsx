@@ -7,6 +7,7 @@ import { ClipLoader } from "react-spinners";
 import { useNavigate, useParams } from "react-router-dom";
 import PostModal from "../../ui/posts/PostModal.jsx";
 import { fetchChatInbox } from "../messaging/chatSlice.js";
+import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton.jsx";
 
 function Feed() {
     const dispatch = useDispatch();
@@ -46,6 +47,10 @@ function Feed() {
 
         return () => observerRef.current?.disconnect();
     }, [hasMore, isLoading, dispatch, accessToken]);
+
+    if (isLoading || !ids) {
+        return <PostCardSkeleton />;
+    }
 
     return (
         <>

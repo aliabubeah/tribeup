@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import Button from "../../ui/Button";
 import Auth from "./Auth";
 import AuthBrand from "./AuthBrand";
+import SplashScreen from "../../ui/SplashScreen";
 
 function Login() {
     const actionData = useActionData();

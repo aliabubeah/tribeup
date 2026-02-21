@@ -37,7 +37,7 @@ export async function feedAPI(accessToken, page = 1) {
 }
 
 export async function toggleLikeAPI(accessToken, postId) {
-    const res = await fetch(`${BASEURL}/api/posts/${postId}/ToggleLike`, {
+    const res = await fetch(`${BASEURL}/api/posts/${postId}/PostToggleLike`, {
         method: "post",
         headers: {
             "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export async function deletePostAPI(postId, accessToken) {
 
 export async function getPostCommentsAPI(accessToken, postId, page, size = 20) {
     const res = await fetch(
-        `${BASEURL}/api/Posts/${postId}/Comments?page=${page}&pageSize=${size}`,
+        `${BASEURL}/api/Comment/${postId}/Comments?page=${page}&pageSize=${size}`,
         {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -92,7 +92,7 @@ export async function getPostCommentsAPI(accessToken, postId, page, size = 20) {
 }
 
 export async function addCommentAPI(accessToken, postId, content) {
-    const res = await fetch(`${BASEURL}/api/Posts/${postId}/AddComment`, {
+    const res = await fetch(`${BASEURL}/api/Comment/${postId}/AddComment`, {
         method: "post",
         headers: {
             Authorization: `Bearer ${accessToken}`,

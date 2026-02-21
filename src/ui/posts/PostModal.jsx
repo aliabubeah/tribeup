@@ -40,7 +40,7 @@ function PostModal({ post, isOpen = false, onClose }) {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black/25" />
+                    <div className="fixed inset-0 bg-black/50" />
                 </Transition.Child>
 
                 <div className="fixed inset-0">
@@ -54,7 +54,7 @@ function PostModal({ post, isOpen = false, onClose }) {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="h-[90vh] w-full max-w-5xl overflow-y-auto bg-white shadow-xl sm:h-[85vh] lg:h-[80vh]">
+                            <Dialog.Panel className="h-[75vh] w-full max-w-5xl overflow-y-auto bg-white shadow-xl lg:h-[80vh] rounded-xl">
                                 <div
                                     className={`grid grid-cols-1 ${
                                         post.media.length === 0

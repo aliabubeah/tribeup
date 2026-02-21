@@ -7,6 +7,10 @@ export default {
         },
 
         extend: {
+            animation: {
+                "spin-slow": "spin 3s linear infinite",
+                "spin-fast": "spin 0.5s linear infinite",
+            },
             colors: {
                 tribe: {
                     50: "#F3E9FC",

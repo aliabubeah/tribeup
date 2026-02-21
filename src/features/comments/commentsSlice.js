@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { addCommentAPI, getPostCommentsAPI } from "../../services/posts";
+// import { useAuth } from "../../contexts/AuthContext";
+import avatar from "../../assets/avatar.jpeg";
 
 const initialState = {
     byPostId: {},
@@ -92,11 +94,24 @@ const commentsSlice = createSlice({
             })
             // addComment
             .addCase(addComment.pending, (state, action) => {
-                const { postId } = action.meta.arg;
+                const { postId, content } = action.meta.arg;
 
-                if (!state.byPostId[postId]) return;
+                const postComments = state.byPostId[postId];
+                if (!postComments) return;
 
-                state.byPostId[postId].isAdding = true;
+                const tempId = "local-" + Date.now();
+
+                const tempComment = {
+                    id: tempId,
+                    content,
+                    createdAt: new Date().toISOString(),
+                    username: "You",
+                    profilePicture: avatar,
+                    likesCount: 0,
+                };
+
+                postComments.ids.unshift(tempId);
+                postComments.entities[tempId] = tempComment;
             })
 
             .addCase(addComment.fulfilled, (state, action) => {

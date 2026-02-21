@@ -112,7 +112,7 @@ function AppLayout() {
                         <Outlet />
                     </main>
                     {/* Right Column */}
-                    <aside className="hidden w-80 shrink-0 border border-green-100 xl:block"></aside>
+                    <aside className="r hidden w-80 shrink-0 xl:block"></aside>
                 </div>
 
                 {/* message Drawer appears only on the big screens */}

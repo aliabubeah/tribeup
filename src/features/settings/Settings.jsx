@@ -6,7 +6,7 @@ import { fetchProfileInfo } from "./settingsSlice";
 
 function Settings() {
     return (
-        <div className="cursor-pointer divide-y divide-neutral-200 rounded-xl bg-white my-6 mx-4">
+        <div className="mx-4 my-6 cursor-pointer divide-y divide-neutral-200 rounded-xl bg-white">
             <SettingCard
                 iconName="account_circle"
                 title="Account"
@@ -28,12 +28,6 @@ function Settings() {
                 iconName="account_circle"
                 title="About"
                 description="Edit your profile information"
-            />
-            <SettingCard
-                to="/auth/change-password"
-                iconName="password"
-                title="changePassword"
-                description="change your Password "
             />
         </div>
     );
