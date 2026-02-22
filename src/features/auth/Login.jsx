@@ -12,6 +12,7 @@ import Button from "../../ui/Button";
 import Auth from "./Auth";
 import AuthBrand from "./AuthBrand";
 import SplashScreen from "../../ui/SplashScreen";
+import Profile from "../profile/Profile";
 
 function Login() {
     const actionData = useActionData();
@@ -31,6 +32,8 @@ function Login() {
             navigate("/", { replace: true });
         }
     }, [isAuthenticated, setAccessToken, actionData, navigate, accessToken]);
+
+    // return <Profile />;
 
     return (
         <Auth

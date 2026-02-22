@@ -169,3 +169,20 @@ export async function updateCoverPictureAPI(accessToken, file) {
 
     return true;
 }
+
+export async function userProfileAPI(accessToken, userName) {
+    const res = await fetch(`${BASEURL}/api/Profile/${userName}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}

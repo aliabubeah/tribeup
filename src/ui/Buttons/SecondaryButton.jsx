@@ -5,7 +5,7 @@ function SecondaryButton({ children, onClick, to, className, disabled }) {
         return (
             <Link
                 to={to}
-                className={`rounded-md border-2 border-neutral-800 py-3 text-center text-sm font-semibold text-neutral-800 transition-all duration-300 hover:bg-neutral-400 active:bg-neutral-950 active:text-white ${className}`}
+                className={`rounded-md border-2 border-neutral-800 px-3 py-[6px] text-center text-sm font-semibold leading-none text-neutral-800 transition-all duration-300 hover:bg-neutral-400 active:bg-neutral-950 active:text-white ${className}`}
             >
                 {children}
             </Link>
@@ -16,7 +16,7 @@ function SecondaryButton({ children, onClick, to, className, disabled }) {
         <button
             onClick={onClick}
             disabled={disabled}
-            className={`appearance-none rounded-md border-2 border-neutral-800 px-3 py-[6px] text-center text-xs font-bold leading-none text-neutral-800 transition-all duration-300 hover:bg-neutral-100 active:bg-neutral-950 active:text-white ${className}`}
+            className={`rounded-md border-2 border-neutral-800 px-3 py-[6px] text-center text-xs font-bold leading-none text-neutral-800 transition-all duration-300 hover:bg-neutral-100 active:bg-neutral-950 active:text-white ${className}`}
         >
             {children}
         </button>
