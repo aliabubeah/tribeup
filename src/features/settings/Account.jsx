@@ -120,7 +120,7 @@ function Account() {
                     <div className="relative rounded-t-lg bg-neutral-200">
                         <div>
                             <img
-                                src={coverPicture}
+                                src={getCleanImageUrl(coverPicture)}
                                 className="h-44 w-full rounded-t-lg object-cover"
                             />
                             <span

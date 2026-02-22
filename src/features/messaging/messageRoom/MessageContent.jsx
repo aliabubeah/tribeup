@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../../contexts/AuthContext";
 import { formatTimeOnly } from "../../../utils/helper";
+import { getCleanImageUrl } from "../../../services/http";
 
 function MessageContent({
     content,
@@ -36,7 +37,7 @@ function MessageContent({
                 <div className={`${spacingClass} flex gap-2`}>
                     {showAvatar && (
                         <img
-                            src={senderProfilePic}
+                            src={getCleanImageUrl(senderProfilePic)}
                             alt=""
                             className="h-9 w-9 rounded-full"
                         />
