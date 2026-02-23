@@ -46,7 +46,7 @@ function CreatePostForm({ onClose }) {
     return (
         <div className="flex flex-col gap-4">
             <select
-                className="input bg-neutral-50"
+                className="input rounded-lg bg-neutral-50"
                 value={groupId}
                 onChange={(e) => setGroupId(e.target.value)}
             >
@@ -58,7 +58,7 @@ function CreatePostForm({ onClose }) {
             </select>
 
             <textarea
-                className="input min-h-[120px] bg-neutral-50"
+                className="input min-h-[120px] rounded-lg bg-neutral-50"
                 placeholder="What's on your mind?"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}

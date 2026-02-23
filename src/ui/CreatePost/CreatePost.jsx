@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import CreatePostModal from "./CreatePostModal";
 import { useAuth } from "../../contexts/AuthContext";
+import { getCleanImageUrl } from "../../services/http";
 
 function CreatePost() {
     const { user } = useAuth();
@@ -13,7 +14,7 @@ function CreatePost() {
         <>
             <div className="mb-6 flex h-[72px] items-center gap-2 rounded-xl bg-white px-3 py-4">
                 <img
-                    src={user.profilePicture}
+                    src={getCleanImageUrl(user.profilePicture)}
                     alt=""
                     className="h-9 w-9 cursor-pointer rounded-full"
                     onClick={() => navigate("/profile")}
