@@ -10,7 +10,7 @@ function CreatePostForm({ onClose }) {
 
     const [caption, setCaption] = useState("");
     const [files, setFiles] = useState(null);
-    const [groupId, setGroupId] = useState("4");
+    const [groupId, setGroupId] = useState("select a group");
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit() {
@@ -38,6 +38,9 @@ function CreatePostForm({ onClose }) {
         async function getGroups() {
             const groups = await MyGroupsAPI(accessToken);
             setGroups(groups);
+            if (groups?.length > 0) {
+                setGroupId(String(groups[0].id)); // default first group
+            }
             console.log(groups);
         }
         getGroups();
@@ -77,7 +80,9 @@ function CreatePostForm({ onClose }) {
                 />
             </label>
 
-            <MainButton onClick={handleSubmit}>Post</MainButton>
+            <MainButton onClick={handleSubmit} disabled={!groupId || loading}>
+                {loading ? "Posting..." : "Post"}
+            </MainButton>
         </div>
     );
 }
