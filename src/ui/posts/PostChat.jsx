@@ -78,7 +78,7 @@ function PostChat({ postId }) {
                 })}
                 <div ref={loadMoreRef} className="h-10">
                     {commentsState.isFetchingMore && (
-                        <CommentSkeleton length={1} />
+                        <CommentSkeleton length={2} />
                     )}
                 </div>
             </div>
