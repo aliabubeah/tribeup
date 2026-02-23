@@ -10,7 +10,7 @@ function CreatePostForm({ onClose }) {
 
     const [caption, setCaption] = useState("");
     const [files, setFiles] = useState(null);
-    const [groupId, setGroupId] = useState("");
+    const [groupId, setGroupId] = useState("4");
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit() {
