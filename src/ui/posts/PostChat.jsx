@@ -78,13 +78,14 @@ function PostChat({ postId }) {
                 })}
                 <div ref={loadMoreRef} className="h-10">
                     {commentsState.isFetchingMore && (
-                        <CommentSkeleton length={2} />
+                        <CommentSkeleton length={1} />
                     )}
                 </div>
             </div>
             <AddComment
                 token={accessToken}
                 userPic={user.profilePicture}
+                userName={user.userName}
                 postId={postId}
                 className="sticky bottom-0 left-0 right-0 lg:static"
             />
@@ -167,6 +168,7 @@ function AddComment({ className, token, postId, userPic, userName }) {
                 postId,
                 content,
                 userPic,
+                userName,
             }),
         );
 

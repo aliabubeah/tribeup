@@ -31,7 +31,10 @@ export const fetchComments = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
     "comments/addComment",
-    async ({ accessToken, postId, content, userPic }, { rejectWithValue }) => {
+    async (
+        { accessToken, postId, content, userPic, userName },
+        { rejectWithValue },
+    ) => {
         try {
             const newComment = await addCommentAPI(
                 accessToken,
@@ -140,7 +143,7 @@ const commentsSlice = createSlice({
             })
             // addComment
             .addCase(addComment.pending, (state, action) => {
-                const { postId, content, userPic } = action.meta.arg;
+                const { postId, content, userPic, userName } = action.meta.arg;
 
                 const postComments = state.byPostId[postId];
                 if (!postComments) return;
@@ -151,7 +154,7 @@ const commentsSlice = createSlice({
                     id: tempId,
                     content,
                     createdAt: new Date().toISOString(),
-                    username: "You",
+                    username: userName,
                     profilePicture: userPic,
                     likesCount: 0,
                 };

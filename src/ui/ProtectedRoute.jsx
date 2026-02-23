@@ -4,7 +4,6 @@ import SplashScreen from "./SplashScreen";
 
 function ProtectedRoute({ children }) {
     const { isAuthenticated, user, isLoading } = useAuth();
-
     if (isLoading) {
         return <SplashScreen />;
     }

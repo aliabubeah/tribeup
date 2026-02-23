@@ -10,14 +10,15 @@ import { fetchUserProfile } from "./profileSlice";
 import { getDateLabel } from "../../utils/helper";
 
 function Profile() {
-    const { accessToken } = useAuth();
+    const { accessToken, user } = useAuth();
     const dispatch = useDispatch();
     const { account, isLoading, error } = useSelector((state) => state.profile);
-    const user = "AliMohamed";
 
     useEffect(() => {
         if (!account && accessToken) {
-            dispatch(fetchUserProfile({ accessToken, userName: user }));
+            dispatch(
+                fetchUserProfile({ accessToken, userName: user.userName }),
+            );
         }
     }, [account, accessToken, dispatch]);
 
@@ -60,7 +61,7 @@ function Profile() {
                 <div className="relative flex flex-col gap-4 p-6 pt-12">
                     <div>
                         <h1 className="font-semibold">{fullName}</h1>
-                        <p className="text-neutral-500">{userName}</p>
+                        <p className="text-neutral-500">@{userName}</p>
                         <p className="mt-2 text-sm font-normal">{displayBio}</p>
                     </div>
 

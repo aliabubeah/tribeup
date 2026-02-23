@@ -5,7 +5,6 @@ import {
     useReducer,
     useRef,
 } from "react";
-import { getprofile } from "../services/profile";
 import { refreshAPI } from "../services/auth";
 import {
     clearAccessToken,
@@ -23,68 +22,56 @@ const initialState = {
 
 function reducer(state, action) {
     switch (action.type) {
-        case "login":
-            setHttpToken(action.payload);
+        case "authenticate":
+            setHttpToken(action.payload.accessToken);
+
             return {
-                ...state,
-                accessToken: action.payload,
+                user: action.payload.userSummary,
+                accessToken: action.payload.accessToken,
                 isAuthenticated: true,
                 isLoading: false,
             };
-        case "setUser":
-            return {
-                ...state,
-                user: action.payload,
-            };
+
         case "logout":
             localStorage.removeItem("refreshToken");
+            clearAccessToken();
+
             return {
                 user: null,
                 accessToken: null,
                 isAuthenticated: false,
                 isLoading: false,
             };
+
         case "finishLoading":
-            return {
-                ...state,
-                isLoading: false,
-            };
+            return { ...state, isLoading: false };
+
         default:
-            throw new Error("unkown Action");
+            throw new Error("Unknown action");
     }
 }
 
 function AuthProvider({ children }) {
     const hasHydrated = useRef(false);
 
-    const [{ user, isAuthenticated, isLoading, accessToken }, dispatch] =
+    const [{ user, accessToken, isAuthenticated, isLoading }, dispatch] =
         useReducer(reducer, initialState);
 
-    // Handle Login
-    async function handleLogin(accessToken) {
-        setHttpToken(accessToken);
+    /**
+     * Called after login success
+     */
+    function setAccessToken(response) {
+        if (!response?.accessToken || !response?.refreshToken) return;
 
-        dispatch({ type: "login", payload: accessToken });
+        localStorage.setItem("refreshToken", response.refreshToken);
 
-        const profile = await getprofile();
-        dispatch({ type: "setUser", payload: profile });
-    }
-
-    // login first time (if user doesn't exist )
-    async function setAccessToken(token) {
-        if (!token.accessToken || !token.refreshToken) return;
-
-        localStorage.setItem("refreshToken", token.refreshToken);
-
-        await handleLogin(token.accessToken);
-    }
-
-    function setUser(user) {
-        dispatch({ type: "setUser", payload: user });
+        dispatch({
+            type: "authenticate",
+            payload: response,
+        });
     }
 
     function logout() {
-        clearAccessToken();
         dispatch({ type: "logout" });
     }
 
@@ -101,12 +88,14 @@ function AuthProvider({ children }) {
             }
 
             try {
-                const { accessToken, refreshToken: newRefresh } =
-                    await refreshAPI(refreshToken);
+                const response = await refreshAPI(refreshToken);
 
-                localStorage.setItem("refreshToken", newRefresh);
+                localStorage.setItem("refreshToken", response.refreshToken);
 
-                await handleLogin(accessToken);
+                dispatch({
+                    type: "authenticate",
+                    payload: response,
+                });
             } catch {
                 localStorage.removeItem("refreshToken");
                 dispatch({ type: "finishLoading" });
@@ -120,11 +109,11 @@ function AuthProvider({ children }) {
         <AuthContext.Provider
             value={{
                 user,
-                setAccessToken,
-                logout,
+                accessToken,
                 isAuthenticated,
                 isLoading,
-                accessToken,
+                setAccessToken,
+                logout,
             }}
         >
             {children}
@@ -134,8 +123,8 @@ function AuthProvider({ children }) {
 
 function useAuth() {
     const context = useContext(AuthContext);
-    if (context === undefined) throw new Error("out of context block");
+    if (!context) throw new Error("useAuth must be used within AuthProvider");
     return context;
 }
 
-export { useAuth, AuthProvider };
+export { AuthProvider, useAuth };

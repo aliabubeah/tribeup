@@ -97,6 +97,7 @@ export async function refreshAPI(refreshToken) {
     return {
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
+        userSummary: data.userSummary,
     };
 }
 

@@ -13,7 +13,7 @@ function Sidebar() {
     }
 
     return (
-        <div className="fixed h-full ">
+        <div className="fixed h-full">
             {/* Profile */}
             <div className="mb-8 flex justify-center gap-2 px-2 lg:justify-normal">
                 <img
@@ -23,7 +23,7 @@ function Sidebar() {
                 />
                 <div className="flex-col md:hidden lg:flex">
                     <h1 className="font-semibold">{user.fullName}</h1>
-                    <p className="text-sm text-neutral-700">@username</p>
+                    <p className="text-sm text-neutral-700">@{user.userName}</p>
                 </div>
             </div>
 
