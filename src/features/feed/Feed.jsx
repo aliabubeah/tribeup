@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PostModal from "../../ui/posts/PostModal.jsx";
 import { fetchChatInbox } from "../messaging/chatSlice.js";
 import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton.jsx";
+import CreatePost from "../../ui/CreatePost/CreatePost.jsx";
 
 function Feed() {
     const dispatch = useDispatch();
@@ -54,6 +55,7 @@ function Feed() {
 
     return (
         <>
+            <CreatePost />
             <div className="flex flex-col gap-3">
                 {ids.map((id) => (
                     <Post key={id} post={entities[id]} />

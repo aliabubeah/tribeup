@@ -133,3 +133,42 @@ export async function likeCommentAPI(accessToken, commentId) {
 
     return data;
 }
+
+export async function createPostAPI({
+    accessToken,
+    groupId,
+    caption,
+    accessibility,
+    taggedUserIds,
+    mediaFiles,
+}) {
+    const formData = new FormData();
+
+    formData.append("GroupId", groupId);
+    formData.append("Caption", caption);
+    formData.append("Accessibility", accessibility);
+
+    taggedUserIds?.forEach((id) => {
+        formData.append("TaggedUserIds", id);
+    });
+
+    mediaFiles?.forEach((file) => {
+        formData.append("mediaFiles", file);
+    });
+
+    const res = await fetch(`${BASEURL}/api/Posts/CreatePost`, {
+        method: "post",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+    return data;
+}

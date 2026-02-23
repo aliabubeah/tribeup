@@ -1,7 +1,4 @@
-// import { useEffect, useState } from "react";
-// import { getprofile } from "../../services/profile";
 import { useAuth } from "../../contexts/AuthContext";
-import avatar from "../../assets/avatar.jpeg";
 import { getCleanImageUrl } from "../../services/http";
 import SecondaryButton from "../../ui/Buttons/SecondaryButton";
 import { useEffect } from "react";
