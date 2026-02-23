@@ -6,6 +6,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import {
     addComment,
     fetchComments,
+    likeComment,
+    likeCommentOptimistic,
 } from "../../features/comments/commentsSlice";
 import { formatPostDate } from "../../utils/helper";
 import CommentSkeleton from "../Skeleton/CommentSkeleton";
@@ -13,24 +15,23 @@ import CommentSkeleton from "../Skeleton/CommentSkeleton";
 function PostChat({ postId }) {
     const observerRef = useRef(null);
     const loadMoreRef = useRef(null);
-    const { accessToken } = useAuth();
+    const { user, accessToken } = useAuth();
+
     const dispatch = useDispatch();
     const commentsState = useSelector(
         (state) => state.comments.byPostId[postId],
     );
 
     const entities = commentsState?.entities || {};
-
     const ids = commentsState?.ids || [];
     const page = commentsState?.page || 1;
     const hasMore = commentsState?.hasMore;
-    const isLoading = commentsState?.isLoading;
-    console.log(entities);
+    const isInitialLoading = commentsState?.isInitialLoading;
 
     useEffect(() => {
         console.log("called");
-
-        if (!hasMore || isLoading || page === 1) return;
+        console.log(page);
+        if (!hasMore || commentsState?.isFetchingMore) return;
         if (!loadMoreRef.current) return;
 
         const observer = new IntersectionObserver((entries) => {
@@ -47,9 +48,9 @@ function PostChat({ postId }) {
         observer.observe(loadMoreRef.current);
 
         return () => observer.disconnect();
-    }, [hasMore, isLoading, accessToken, postId, page, dispatch]);
+    }, [hasMore, isInitialLoading, accessToken, postId, page, dispatch]);
 
-    if (!commentsState || commentsState?.isLoading) {
+    if (!commentsState || commentsState?.isInitialLoading) {
         return <CommentSkeleton />;
     }
 
@@ -60,22 +61,30 @@ function PostChat({ postId }) {
                     const comment = entities[id];
 
                     return (
-                        <>
-                            <PostComment
-                                key={id}
-                                likesCount={comment.likesCount}
-                                content={comment.content}
-                                createdAt={comment.createdAt}
-                                profilePicture={comment.profilePicture}
-                                userName={comment.username}
-                            />
-                        </>
+                        <PostComment
+                            postId={comment.postId}
+                            id={comment.id}
+                            dispatch={dispatch}
+                            key={id}
+                            likesCount={comment.likesCount}
+                            content={comment.content}
+                            createdAt={comment.createdAt}
+                            profilePicture={comment.profilePicture}
+                            userName={comment.username}
+                            accessToken={accessToken}
+                            isLikedByCurrentUser={comment.isLikedByCurrentUser}
+                        />
                     );
                 })}
-                <div ref={loadMoreRef} className="h-4" />
+                <div ref={loadMoreRef} className="h-10">
+                    {commentsState.isFetchingMore && (
+                        <CommentSkeleton length={1} />
+                    )}
+                </div>
             </div>
             <AddComment
                 token={accessToken}
+                userPic={user.profilePicture}
                 postId={postId}
                 className="sticky bottom-0 left-0 right-0 lg:static"
             />
@@ -86,12 +95,32 @@ function PostChat({ postId }) {
 export default PostChat;
 
 function PostComment({
+    dispatch,
+    postId,
+    id,
     content,
     createdAt,
     profilePicture,
     userName,
     likesCount,
+    accessToken,
+    isLikedByCurrentUser,
 }) {
+    const [favoriteToggle, setFavoriteToggle] = useState(isLikedByCurrentUser);
+
+    function handleToggle() {
+        console.log(id);
+        dispatch(likeCommentOptimistic({ postId, commentId: id }));
+        setFavoriteToggle((e) => !e);
+
+        dispatch(
+            likeComment({
+                accessToken,
+                commentId: id,
+            }),
+        );
+    }
+
     return (
         <div className="flex p-2">
             <div className="flex grow items-start gap-2">
@@ -111,14 +140,19 @@ function PostComment({
             </div>
 
             <div className="flex flex-col items-center justify-center">
-                <button className="icon-outlined">favorite</button>
+                <button
+                    className={`icon-outlined ${favoriteToggle ? "icon-filled text-red-500 " : ""}`}
+                    onClick={handleToggle}
+                >
+                    favorite
+                </button>
                 <p className="text-xs font-medium">{likesCount}</p>
             </div>
         </div>
     );
 }
 
-function AddComment({ className, token, postId }) {
+function AddComment({ className, token, postId, userPic, userName }) {
     const [content, setContent] = useState("");
     const dispatch = useDispatch();
 
@@ -132,6 +166,7 @@ function AddComment({ className, token, postId }) {
                 accessToken: token,
                 postId,
                 content,
+                userPic,
             }),
         );
 

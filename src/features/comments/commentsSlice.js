@@ -1,5 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { addCommentAPI, getPostCommentsAPI } from "../../services/posts";
+import {
+    addCommentAPI,
+    getPostCommentsAPI,
+    likeCommentAPI,
+} from "../../services/posts";
 // import { useAuth } from "../../contexts/AuthContext";
 import avatar from "../../assets/avatar.jpeg";
 
@@ -27,7 +31,7 @@ export const fetchComments = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
     "comments/addComment",
-    async ({ accessToken, postId, content }, { rejectWithValue }) => {
+    async ({ accessToken, postId, content, userPic }, { rejectWithValue }) => {
         try {
             const newComment = await addCommentAPI(
                 accessToken,
@@ -35,12 +39,26 @@ export const addComment = createAsyncThunk(
                 content,
             );
 
-            return { postId, comment: content };
+            return { postId, comment: newComment };
         } catch (err) {
             return rejectWithValue(err.message);
         }
     },
 );
+
+export const likeComment = createAsyncThunk(
+    "comments/likeComment",
+    async ({ accessToken, commentId, postId }, { rejectWithValue }) => {
+        try {
+            const likeComment = await likeCommentAPI(accessToken, commentId);
+
+            return { postId, commentId };
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    },
+);
+
 const commentsSlice = createSlice({
     name: "comments",
     initialState,
@@ -49,11 +67,29 @@ const commentsSlice = createSlice({
             const postId = action.payload;
             delete state.byPostId[postId];
         },
+
+        likeCommentOptimistic(state, action) {
+            const { postId, commentId } = action.payload;
+
+            const postComments = state.byPostId[postId];
+            if (!postComments) return;
+
+            const comment = postComments.entities[commentId];
+            if (!comment) return;
+
+            if (comment.isLikedByCurrentUser) {
+                comment.likesCount -= 1;
+                comment.isLikedByCurrentUser = false;
+            } else {
+                comment.likesCount += 1;
+                comment.isLikedByCurrentUser = true;
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
             .addCase(fetchComments.pending, (state, action) => {
-                const { postId } = action.meta.arg;
+                const { postId, page } = action.meta.arg;
 
                 if (!state.byPostId[postId]) {
                     state.byPostId[postId] = {
@@ -61,12 +97,19 @@ const commentsSlice = createSlice({
                         ids: [],
                         page: 1,
                         hasMore: true,
-                        isLoading: false,
+                        isInitialLoading: false,
+                        isFetchingMore: false,
                         error: null,
                     };
                 }
 
-                state.byPostId[postId].isLoading = true;
+                const postComments = state.byPostId[postId];
+
+                if (page === 1) {
+                    postComments.isInitialLoading = true;
+                } else {
+                    postComments.isFetchingMore = true;
+                }
             })
 
             .addCase(fetchComments.fulfilled, (state, action) => {
@@ -82,19 +125,22 @@ const commentsSlice = createSlice({
 
                 postComments.hasMore = hasMore;
                 postComments.page += 1;
-                postComments.isLoading = false;
+                postComments.isInitialLoading = false;
+                postComments.isFetchingMore = false;
             })
 
             .addCase(fetchComments.rejected, (state, action) => {
                 if (action.payload === "STOP") return;
 
                 const { postId } = action.meta.arg;
-                state.byPostId[postId].isLoading = false;
+                const postComments = state.byPostId[postId];
+                postComments.isInitialLoading = false;
+                postComments.isFetchingMore = false;
                 state.byPostId[postId].error = action.payload;
             })
             // addComment
             .addCase(addComment.pending, (state, action) => {
-                const { postId, content } = action.meta.arg;
+                const { postId, content, userPic } = action.meta.arg;
 
                 const postComments = state.byPostId[postId];
                 if (!postComments) return;
@@ -106,7 +152,7 @@ const commentsSlice = createSlice({
                     content,
                     createdAt: new Date().toISOString(),
                     username: "You",
-                    profilePicture: avatar,
+                    profilePicture: userPic,
                     likesCount: 0,
                 };
 
@@ -114,32 +160,25 @@ const commentsSlice = createSlice({
                 postComments.entities[tempId] = tempComment;
             })
 
-            .addCase(addComment.fulfilled, (state, action) => {
-                const { postId, comment } = action.payload;
-
+            .addCase(addComment.rejected, (state, action) => {
+                const { postId } = action.meta.arg;
                 const postComments = state.byPostId[postId];
                 if (!postComments) return;
 
-                // Prevent duplicates
-                if (!postComments.entities[comment.id]) {
-                    postComments.ids.unshift(comment.id); // add to top
+                const tempId = postComments.ids.find((id) =>
+                    id.startsWith("local-"),
+                );
+
+                if (tempId) {
+                    delete postComments.entities[tempId];
+                    postComments.ids = postComments.ids.filter(
+                        (id) => id !== tempId,
+                    );
                 }
-
-                postComments.entities[comment.id] = comment;
-                postComments.isAdding = false;
-            })
-
-            .addCase(addComment.rejected, (state, action) => {
-                const { postId } = action.meta.arg;
-
-                if (!state.byPostId[postId]) return;
-
-                state.byPostId[postId].isAdding = false;
-                state.byPostId[postId].error = action.payload;
             });
     },
 });
 
-export const { resetComments } = commentsSlice.actions;
+export const { resetComments, likeCommentOptimistic } = commentsSlice.actions;
 
 export default commentsSlice.reducer;

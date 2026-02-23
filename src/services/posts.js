@@ -111,3 +111,25 @@ export async function addCommentAPI(accessToken, postId, content) {
 
     return data;
 }
+
+export async function likeCommentAPI(accessToken, commentId) {
+    const res = await fetch(
+        `${BASEURL}/api/Comment/${commentId}/CommentToggleLike`,
+        {
+            method: "post",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}
