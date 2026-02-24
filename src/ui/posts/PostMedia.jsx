@@ -1,36 +1,31 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, Zoom } from "swiper/modules";
 import { useEffect, useRef, useState } from "react";
+import { getCleanImageUrl } from "../../services/http";
+import Video from "../Video";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import Video from "../Video";
-import { getCleanImageUrl } from "../../services/http";
+import "swiper/css/zoom";
 
 function PostMedia({ media, rounded = true }) {
-    // const swiperRef = useRef(null);
-
     if (!media || media.length === 0) return null;
 
     return (
         <div className={`overflow-hidden ${rounded ? "rounded-xl" : ""} `}>
             <Swiper
-                modules={[Navigation, Pagination]}
+                zoom={{ maxRatio: 3 }}
+                modules={[Navigation, Pagination, Zoom]}
                 navigation
                 pagination={{ clickable: true }}
-                // onSwiper={(swiper) => (swiperRef.current = swiper)}
                 className="post-swiper"
             >
                 {media.map((item) => (
                     <SwiperSlide key={item.mediaURL}>
-                        <MediaItem
-                            media={item}
-                            // onResize={() => {
-                            //     const swiper = swiperRef.current;
-                            //     if (!swiper) return;
-                            // }}
-                        />
+                        <div className="swiper-zoom-container">
+                            <MediaItem media={item} />
+                        </div>
                     </SwiperSlide>
                 ))}
             </Swiper>

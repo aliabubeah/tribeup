@@ -11,7 +11,7 @@ function Post({ post }) {
         e.stopPropagation();
         navigate(`/posts/${post.postId}?focus=comments`);
     }
-
+    // console.log(post);
     return (
         <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
             <PostHeader
@@ -19,6 +19,7 @@ function Post({ post }) {
                 userName={post.username}
                 groupName={post.groupName}
                 groupPicture={post.groupProfilePicture}
+                groupPermissions={post.groupPermissions}
             />
 
             {post.media.length > 0 && <PostMedia media={post.media} />}

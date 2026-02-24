@@ -1,8 +1,9 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, Zoom } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
+import "swiper/css/zoom";
 import "swiper/css/pagination";
 import Video from "../Video";
 import { getCleanImageUrl } from "../../services/http";
@@ -14,7 +15,8 @@ function PostMediaModal({ media }) {
     return (
         <div className="relative h-full w-full bg-black">
             <Swiper
-                modules={[Navigation, Pagination]}
+                zoom={{ maxRatio: 3 }}
+                modules={[Navigation, Pagination, Zoom]}
                 navigation
                 pagination={{ clickable: true }}
                 className="h-full w-full"
@@ -24,7 +26,9 @@ function PostMediaModal({ media }) {
                         key={index}
                         className="flex h-full w-full items-center justify-center"
                     >
-                        <ModalMediaItem media={item} />
+                        <div className="swiper-zoom-container">
+                            <ModalMediaItem media={item} />
+                        </div>
                     </SwiperSlide>
                 ))}
             </Swiper>

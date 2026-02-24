@@ -59,7 +59,6 @@ function PostChat({ postId }) {
             <div className="flex-1 p-2 lg:overflow-y-auto">
                 {ids.map((id) => {
                     const comment = entities[id];
-
                     return (
                         <PostComment
                             postId={comment.postId}
@@ -73,6 +72,7 @@ function PostChat({ postId }) {
                             userName={comment.username}
                             accessToken={accessToken}
                             isLikedByCurrentUser={comment.isLikedByCurrentUser}
+                            permissions={comment.permissions}
                         />
                     );
                 })}
@@ -106,6 +106,7 @@ function PostComment({
     likesCount,
     accessToken,
     isLikedByCurrentUser,
+    permissions,
 }) {
     const [favoriteToggle, setFavoriteToggle] = useState(isLikedByCurrentUser);
 
@@ -154,13 +155,15 @@ function PostComment({
                     </button>
                     <p className="text-xs font-medium">{likesCount}</p>
                 </div>
-                <PostActionsMenu
-                    onDelete={(e) => handleDelete()}
-                    onEdit={(e) => console.log("edit")}
-                    remove="comment"
-                    icon="more_vert"
-                    size="text-lg"
-                />
+                {permissions?.canDelete && (
+                    <PostActionsMenu
+                        onDelete={(e) => handleDelete()}
+                        onEdit={(e) => console.log("edit")}
+                        remove="comment"
+                        icon="more_vert"
+                        size="text-lg"
+                    />
+                )}
             </div>
         </div>
     );
