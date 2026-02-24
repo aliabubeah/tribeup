@@ -7,6 +7,7 @@ import { getCleanImageUrl } from "../../services/http";
 
 function CreatePost() {
     const { user } = useAuth();
+    const username = user.userName;
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
 
@@ -17,7 +18,7 @@ function CreatePost() {
                     src={getCleanImageUrl(user.profilePicture)}
                     alt=""
                     className="h-9 w-9 cursor-pointer rounded-full"
-                    onClick={() => navigate("/profile")}
+                    onClick={() => navigate(username)}
                 />
                 <p
                     className="flex-1 cursor-pointer rounded-2xl bg-neutral-50 px-4 py-[10px] text-sm font-semibold text-neutral-500 hover:bg-neutral-100"

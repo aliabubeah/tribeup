@@ -172,3 +172,26 @@ export async function createPostAPI({
     }
     return data;
 }
+
+export async function deletePostCommentAPI(accessToken, commentId) {
+    const res = await fetch(
+        `${BASEURL}/api/Comment/${commentId}/DeleteComment`,
+        {
+            method: "delete",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        toast.error(data.message);
+        return handleApiError(data);
+    }
+    toast.success("deleted sucssefully");
+    return data;
+}

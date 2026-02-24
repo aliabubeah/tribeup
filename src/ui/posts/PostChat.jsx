@@ -11,6 +11,8 @@ import {
 } from "../../features/comments/commentsSlice";
 import { formatPostDate } from "../../utils/helper";
 import CommentSkeleton from "../Skeleton/CommentSkeleton";
+import PostActionsMenu from "./PostActionMenu";
+import { deletePostCommentAPI } from "../../services/posts";
 
 function PostChat({ postId }) {
     const observerRef = useRef(null);
@@ -29,8 +31,6 @@ function PostChat({ postId }) {
     const isInitialLoading = commentsState?.isInitialLoading;
 
     useEffect(() => {
-        console.log("called");
-        console.log(page);
         if (!hasMore || commentsState?.isFetchingMore) return;
         if (!loadMoreRef.current) return;
 
@@ -122,6 +122,10 @@ function PostComment({
         );
     }
 
+    function handleDelete() {
+        deletePostCommentAPI(accessToken, id);
+    }
+
     return (
         <div className="flex p-2">
             <div className="flex grow items-start gap-2">
@@ -140,14 +144,23 @@ function PostComment({
                 </div>
             </div>
 
-            <div className="flex flex-col items-center justify-center">
-                <button
-                    className={`icon-outlined ${favoriteToggle ? "icon-filled text-red-500 " : ""}`}
-                    onClick={handleToggle}
-                >
-                    favorite
-                </button>
-                <p className="text-xs font-medium">{likesCount}</p>
+            <div className="flex items-center">
+                <div className="flex flex-col items-center justify-center">
+                    <button
+                        className={`icon-outlined ${favoriteToggle ? "icon-filled text-red-500 " : ""}`}
+                        onClick={handleToggle}
+                    >
+                        favorite
+                    </button>
+                    <p className="text-xs font-medium">{likesCount}</p>
+                </div>
+                <PostActionsMenu
+                    onDelete={(e) => handleDelete()}
+                    onEdit={(e) => console.log("edit")}
+                    remove="comment"
+                    icon="more_vert"
+                    size="text-lg"
+                />
             </div>
         </div>
     );

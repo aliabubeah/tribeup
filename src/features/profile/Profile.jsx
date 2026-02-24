@@ -5,19 +5,20 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile } from "./profileSlice";
 import { getDateLabel } from "../../utils/helper";
+import { useParams } from "react-router-dom";
 
 function Profile() {
     const { accessToken, user } = useAuth();
+    const { username } = useParams();
+
     const dispatch = useDispatch();
     const { account, isLoading, error } = useSelector((state) => state.profile);
 
     useEffect(() => {
-        if (!account && accessToken) {
-            dispatch(
-                fetchUserProfile({ accessToken, userName: user.userName }),
-            );
-        }
-    }, [account, accessToken, dispatch]);
+        if (!accessToken || !username) return;
+
+        dispatch(fetchUserProfile({ accessToken, userName: username }));
+    }, [accessToken, dispatch, username]);
 
     if (isLoading) return <div>loading...</div>;
     if (error) return <div className="text-red-500">{error}</div>;

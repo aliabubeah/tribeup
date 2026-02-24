@@ -54,7 +54,9 @@ function ModalMediaImage({ src }) {
                     setIsPortrait(naturalHeight > naturalWidth);
                 }}
                 className={`h-full ${
-                    isPortrait ? "object-contain" : "w-full object-cover"
+                    isPortrait
+                        ? "object-contain"
+                        : "w-full object-contain md:object-cover"
                 }`}
                 alt="Post media"
             />

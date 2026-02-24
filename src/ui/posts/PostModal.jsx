@@ -25,7 +25,6 @@ function PostModal({ post, isOpen = false, onClose }) {
         if (!commentsState) {
             dispatch(fetchComments({ accessToken, postId: post.postId, page }));
         }
-        console.log(commentsState);
     }, [isOpen, post.postId, accessToken, dispatch]);
 
     return (
@@ -54,7 +53,7 @@ function PostModal({ post, isOpen = false, onClose }) {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="h-[75vh] w-full max-w-5xl overflow-y-auto bg-white shadow-xl lg:h-[80vh] rounded-xl">
+                            <Dialog.Panel className="h-[75vh] w-full max-w-5xl overflow-y-auto rounded-xl bg-white shadow-xl lg:h-[80vh]">
                                 <div
                                     className={`grid grid-cols-1 ${
                                         post.media.length === 0

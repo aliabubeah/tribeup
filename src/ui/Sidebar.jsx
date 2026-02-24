@@ -5,6 +5,7 @@ import { getCleanImageUrl } from "../services/http";
 
 function Sidebar() {
     const { user, logout, accessToken } = useAuth();
+    const username = user.userName;
     const navigate = useNavigate();
     function handleClick() {
         logoutAPI(accessToken);
@@ -39,7 +40,7 @@ function Sidebar() {
                 <SidebarItem to="/tribes" icon="groups" label="My tribes" />
                 <SidebarItem to="/settings" icon="settings" label="Settings" />
                 <SidebarItem
-                    to="/profile"
+                    to={`/${username}`}
                     icon="account_circle"
                     label="Profile"
                 />
