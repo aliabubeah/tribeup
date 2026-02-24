@@ -23,7 +23,7 @@ function PostMedia({ media, rounded = true }) {
             >
                 {media.map((item) => (
                     <SwiperSlide key={item.mediaURL}>
-                        {item.type === "image" ? (
+                        {item.type === "Image" ? (
                             <div className="swiper-zoom-container">
                                 <MediaItem media={item} />
                             </div>
