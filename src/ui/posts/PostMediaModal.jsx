@@ -26,9 +26,13 @@ function PostMediaModal({ media }) {
                         key={index}
                         className="flex h-full w-full items-center justify-center"
                     >
-                        <div className="swiper-zoom-container">
+                        {item.type === "image" ? (
+                            <div className="swiper-zoom-container">
+                                <ModalMediaItem media={item} />
+                            </div>
+                        ) : (
                             <ModalMediaItem media={item} />
-                        </div>
+                        )}
                     </SwiperSlide>
                 ))}
             </Swiper>
