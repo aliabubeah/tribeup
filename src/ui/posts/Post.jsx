@@ -20,6 +20,7 @@ function Post({ post }) {
                 groupName={post.groupName}
                 groupPicture={post.groupProfilePicture}
                 postPermissions={post.postPermissions}
+                isAuthor={post.isAuthor}
             />
 
             {post.media.length > 0 && <PostMedia media={post.media} />}
