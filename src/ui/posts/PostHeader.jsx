@@ -10,10 +10,10 @@ function PostHeader({
     groupName,
     postId,
     groupPicture,
-    groupPermissions,
+    postPermissions,
 }) {
     const { accessToken } = useAuth();
-
+    // console.log(postPermissions);
     function handleDelete() {
         deletePostAPI(postId, accessToken);
     }
@@ -32,12 +32,16 @@ function PostHeader({
                     </Link>
                 </div>
             </div>
-            {groupPermissions?.canDeletePost && (
+            <PostActionsMenu
+                onDelete={(e) => handleDelete()}
+                onEdit={(e) => console.log("edit")}
+            />
+            {/* {postPermissions?.canDeletePost && (
                 <PostActionsMenu
                     onDelete={(e) => handleDelete()}
                     onEdit={(e) => console.log("edit")}
                 />
-            )}
+            )} */}
         </div>
     );
 }

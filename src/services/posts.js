@@ -20,17 +20,8 @@ export async function feedAPI(accessToken, page = 1) {
     }
 
     if (!res.ok) {
-        console.error("Feed API error:", {
-            status: res.status,
-            statusText: res.statusText,
-            body: data,
-        });
-
-        throw new Error(
-            data?.message ||
-                data?.Message ||
-                `Request failed with status ${res.status}`,
-        );
+        console.log(handleApiError(data));
+        return handleApiError(data);
     }
 
     return data;
@@ -193,5 +184,34 @@ export async function deletePostCommentAPI(accessToken, commentId) {
         return handleApiError(data);
     }
     toast.success("deleted sucssefully");
+    return data;
+}
+
+export async function editCommentAPI(
+    accessToken,
+    commentId,
+    content,
+    taggedUserIds = [],
+) {
+    const res = await fetch(`${BASEURL}/api/Comment/${commentId}/EditComment`, {
+        method: "put",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            content,
+            taggedUserIds,
+        }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    console.log(data);
     return data;
 }

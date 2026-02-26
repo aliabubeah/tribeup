@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     addCommentAPI,
+    editCommentAPI,
     getPostCommentsAPI,
     likeCommentAPI,
 } from "../../services/posts";
@@ -56,6 +57,26 @@ export const likeComment = createAsyncThunk(
             const likeComment = await likeCommentAPI(accessToken, commentId);
 
             return { postId, commentId };
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    },
+);
+
+export const editComment = createAsyncThunk(
+    "comments/editComment",
+    async (
+        { accessToken, postId, commentId, content },
+        { rejectWithValue },
+    ) => {
+        try {
+            const response = await editCommentAPI(
+                accessToken,
+                commentId,
+                content,
+            );
+
+            return { postId, comment: response.comment };
         } catch (err) {
             return rejectWithValue(err.message);
         }
@@ -178,6 +199,41 @@ const commentsSlice = createSlice({
                         (id) => id !== tempId,
                     );
                 }
+            })
+            // edit Comment
+            .addCase(editComment.pending, (state, action) => {
+                const { postId, commentId } = action.meta.arg;
+                const postComments = state.byPostId[postId];
+                if (!postComments) return;
+
+                const comment = postComments.entities[commentId];
+                if (!comment) return;
+
+                comment.isEditing = true;
+            })
+
+            .addCase(editComment.fulfilled, (state, action) => {
+                const { postId, comment } = action.payload;
+                const postComments = state.byPostId[postId];
+                if (!postComments) return;
+
+                postComments.entities[comment.id] = {
+                    ...postComments.entities[comment.id],
+                    ...comment,
+                    isEditing: false,
+                };
+            })
+
+            .addCase(editComment.rejected, (state, action) => {
+                const { postId, commentId } = action.meta.arg;
+                const postComments = state.byPostId[postId];
+                if (!postComments) return;
+
+                const comment = postComments.entities[commentId];
+                if (!comment) return;
+
+                comment.isEditing = false;
+                postComments.error = action.payload;
             });
     },
 });

@@ -19,7 +19,7 @@ function Post({ post }) {
                 userName={post.username}
                 groupName={post.groupName}
                 groupPicture={post.groupProfilePicture}
-                groupPermissions={post.groupPermissions}
+                postPermissions={post.postPermissions}
             />
 
             {post.media.length > 0 && <PostMedia media={post.media} />}

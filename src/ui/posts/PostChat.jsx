@@ -5,6 +5,7 @@ import { getCleanImageUrl } from "../../services/http";
 import { useAuth } from "../../contexts/AuthContext";
 import {
     addComment,
+    editComment,
     fetchComments,
     likeComment,
     likeCommentOptimistic,
@@ -109,7 +110,7 @@ function PostComment({
     permissions,
 }) {
     const [favoriteToggle, setFavoriteToggle] = useState(isLikedByCurrentUser);
-
+    const [isEdit, setIsEdit] = useState(false);
     function handleToggle() {
         console.log(id);
         dispatch(likeCommentOptimistic({ postId, commentId: id }));
@@ -127,7 +128,19 @@ function PostComment({
         deletePostCommentAPI(accessToken, id);
     }
 
-    return (
+    function handleEdit() {
+        setIsEdit(true);
+    }
+
+    return isEdit ? (
+        <EditComment
+            onEdit={setIsEdit}
+            content={content}
+            accessToken={accessToken}
+            postId={postId}
+            commentId={id}
+        />
+    ) : (
         <div className="flex p-2">
             <div className="flex grow items-start gap-2">
                 <img
@@ -158,7 +171,7 @@ function PostComment({
                 {permissions?.canDelete && (
                     <PostActionsMenu
                         onDelete={(e) => handleDelete()}
-                        onEdit={(e) => console.log("edit")}
+                        onEdit={(e) => handleEdit()}
                         remove="comment"
                         icon="more_vert"
                         size="text-lg"
@@ -201,6 +214,54 @@ function AddComment({ className, token, postId, userPic, userName }) {
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Type msg..."
                 className="grow rounded-3xl bg-neutral-100 p-2 outline-none placeholder:text-sm placeholder:font-normal placeholder:text-neutral-500"
+            />
+            <button
+                type="submit"
+                className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl hover:bg-neutral-200 active:bg-neutral-400"
+            >
+                send
+            </button>
+        </form>
+    );
+}
+
+function EditComment({ content, accessToken, postId, commentId, onEdit }) {
+    const [comment, setComment] = useState(content);
+    const { user } = useAuth();
+    console.log(user);
+    const dispatch = useDispatch();
+
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        if (!content.trim()) return;
+
+        dispatch(
+            editComment({
+                accessToken,
+                postId,
+                commentId,
+                content: comment,
+            }),
+        );
+
+        onEdit(false);
+    }
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className={`flex h-14 w-full gap-2 bg-white p-2`}
+        >
+            <img
+                src={getCleanImageUrl(user.profilePicture)}
+                className="h-9 w-9 rounded-full"
+            />
+            <input
+                defaultValue={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Type msg..."
+                className="min-w-0 grow rounded-3xl bg-neutral-100 p-2 outline-none placeholder:text-sm placeholder:font-normal placeholder:text-neutral-500"
             />
             <button
                 type="submit"

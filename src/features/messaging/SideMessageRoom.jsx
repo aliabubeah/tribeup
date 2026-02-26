@@ -7,6 +7,7 @@ import { fetchRoomMessages } from "./chatSlice";
 import MessageContent from "./messageRoom/MessageContent";
 import { getConnection } from "../../services/siganlR";
 import { getDateLabel } from "../../utils/helper";
+import { getCleanImageUrl } from "../../services/http";
 
 function SideMessageRoom({ onChatRoom, onClose }) {
     const { accessToken } = useAuth();
@@ -132,7 +133,9 @@ function SideMessageRoom({ onChatRoom, onClose }) {
                 onChatRoom={onChatRoom}
                 onClose={onClose}
                 groupName={room.messages[0].groupName}
-                groupPic={room.messages[0].groupProfilePicture}
+                groupPic={getCleanImageUrl(
+                    room.messages[0].groupProfilePicture,
+                )}
             />
 
             {/* Messages */}

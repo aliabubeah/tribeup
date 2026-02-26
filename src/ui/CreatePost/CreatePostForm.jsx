@@ -61,7 +61,7 @@ function CreatePostForm({ onClose }) {
             </select>
 
             <textarea
-                className="input min-h-[120px] rounded-lg bg-neutral-50"
+                className="input min-h-[50px] rounded-lg bg-neutral-50"
                 placeholder="What's on your mind?"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
