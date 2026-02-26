@@ -15,7 +15,7 @@ function CreatePostModal({ isOpen, onClose }) {
                 <div className="fixed inset-0 bg-black/40" />
 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <Dialog.Panel className="flex w-[800px] flex-col gap-4 rounded-xl bg-white shadow-2xl">
+                    <Dialog.Panel className="flex max-h-screen w-[800px] flex-col gap-4 rounded-xl bg-white shadow-2xl">
                         {/* Header */}
                         <div className="flex items-center border-b px-6 py-4">
                             <span
