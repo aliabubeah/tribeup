@@ -83,18 +83,20 @@ export async function getPostCommentsAPI(accessToken, postId, page, size = 20) {
 }
 
 export async function addCommentAPI(accessToken, postId, content) {
+    const formData = new FormData();
+    formData.append("Content", content);
+    // formData.append("TaggedUserIds", "");
+
     const res = await fetch(`${BASEURL}/api/Comment/${postId}/AddComment`, {
-        method: "post",
+        method: "POST",
         headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            content,
-        }),
+        body: formData,
     });
 
     const data = await res.json();
+
     if (!res.ok) {
         console.log(handleApiError(data));
         return handleApiError(data);
@@ -102,7 +104,6 @@ export async function addCommentAPI(accessToken, postId, content) {
 
     return data;
 }
-
 export async function likeCommentAPI(accessToken, commentId) {
     const res = await fetch(
         `${BASEURL}/api/Comment/${commentId}/CommentToggleLike`,

@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     addCommentAPI,
+    deletePostCommentAPI,
     editCommentAPI,
     getPostCommentsAPI,
     likeCommentAPI,
 } from "../../services/posts";
-// import { useAuth } from "../../contexts/AuthContext";
-import avatar from "../../assets/avatar.jpeg";
 
 const initialState = {
     byPostId: {},
@@ -32,18 +31,18 @@ export const fetchComments = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
     "comments/addComment",
-    async (
-        { accessToken, postId, content, userPic, userName },
-        { rejectWithValue },
-    ) => {
+    async ({ accessToken, postId, content }, { rejectWithValue }) => {
         try {
-            const newComment = await addCommentAPI(
-                accessToken,
-                postId,
-                content,
-            );
+            const res = await addCommentAPI(accessToken, postId, content);
 
-            return { postId, comment: newComment };
+            if (!res.comment) {
+                return rejectWithValue(res.message || "Failed");
+            }
+
+            return {
+                postId,
+                comment: res.comment,
+            };
         } catch (err) {
             return rejectWithValue(err.message);
         }
@@ -83,6 +82,18 @@ export const editComment = createAsyncThunk(
     },
 );
 
+export const deleteComment = createAsyncThunk(
+    "comments/deleteComment",
+    async ({ accessToken, postId, commentId }, { rejectWithValue }) => {
+        try {
+            await deletePostCommentAPI(accessToken, commentId);
+            return { postId, commentId };
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    },
+);
+
 const commentsSlice = createSlice({
     name: "comments",
     initialState,
@@ -90,24 +101,6 @@ const commentsSlice = createSlice({
         resetComments(state, action) {
             const postId = action.payload;
             delete state.byPostId[postId];
-        },
-
-        likeCommentOptimistic(state, action) {
-            const { postId, commentId } = action.payload;
-
-            const postComments = state.byPostId[postId];
-            if (!postComments) return;
-
-            const comment = postComments.entities[commentId];
-            if (!comment) return;
-
-            if (comment.isLikedByCurrentUser) {
-                comment.likesCount -= 1;
-                comment.isLikedByCurrentUser = false;
-            } else {
-                comment.likesCount += 1;
-                comment.isLikedByCurrentUser = true;
-            }
         },
     },
     extraReducers: (builder) => {
@@ -163,42 +156,26 @@ const commentsSlice = createSlice({
                 state.byPostId[postId].error = action.payload;
             })
             // addComment
-            .addCase(addComment.pending, (state, action) => {
-                const { postId, content, userPic, userName } = action.meta.arg;
+            .addCase(addComment.fulfilled, (state, action) => {
+                const { postId, comment } = action.payload;
 
                 const postComments = state.byPostId[postId];
                 if (!postComments) return;
 
-                const tempId = "local-" + Date.now();
+                if (!postComments.entities[comment.id]) {
+                    postComments.ids.unshift(comment.id);
+                }
 
-                const tempComment = {
-                    id: tempId,
-                    content,
-                    createdAt: new Date().toISOString(),
-                    username: userName,
-                    profilePicture: userPic,
-                    likesCount: 0,
-                };
-
-                postComments.ids.unshift(tempId);
-                postComments.entities[tempId] = tempComment;
+                postComments.entities[comment.id] = comment;
             })
 
             .addCase(addComment.rejected, (state, action) => {
                 const { postId } = action.meta.arg;
                 const postComments = state.byPostId[postId];
+
                 if (!postComments) return;
 
-                const tempId = postComments.ids.find((id) =>
-                    id.startsWith("local-"),
-                );
-
-                if (tempId) {
-                    delete postComments.entities[tempId];
-                    postComments.ids = postComments.ids.filter(
-                        (id) => id !== tempId,
-                    );
-                }
+                postComments.error = action.payload;
             })
             // edit Comment
             .addCase(editComment.pending, (state, action) => {
@@ -234,6 +211,29 @@ const commentsSlice = createSlice({
 
                 comment.isEditing = false;
                 postComments.error = action.payload;
+            })
+            // delete comment
+            .addCase(deleteComment.pending, (state, action) => {
+                const { postId, commentId } = action.meta.arg;
+
+                const postComments = state.byPostId[postId];
+                if (!postComments) return;
+
+                delete postComments.entities[commentId];
+                postComments.ids = postComments.ids.filter(
+                    (id) => id !== commentId,
+                );
+            })
+            .addCase(deleteComment.fulfilled, () => {})
+
+            .addCase(deleteComment.rejected, (state, action) => {
+                const { postId } = action.meta.arg;
+                const postComments = state.byPostId[postId];
+
+                if (!postComments) return;
+
+                postComments.hasMore = true;
+                postComments.page = 1;
             });
     },
 });

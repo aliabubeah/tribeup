@@ -5,6 +5,7 @@ import { getCleanImageUrl } from "../../services/http";
 import { useAuth } from "../../contexts/AuthContext";
 import {
     addComment,
+    deleteComment,
     editComment,
     fetchComments,
     likeComment,
@@ -124,8 +125,14 @@ function PostComment({
         );
     }
 
-    function handleDelete() {
-        deletePostCommentAPI(accessToken, id);
+    async function handleDelete() {
+        const result = await dispatch(
+            deleteComment({ accessToken, postId, commentId: id }),
+        );
+
+        if (deleteComment.rejected.match(result)) {
+            dispatch(fetchComments({ accessToken, postId, page: 1 }));
+        }
     }
 
     function handleEdit() {
@@ -182,26 +189,26 @@ function PostComment({
     );
 }
 
-function AddComment({ className, token, postId, userPic, userName }) {
+function AddComment({ className, token, postId }) {
     const [content, setContent] = useState("");
     const dispatch = useDispatch();
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
         if (!content.trim()) return;
 
-        dispatch(
+        const result = await dispatch(
             addComment({
                 accessToken: token,
                 postId,
                 content,
-                userPic,
-                userName,
             }),
         );
 
-        setContent("");
+        if (addComment.fulfilled.match(result)) {
+            setContent("");
+        }
     }
 
     return (
