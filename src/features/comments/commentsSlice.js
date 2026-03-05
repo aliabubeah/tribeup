@@ -102,6 +102,23 @@ const commentsSlice = createSlice({
             const postId = action.payload;
             delete state.byPostId[postId];
         },
+        likeCommentOptimistic(state, action) {
+            const { postId, commentId } = action.payload;
+
+            const postComments = state.byPostId[postId];
+            if (!postComments) return;
+
+            const comment = postComments.entities[commentId];
+            if (!comment) return;
+
+            if (comment.isLikedByCurrentUser) {
+                comment.likesCount -= 1;
+                comment.isLikedByCurrentUser = false;
+            } else {
+                comment.likesCount += 1;
+                comment.isLikedByCurrentUser = true;
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
