@@ -10,6 +10,7 @@ import {
     clearAccessToken,
     setAccessToken as setHttpToken,
 } from "../services/http";
+import store from "../store/store";
 
 const AuthContext = createContext();
 
@@ -65,6 +66,8 @@ function AuthProvider({ children }) {
 
         localStorage.setItem("refreshToken", response.refreshToken);
 
+        store.dispatch({ type: "RESET_APP" });
+
         dispatch({
             type: "authenticate",
             payload: response,
@@ -72,6 +75,7 @@ function AuthProvider({ children }) {
     }
 
     function logout() {
+        store.dispatch({ type: "RESET_APP" });
         dispatch({ type: "logout" });
     }
 

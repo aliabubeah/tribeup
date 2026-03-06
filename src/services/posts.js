@@ -105,7 +105,6 @@ export async function addCommentAPI(accessToken, postId, content) {
     return data;
 }
 
-// /api/Comment/{commentId}/CommentToggleLike
 export async function likeCommentAPI(accessToken, commentId) {
     const res = await fetch(
         `${BASEURL}/api/Comment/${commentId}/CommentToggleLike`,

@@ -2,6 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../../contexts/AuthContext";
 import { formatTimeOnly } from "../../../utils/helper";
 import { getCleanImageUrl } from "../../../services/http";
+import { Link } from "react-router-dom";
 
 function MessageContent({
     content,
@@ -36,11 +37,13 @@ function MessageContent({
             ) : (
                 <div className={`${spacingClass} flex gap-2`}>
                     {showAvatar && (
-                        <img
-                            src={getCleanImageUrl(senderProfilePic)}
-                            alt=""
-                            className="h-9 w-9 rounded-full"
-                        />
+                        <Link to={`${senderName}`}>
+                            <img
+                                src={getCleanImageUrl(senderProfilePic)}
+                                alt=""
+                                className="h-9 w-9 rounded-full"
+                            />
+                        </Link>
                     )}
                     <div className="flex flex-col">
                         {showAvatar && (

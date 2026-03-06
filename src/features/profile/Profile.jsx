@@ -36,7 +36,7 @@ function Profile() {
         isOwnProfile,
     } = account;
 
-    const displayBio = bio || "You don't have bio yet.";
+    const displayBio = bio;
 
     return (
         <div className="px-3 py-4">

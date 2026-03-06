@@ -15,6 +15,7 @@ import { formatPostDate } from "../../utils/helper";
 import CommentSkeleton from "../Skeleton/CommentSkeleton";
 import PostActionsMenu from "./PostActionMenu";
 import { deletePostCommentAPI } from "../../services/posts";
+import { Link } from "react-router-dom";
 
 function PostChat({ postId }) {
     const observerRef = useRef(null);
@@ -150,11 +151,13 @@ function PostComment({
     ) : (
         <div className="flex p-2">
             <div className="flex grow items-start gap-2">
-                <img
-                    src={getCleanImageUrl(profilePicture)}
-                    alt=""
-                    className="h-9 w-9 rounded-full"
-                />
+                <Link to={`/${userName}`}>
+                    <img
+                        src={getCleanImageUrl(profilePicture)}
+                        alt=""
+                        className="h-9 w-9 rounded-full"
+                    />
+                </Link>
 
                 <div className="text-left">
                     <h1 className="text-sm font-semibold">{userName}</h1>
@@ -168,7 +171,7 @@ function PostComment({
             <div className="flex items-center">
                 <div className="flex flex-col items-center justify-center">
                     <button
-                        className={`icon-outlined ${favoriteToggle ? "icon-filled text-red-500 " : ""}`}
+                        className={`icon-outlined ${favoriteToggle ? "icon-filled text-red-500 " : ""} transition-all duration-150 ease-in-out`}
                         onClick={handleToggle}
                     >
                         favorite

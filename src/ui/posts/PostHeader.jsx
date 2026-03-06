@@ -27,7 +27,7 @@ function PostHeader({
                     src={getCleanImageUrl(groupPicture)}
                     className="h-12 w-12 rounded-full"
                 />
-                <div className="flex flex-col">
+                <div className="flex flex-col text-start ">
                     <h1 className="font-semibold">{groupName}</h1>
                     <Link to={userName} className="text-sm text-neutral-700">
                         from {userName}

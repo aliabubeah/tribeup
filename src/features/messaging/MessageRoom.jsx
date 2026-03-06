@@ -166,7 +166,7 @@ function MessageRoom({ onChatRoom, onClose }) {
                             {/* Date Separator */}
                             {isFirstMessageOfDay && (
                                 <div className="my-3 flex justify-center">
-                                    <span className="rounded-full px-3 py-1 text-xs font-semibold text-neutral-900">
+                                    <span className="rounded-full px-3 py-1 text-xs font-semibold text-neutral-900 bg-neutral-100">
                                         {getDateLabel(msg.sentAt)}
                                     </span>
                                 </div>

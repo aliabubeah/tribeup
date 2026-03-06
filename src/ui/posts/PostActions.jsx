@@ -46,7 +46,7 @@ function PostActions({
                 <div className="flex items-center gap-2">
                     <button className="flex items-center gap-1">
                         <span
-                            className={`icon-outlined text-xl transition-all duration-[.05s] ${favoriteToggle ? "icon-filled text-red-500 " : ""}`}
+                            className={`icon-outlined text-xl transition-all duration-150 ${favoriteToggle ? "icon-filled text-red-500 " : ""}`}
                             onClick={handleToggle}
                         >
                             favorite
