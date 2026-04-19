@@ -217,3 +217,27 @@ export async function editCommentAPI(
     console.log(data);
     return data;
 }
+
+export async function personalFeedAPI({
+    userName = "AliMohamed",
+    page = 1,
+    accessToken,
+}) {
+    const res = await fetch(
+        `${BASEURL}/api/Posts/PersonalFeed?username=${userName}&page=${page}&pageSize=20`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+    // console.log(data);
+    return data;
+}

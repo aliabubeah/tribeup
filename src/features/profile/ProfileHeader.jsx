@@ -1,0 +1,80 @@
+import { useSelector } from "react-redux";
+import { getCleanImageUrl } from "../../services/http";
+import SecondaryButton from "../../ui/Buttons/SecondaryButton";
+import { getDateLabel } from "../../utils/helper";
+
+function ProfileHeader() {
+    const { account } = useSelector((state) => state.profile);
+
+    const {
+        fullName,
+        userName,
+        bio,
+        createdAt,
+        profilePicture,
+        coverPicture,
+        tribesCount,
+        postsCount,
+        isOwnProfile,
+    } = account;
+
+    const displayBio = bio;
+    return (
+        <div className="flex flex-col rounded-lg bg-white">
+            <div className="relative rounded-t-lg bg-neutral-200">
+                <div>
+                    <img
+                        src={getCleanImageUrl(coverPicture)}
+                        className="h-44 w-full rounded-t-lg object-cover"
+                    />
+                </div>
+                <div className="absolute -bottom-6 left-6 flex">
+                    <img
+                        src={getCleanImageUrl(profilePicture)}
+                        className="h-24 w-24 rounded-full"
+                    />
+                </div>
+            </div>
+
+            <div className="relative flex flex-col gap-4 p-6 pt-12">
+                <div>
+                    <h1 className="font-semibold">{fullName}</h1>
+                    <p className="text-neutral-500">@{userName}</p>
+                    <p className="mt-2 text-sm font-normal">{displayBio}</p>
+                </div>
+
+                <p className="flex gap-2 text-sm font-normal text-neutral-700">
+                    <span className="icon-outlined">calendar_today</span>
+                    {getDateLabel(createdAt)}
+                </p>
+
+                <div className="flex items-center justify-between border-t pt-2">
+                    <div className="flex gap-6">
+                        <p className="text-neutral-700">
+                            <span className="mr-1 font-bold text-neutral-950">
+                                {tribesCount}
+                            </span>{" "}
+                            Tribes
+                        </p>
+                        <p className="text-neutral-700">
+                            <span className="mr-1 font-bold text-neutral-950">
+                                {postsCount}
+                            </span>{" "}
+                            Posts
+                        </p>
+                    </div>
+                    {isOwnProfile && (
+                        <SecondaryButton
+                            to="/settings/account"
+                            className="px-6 py-4"
+                        >
+                            Edit profile
+                        </SecondaryButton>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default ProfileHeader;

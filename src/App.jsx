@@ -1,3 +1,6 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+
 import Login, { action as loginAction } from "./features/auth/Login";
 import Register, { action as registerAction } from "./features/auth/Register";
 import ResetPassword, {
@@ -7,7 +10,6 @@ import ChangePassword, {
     action as changePasswordAction,
 } from "./features/auth/ChangePassword";
 import ForgetPassword from "./features/auth/ForgetPassword";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Feed from "./features/feed/Feed";
 import AppLayout from "./ui/AppLayout";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -20,7 +22,6 @@ import Privacy from "./features/settings/Privacy";
 import Avatar from "./features/settings/Avatar";
 import About from "./features/settings/About";
 import AuthLayout from "./features/auth/AuthLayout";
-import { Toaster } from "react-hot-toast";
 import Mesaage from "./features/messaging/Mesaage";
 import Tribes from "./features/tribes/Tribes";
 import Notifications from "./features/notification/Notifications";
