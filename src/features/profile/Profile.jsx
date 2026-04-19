@@ -1,10 +1,7 @@
 import { useAuth } from "../../contexts/AuthContext";
-// import { getCleanImageUrl } from "../../services/http";
-import SecondaryButton from "../../ui/Buttons/SecondaryButton";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile } from "./profileSlice";
-// import { getDateLabel } from "../../utils/helper";
 import { useParams } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { personalFeedAPI } from "../../services/posts";
@@ -12,16 +9,21 @@ import ProfileHeader from "./ProfileHeader";
 import ProfilePosts from "./ProfilePosts";
 
 function Profile() {
+    const dispatch = useDispatch();
     const { accessToken } = useAuth();
     const { username } = useParams();
-    const dispatch = useDispatch();
+    console.log(username);
     const { account, isLoading, error } = useSelector((state) => state.profile);
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
         useInfiniteQuery({
             queryKey: ["personalPosts", username, accessToken],
             queryFn: ({ pageParam = 1 }) =>
-                personalFeedAPI({ username, page: pageParam, accessToken }),
+                personalFeedAPI({
+                    userName: username,
+                    page: pageParam,
+                    accessToken,
+                }),
 
             initialPageParam: 1,
 

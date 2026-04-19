@@ -218,11 +218,7 @@ export async function editCommentAPI(
     return data;
 }
 
-export async function personalFeedAPI({
-    userName = "AliMohamed",
-    page = 1,
-    accessToken,
-}) {
+export async function personalFeedAPI({ userName, page = 1, accessToken }) {
     const res = await fetch(
         `${BASEURL}/api/Posts/PersonalFeed?username=${userName}&page=${page}&pageSize=20`,
         {
