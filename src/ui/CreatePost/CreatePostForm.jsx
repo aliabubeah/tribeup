@@ -6,14 +6,15 @@ import { createPostAPI } from "../../services/posts";
 
 function CreatePostForm({ onClose, id }) {
     const { accessToken } = useAuth();
+
     const [groups, setGroups] = useState(null);
     const [caption, setCaption] = useState("");
     const [files, setFiles] = useState([]);
     const [groupId, setGroupId] = useState(id ? String(id) : "");
     const [loading, setLoading] = useState(false);
     const [previewUrls, setPreviewUrls] = useState([]);
-    const isCaptionOrMedia = files.length > 0 || caption !== "";
 
+    const isCaptionOrMedia = files.length > 0 || caption !== "";
     const isDisabled = Boolean(id);
 
     async function handleSubmit() {
@@ -39,13 +40,18 @@ function CreatePostForm({ onClose, id }) {
 
     useEffect(() => {
         async function getGroups() {
-            const groups = await MyGroupsAPI(accessToken);
-            setGroups(groups);
-            if (!id && groups?.length > 0) {
-                setGroupId(String(groups[0].id));
+            const res = await MyGroupsAPI(accessToken);
+            setGroups(res);
+
+            // Only set default if not coming from tribe page
+            if (!id && res?.items?.length > 0) {
+                setGroupId(String(res.items[0].id));
             }
         }
-        getGroups();
+
+        if (accessToken) {
+            getGroups();
+        }
     }, [accessToken, id]);
 
     useEffect(() => {
@@ -56,19 +62,25 @@ function CreatePostForm({ onClose, id }) {
 
     return (
         <div className="flex flex-col gap-4">
+            {/* Select Group */}
             <select
                 disabled={isDisabled}
                 className="input rounded-lg bg-neutral-50"
                 value={groupId}
                 onChange={(e) => setGroupId(e.target.value)}
             >
-                {groups?.map((group) => (
-                    <option key={group.id} value={group.id}>
+                <option value="" disabled>
+                    Select a group
+                </option>
+
+                {groups?.items?.map((group) => (
+                    <option key={group.id} value={String(group.id)}>
                         {group.groupName}
                     </option>
                 ))}
             </select>
 
+            {/* Caption */}
             <textarea
                 className="input max-h-[120px] min-h-[50px] resize-none overflow-y-auto rounded-lg bg-neutral-50"
                 placeholder="What's on your mind?"
@@ -77,9 +89,14 @@ function CreatePostForm({ onClose, id }) {
                     setCaption(e.target.value);
 
                     e.target.style.height = "auto";
-                    e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+                    e.target.style.height = `${Math.min(
+                        e.target.scrollHeight,
+                        120,
+                    )}px`;
                 }}
             />
+
+            {/* Media Preview */}
             {previewUrls.length > 0 && (
                 <MediaGrid
                     images={previewUrls}
@@ -94,6 +111,7 @@ function CreatePostForm({ onClose, id }) {
                 />
             )}
 
+            {/* Upload */}
             <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border bg-neutral-50 px-2 py-1 text-sm font-medium hover:bg-neutral-100">
                 <span className="icon-outlined text-xl">
                     add_photo_alternate
@@ -105,26 +123,22 @@ function CreatePostForm({ onClose, id }) {
                     hidden
                     onChange={(e) => {
                         const selectedFiles = Array.from(e.target.files);
-
                         if (!selectedFiles.length) return;
 
-                        // Append files
-                        setFiles((prev) => [...(prev || []), ...selectedFiles]);
+                        setFiles((prev) => [...prev, ...selectedFiles]);
 
-                        // Create URLs
                         const newUrls = selectedFiles.map((file) =>
                             URL.createObjectURL(file),
                         );
 
-                        // Append URLs (THIS was your bug)
                         setPreviewUrls((prev) => [...prev, ...newUrls]);
 
-                        // Reset input so same file can be selected again
                         e.target.value = null;
                     }}
                 />
             </label>
 
+            {/* Submit */}
             <MainButton
                 onClick={handleSubmit}
                 disabled={!groupId || loading || !isCaptionOrMedia}
