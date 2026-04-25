@@ -5,15 +5,16 @@ import CreatePostModal from "./CreatePostModal";
 import { useAuth } from "../../contexts/AuthContext";
 import { getCleanImageUrl } from "../../services/http";
 
-function CreatePost() {
+function CreatePost({ className, id }) {
     const { user } = useAuth();
     const username = user.userName;
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
-
     return (
         <>
-            <div className="mb-6 flex h-[72px] items-center gap-2 rounded-xl bg-white px-3 py-4">
+            <div
+                className={`mb-6 flex h-[72px] items-center gap-2 rounded-xl bg-white px-3 py-4 ${className}`}
+            >
                 <img
                     src={getCleanImageUrl(user.profilePicture)}
                     alt=""
@@ -30,7 +31,11 @@ function CreatePost() {
                     add_photo_alternate
                 </button>
             </div>
-            <CreatePostModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+            <CreatePostModal
+                isOpen={isOpen}
+                onClose={() => setIsOpen(false)}
+                id={id}
+            />
         </>
     );
 }

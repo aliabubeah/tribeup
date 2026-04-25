@@ -8,7 +8,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-function CreatePostModal({ isOpen, onClose }) {
+function CreatePostModal({ isOpen, onClose, id }) {
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -51,7 +51,7 @@ function CreatePostModal({ isOpen, onClose }) {
 
                             <Tab.Panels>
                                 <Tab.Panel>
-                                    <CreatePostForm onClose={onClose} />
+                                    <CreatePostForm onClose={onClose} id={id} />
                                 </Tab.Panel>
 
                                 <Tab.Panel>

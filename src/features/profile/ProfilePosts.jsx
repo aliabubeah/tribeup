@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import Post from "../../ui/posts/Post";
-
+import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton";
 function ProfilePosts({
     posts,
     fetchNextPage,
@@ -20,7 +20,7 @@ function ProfilePosts({
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     if (status === "pending") {
-        return <div>Loading posts...</div>;
+        return <PostCardSkeleton />;
     }
 
     if (!posts.length) {
@@ -41,9 +41,7 @@ function ProfilePosts({
                 return <Post key={post.postId} post={post} />;
             })}
 
-            {isFetchingNextPage && (
-                <div className="py-4 text-center">Loading more...</div>
-            )}
+            {isFetchingNextPage && <PostCardSkeleton />}
         </div>
     );
 }

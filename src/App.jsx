@@ -27,6 +27,8 @@ import Tribes from "./features/tribes/Tribes";
 import Notifications from "./features/notification/Notifications";
 import Search from "./features/search/Search";
 import FullScreenLayout from "./ui/FullScreenLayout";
+import { MyGroupsAPI } from "./services/groups";
+import Tribe from "./features/tribes/Tribe";
 
 const router = createBrowserRouter([
     {
@@ -54,6 +56,10 @@ const router = createBrowserRouter([
             {
                 path: "tribes",
                 element: <Tribes />,
+            },
+            {
+                path: "tribes/:tribeId",
+                element: <Tribe />,
             },
             {
                 path: "notifications",

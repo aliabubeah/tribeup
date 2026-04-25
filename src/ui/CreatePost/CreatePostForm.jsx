@@ -4,15 +4,18 @@ import { MyGroupsAPI } from "../../services/groups";
 import { useAuth } from "../../contexts/AuthContext";
 import { createPostAPI } from "../../services/posts";
 
-function CreatePostForm({ onClose }) {
+function CreatePostForm({ onClose, id }) {
     const { accessToken } = useAuth();
     const [groups, setGroups] = useState(null);
     const [caption, setCaption] = useState("");
     const [files, setFiles] = useState([]);
-    const [groupId, setGroupId] = useState("select a group");
+    const [groupId, setGroupId] = useState(id ? String(id) : "");
     const [loading, setLoading] = useState(false);
     const [previewUrls, setPreviewUrls] = useState([]);
     const isCaptionOrMedia = files.length > 0 || caption !== "";
+
+    const isDisabled = Boolean(id);
+    console.log(id);
 
     async function handleSubmit() {
         try {
@@ -39,13 +42,13 @@ function CreatePostForm({ onClose }) {
         async function getGroups() {
             const groups = await MyGroupsAPI(accessToken);
             setGroups(groups);
-            if (groups?.length > 0) {
-                setGroupId(String(groups[0].id)); // default first group
+            if (!id && groups?.length > 0) {
+                setGroupId(String(groups[0].id));
             }
             console.log(groups);
         }
         getGroups();
-    }, [accessToken]);
+    }, [accessToken, id]);
 
     useEffect(() => {
         return () => {
@@ -56,6 +59,7 @@ function CreatePostForm({ onClose }) {
     return (
         <div className="flex flex-col gap-4">
             <select
+                disabled={isDisabled}
                 className="input rounded-lg bg-neutral-50"
                 value={groupId}
                 onChange={(e) => setGroupId(e.target.value)}

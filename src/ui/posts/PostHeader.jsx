@@ -12,6 +12,7 @@ function PostHeader({
     groupPicture,
     postPermissions,
     isAuthor,
+    groupId,
 }) {
     const { accessToken } = useAuth();
     const canModerate = isAuthor || postPermissions?.canDelete;
@@ -27,9 +28,14 @@ function PostHeader({
                     src={getCleanImageUrl(groupPicture)}
                     className="h-12 w-12 rounded-full"
                 />
-                <div className="flex flex-col text-start ">
-                    <h1 className="font-semibold">{groupName}</h1>
-                    <Link to={userName} className="text-sm text-neutral-700">
+                <div className="flex flex-col text-start">
+                    <Link to={`/tribes/${groupId}`} className="font-semibold">
+                        {groupName}
+                    </Link>
+                    <Link
+                        to={`/${userName}`}
+                        className="text-sm text-neutral-700"
+                    >
                         from {userName}
                     </Link>
                 </div>

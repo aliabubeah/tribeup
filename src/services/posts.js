@@ -234,6 +234,23 @@ export async function personalFeedAPI({ userName, page = 1, accessToken }) {
         console.log(handleApiError(data));
         return handleApiError(data);
     }
-    // console.log(data);
+    return data;
+}
+
+export async function GroupFeedAPI({ accessToken, groupId, page }) {
+    const res = await fetch(
+        `${BASEURL}/api/Posts/${groupId}/GroupFeed?page=${page}&pageSize=20`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    const data = await res.json();
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
     return data;
 }

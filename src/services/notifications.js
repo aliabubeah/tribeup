@@ -6,7 +6,6 @@ export async function getNotificationsAPI({ accessToken, page = 1 }) {
         `${BASEURL}/api/Notification?pageNumber=${page}&pageSize=20`,
         {
             headers: {
-                "Content-Type": "application/json",
                 Authorization: `Bearer ${accessToken}`,
             },
         },
@@ -16,13 +15,14 @@ export async function getNotificationsAPI({ accessToken, page = 1 }) {
     if (!res.ok) {
         return handleApiError(data);
     }
+
     return data;
 }
 
 export async function sendNotificationAPI({ accessToken, id }) {
     const res = await fetch(`${BASEURL}/api/Notification/${id}/read`, {
+        method: "put",
         headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
         },
     });

@@ -16,6 +16,7 @@ function Post({ post }) {
         <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
             <PostHeader
                 postId={post.postId}
+                groupId={post.groupId}
                 userName={post.username}
                 groupName={post.groupName}
                 groupPicture={post.groupProfilePicture}
