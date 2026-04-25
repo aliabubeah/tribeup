@@ -11,7 +11,6 @@ function Post({ post }) {
         e.stopPropagation();
         navigate(`/posts/${post.postId}?focus=comments`);
     }
-    // console.log(post);
     return (
         <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
             <PostHeader

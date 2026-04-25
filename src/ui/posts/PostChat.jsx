@@ -114,7 +114,6 @@ function PostComment({
     const [favoriteToggle, setFavoriteToggle] = useState(isLikedByCurrentUser);
     const [isEdit, setIsEdit] = useState(false);
     function handleToggle() {
-        console.log(id);
         dispatch(likeCommentOptimistic({ postId, commentId: id }));
         setFavoriteToggle((e) => !e);
 
@@ -238,7 +237,6 @@ function AddComment({ className, token, postId }) {
 function EditComment({ content, accessToken, postId, commentId, onEdit }) {
     const [comment, setComment] = useState(content);
     const { user } = useAuth();
-    console.log(user);
     const dispatch = useDispatch();
 
     function handleSubmit(e) {

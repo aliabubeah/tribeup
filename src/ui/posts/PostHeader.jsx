@@ -16,7 +16,6 @@ function PostHeader({
 }) {
     const { accessToken } = useAuth();
     const canModerate = isAuthor || postPermissions?.canDelete;
-    // console.log(postPermissions);
     function handleDelete() {
         deletePostAPI(postId, accessToken);
     }

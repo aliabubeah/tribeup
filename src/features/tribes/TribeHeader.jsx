@@ -45,7 +45,7 @@ function TribeHeader({ tribe }) {
                         </SecondaryButton>
                     )} */}
                         <SecondaryButton className="px-6 py-4">
-                            Joined
+                            Following
                         </SecondaryButton>
                     </div>
                 </div>

@@ -50,7 +50,6 @@ function Notifications() {
     if (!notifications.length) {
         return <div className="py-4 text-center">No notifications yet</div>;
     }
-    console.log(notifications);
     return (
         <div>
             {notifications.map((notification) => (

@@ -37,7 +37,7 @@ function Sidebar() {
                 />
                 <SidebarItem to="/search" icon="search" label="Search" />
                 <SidebarItem to="/messages" icon="mail" label="Chat" />
-                <SidebarItem to="/tribes" icon="groups" label="My tribes" />
+                <SidebarItem to="/tribes" icon="groups" label="Tribes" />
                 <SidebarItem to="/settings" icon="settings" label="Settings" />
                 <SidebarItem
                     to={`/${username}`}

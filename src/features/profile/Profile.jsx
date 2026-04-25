@@ -7,12 +7,13 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { personalFeedAPI } from "../../services/posts";
 import ProfileHeader from "./ProfileHeader";
 import ProfilePosts from "./ProfilePosts";
+import HeaderSkeleton from "../../ui/Skeleton/HeaderSkeleton";
+import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton";
 
 function Profile() {
     const dispatch = useDispatch();
     const { accessToken } = useAuth();
     const { username } = useParams();
-    console.log(username);
     const { account, isLoading, error } = useSelector((state) => state.profile);
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -45,7 +46,13 @@ function Profile() {
         dispatch(fetchUserProfile({ accessToken, userName: username }));
     }, [accessToken, dispatch, username]);
 
-    if (isLoading) return <div>loading...</div>;
+    if (isLoading)
+        return (
+            <div>
+                <HeaderSkeleton />
+                <PostCardSkeleton />
+            </div>
+        );
     if (error) return <div className="text-red-500">{error}</div>;
     if (!account) return null;
 

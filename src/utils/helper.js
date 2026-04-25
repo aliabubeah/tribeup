@@ -1,5 +1,7 @@
 export function formatPostDate(isoString) {
-    const postDate = new Date(isoString);
+    const postDate = new Date(
+        isoString.endsWith("Z") ? isoString : isoString + "Z",
+    );
     const now = new Date();
 
     const diffMs = now - postDate;
@@ -13,22 +15,20 @@ export function formatPostDate(isoString) {
         hour12: true,
     });
 
-    // Just now / minutes ago
     if (diffMinutes < 60) {
         return diffMinutes <= 1 ? "Just now" : `${diffMinutes}m ago`;
     }
 
-    // Hours ago
     if (diffHours < 24) {
         return `${diffHours}h ago`;
     }
+
     if (diffDays === 1) return `Yesterday · ${time}`;
-    // Days ago (up to 6 days) + time
+
     if (diffDays < 7) {
         return `${diffDays}d ago · ${time}`;
     }
 
-    // Older than a week → full date + time
     const fullDate = postDate.toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
@@ -39,9 +39,10 @@ export function formatPostDate(isoString) {
 }
 
 export function getDateLabel(dateString, locale = navigator.language) {
-    const messageDate = new Date(dateString);
+    const safe = dateString.endsWith("Z") ? dateString : dateString + "Z";
+    const messageDate = new Date(safe);
 
-    // Normalize all dates to midnight (prevents timezone edge bugs)
+    // Normalize to local midnight
     const normalize = (date) => {
         const d = new Date(date);
         d.setHours(0, 0, 0, 0);
@@ -49,7 +50,8 @@ export function getDateLabel(dateString, locale = navigator.language) {
     };
 
     const today = normalize(new Date());
-    const yesterday = normalize(new Date(today));
+
+    const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
 
     const msgDate = normalize(messageDate);
@@ -62,14 +64,11 @@ export function getDateLabel(dateString, locale = navigator.language) {
         return "Yesterday";
     }
 
-    // Localized date formatting
-    const formatter = new Intl.DateTimeFormat(locale, {
+    return new Intl.DateTimeFormat(locale, {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
-    });
-
-    return formatter.format(messageDate);
+    }).format(messageDate);
 }
 
 export function groupMessagesByDate(messages) {

@@ -15,7 +15,6 @@ function CreatePostForm({ onClose, id }) {
     const isCaptionOrMedia = files.length > 0 || caption !== "";
 
     const isDisabled = Boolean(id);
-    console.log(id);
 
     async function handleSubmit() {
         try {
@@ -45,7 +44,6 @@ function CreatePostForm({ onClose, id }) {
             if (!id && groups?.length > 0) {
                 setGroupId(String(groups[0].id));
             }
-            console.log(groups);
         }
         getGroups();
     }, [accessToken, id]);
