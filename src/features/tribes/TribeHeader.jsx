@@ -44,9 +44,17 @@ function TribeHeader({ tribe }) {
                             Edit profile
                         </SecondaryButton>
                     )} */}
-                        <SecondaryButton className="px-6 py-4">
-                            Following
-                        </SecondaryButton>
+                        <div className="flex gap-1">
+                            <SecondaryButton
+                                to={"settings"}
+                                className="px-6 py-4"
+                            >
+                                Settings
+                            </SecondaryButton>
+                            <SecondaryButton className="px-6 py-4">
+                                Following
+                            </SecondaryButton>
+                        </div>
                     </div>
                 </div>
             </div>

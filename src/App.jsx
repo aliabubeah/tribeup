@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+    createBrowserRouter,
+    Navigate,
+    RouterProvider,
+} from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import Login, { action as loginAction } from "./features/auth/Login";
@@ -29,6 +33,10 @@ import Search from "./features/search/Search";
 import FullScreenLayout from "./ui/FullScreenLayout";
 import { MyGroupsAPI } from "./services/groups";
 import Tribe from "./features/tribes/Tribe";
+import TribeSettings from "./features/tribes/TribeSettings";
+import General from "./features/tribes/General";
+import Members from "./features/tribes/Members";
+import Followers from "./features/tribes/Followers";
 
 const router = createBrowserRouter([
     {
@@ -100,6 +108,16 @@ const router = createBrowserRouter([
                 element: <Settings />,
             },
             { path: "settings/account", element: <Account /> },
+            {
+                path: "/tribes/:tribeId/settings",
+                element: <TribeSettings />,
+                children: [
+                    { index: true, element: <Navigate to="general" replace /> },
+                    { path: "general", element: <General /> },
+                    { path: "members", element: <Members /> },
+                    { path: "followers", element: <Followers /> },
+                ],
+            },
         ],
     },
     {

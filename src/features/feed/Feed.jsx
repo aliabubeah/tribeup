@@ -15,7 +15,6 @@ function Feed() {
     const { accessToken } = useAuth();
     const { postId } = useParams();
     const navigate = useNavigate();
-
     const { ids, entities, hasMore, isLoading, page } = useSelector(
         (state) => state.feed,
     );

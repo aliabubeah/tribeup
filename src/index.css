@@ -4,7 +4,7 @@
 
 @layer components {
     .input {
-        @apply w-full rounded border-2 border-neutral-200 px-3 py-2 font-normal transition-all duration-300 placeholder:text-neutral-600 hover:bg-[#ccc] focus:border-tribe-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-600;
+        @apply w-full rounded border-2 border-neutral-200 px-3 py-2 font-normal transition-all duration-300 placeholder:text-neutral-600 hover:bg-neutral-50 focus:border-tribe-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-neutral-100 disabled:text-neutral-600;
     }
 }
 

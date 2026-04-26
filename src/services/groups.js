@@ -1,3 +1,4 @@
+import { data } from "autoprefixer";
 import { handleApiError } from "../utils/helper";
 import { BASEURL } from "./http";
 
@@ -90,3 +91,90 @@ export async function CreateGroupAPI({
     return data;
 }
 
+export async function groupMembersAPI({
+    accessToken,
+    tribeId,
+    page,
+    pageSize = 10,
+    search,
+}) {
+    const params = {
+        page,
+        pageSize,
+    };
+
+    if (search) params.search = search;
+
+    const queryParams = new URLSearchParams(params).toString();
+
+    const res = await fetch(
+        `${BASEURL}/api/GroupMembers/GroupMembers/${tribeId}?${queryParams}`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+    return data;
+}
+
+export async function promoteAdminAPI({ accessToken, tribeId, tribeMemberId }) {
+    const res = await fetch(
+        `${BASEURL}/api/GroupMembers/Promote/${tribeId}/User/${tribeMemberId}`,
+        {
+            method: "post",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+    }
+
+    return true;
+}
+
+export async function demoteAdminAPI({ accessToken, tribeId, tribeMemberId }) {
+    const res = await fetch(
+        `${BASEURL}/api/GroupMembers/Demote/${tribeId}/User/${tribeMemberId}`,
+        {
+            method: "post",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+    }
+
+    return true;
+}
+
+export async function kickAPI({ accessToken, tribeId, tribeMemberId }) {
+    const res = await fetch(
+        `${BASEURL}/api/GroupMembers/Kick/${tribeId}/User/${tribeMemberId}`,
+        {
+            method: "post",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+    }
+
+    return true;
+}

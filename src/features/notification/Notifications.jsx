@@ -29,7 +29,7 @@ function Notifications() {
 
             enabled: !!accessToken,
         });
-
+    
     const { ref, inView } = useInView({
         threshold: 0.5,
     });
