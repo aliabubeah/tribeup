@@ -16,7 +16,7 @@ function TribeSettings() {
     return (
         <div className="flex flex-col px-8 py-8">
             {/* <BackButton className="text-left" /> */}
-            <div className="flex rounded-xl rounded-b-none bg-neutral-100">
+            <div className="flex rounded-xl rounded-b-none bg-neutral-100 p-1">
                 {tabs.map((tab) => (
                     <NavLink
                         key={tab.name}

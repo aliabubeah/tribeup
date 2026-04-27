@@ -37,6 +37,9 @@ import TribeSettings from "./features/tribes/TribeSettings";
 import General from "./features/tribes/General";
 import Members from "./features/tribes/Members";
 import Followers from "./features/tribes/Followers";
+import DiscoverTribes from "./features/tribes/DiscoverTribes";
+import JoinedTribes from "./features/tribes/JoinedTribes";
+import { ConfirmProvider } from "./contexts/ConfirmContext";
 
 const router = createBrowserRouter([
     {
@@ -61,10 +64,6 @@ const router = createBrowserRouter([
                 element: <Profile />,
             },
 
-            {
-                path: "tribes",
-                element: <Tribes />,
-            },
             {
                 path: "tribes/:tribeId",
                 element: <Tribe />,
@@ -109,6 +108,15 @@ const router = createBrowserRouter([
             },
             { path: "settings/account", element: <Account /> },
             {
+                path: "tribes",
+                element: <Tribes />,
+                children: [
+                    { index: true, element: <Navigate to="joined" replace /> },
+                    { path: "joined", element: <JoinedTribes /> },
+                    { path: "discover", element: <DiscoverTribes /> },
+                ],
+            },
+            {
                 path: "/tribes/:tribeId/settings",
                 element: <TribeSettings />,
                 children: [
@@ -151,7 +159,9 @@ function App() {
     return (
         <>
             <AuthProvider>
-                <RouterProvider router={router} />
+                <ConfirmProvider>
+                    <RouterProvider router={router} />
+                </ConfirmProvider>
             </AuthProvider>
             <Toaster
                 position="bottom-right"

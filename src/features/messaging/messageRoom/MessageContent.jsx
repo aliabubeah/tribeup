@@ -15,11 +15,21 @@ function MessageContent({
 }) {
     const { accessToken } = useAuth();
     const spacingClass = isSameSenderAsPrev ? "mt-1" : "mt-3";
+
     const decoded = jwtDecode(accessToken);
     const userId =
         decoded[
             "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
         ];
+
+    // ✅ SAFE DATE HANDLING
+    let formattedTime = "";
+    if (sentAt) {
+        const d = new Date(sentAt);
+        if (!isNaN(d)) {
+            formattedTime = formatTimeOnly(d);
+        }
+    }
 
     return (
         <div className="flex flex-col">
@@ -29,9 +39,11 @@ function MessageContent({
                         <p className="w-fit max-w-56 break-words text-sm font-light">
                             {content}
                         </p>
-                        <p className="text-end text-[9px] text-neutral-100">
-                            {formatTimeOnly(sentAt)}
-                        </p>
+                        {formattedTime && (
+                            <p className="text-end text-[9px] text-neutral-100">
+                                {formattedTime}
+                            </p>
+                        )}
                     </div>
                 </div>
             ) : (
@@ -45,23 +57,28 @@ function MessageContent({
                             />
                         </Link>
                     )}
+
                     <div className="flex flex-col">
                         {showAvatar && (
                             <p className="text-[10px] font-medium text-neutral-700">
                                 {senderName}
                             </p>
                         )}
+
                         <div
-                            className={`${!showAvatar ? "ml-11" : ""} rounded-xl bg-neutral-500 px-2 py-1`}
+                            className={`${
+                                !showAvatar ? "ml-11" : ""
+                            } rounded-xl bg-neutral-500 px-2 py-1`}
                         >
-                            <p
-                                className={`w-fit max-w-56 break-words text-sm font-light`}
-                            >
+                            <p className="w-fit max-w-56 break-words text-sm font-light">
                                 {content}
                             </p>
-                            <p className="text-right text-[9px] text-neutral-100">
-                                {formatTimeOnly(sentAt)}
-                            </p>
+
+                            {formattedTime && (
+                                <p className="text-right text-[9px] text-neutral-100">
+                                    {formattedTime}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>

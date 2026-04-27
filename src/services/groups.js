@@ -2,13 +2,16 @@ import { data } from "autoprefixer";
 import { handleApiError } from "../utils/helper";
 import { BASEURL } from "./http";
 
-export async function MyGroupsAPI(accessToken) {
-    const res = await fetch(`${BASEURL}/api/Groups/MyGroups`, {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+export async function MyGroupsAPI({ accessToken, page = 1 }) {
+    const res = await fetch(
+        `${BASEURL}/api/Groups/MyGroups?page=${page}&pageSize=10`,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+            },
         },
-    });
+    );
     const data = await res.json();
 
     if (!res.ok) {
@@ -177,4 +180,55 @@ export async function kickAPI({ accessToken, tribeId, tribeMemberId }) {
     }
 
     return true;
+}
+
+export async function leaveAPI({ accessToken, tribeId }) {
+    const res = await fetch(
+        `${BASEURL}/api/GroupMembers/LeaveGroup/${tribeId}`,
+        {
+            method: "post",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+    }
+
+    return true;
+}
+
+export async function getFollowersAPI({
+    accessToken,
+    groupId,
+    page,
+    pageSize = 10,
+    searchTerm,
+}) {
+    const params = {
+        groupId,
+        page,
+        pageSize,
+    };
+
+    if (searchTerm) params.searchTerm = searchTerm;
+
+    const queryParams = new URLSearchParams(params).toString();
+    const res = await fetch(
+        `${BASEURL}/api/groups/${groupId}/GetFollowers?${queryParams}`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+    return data;
 }

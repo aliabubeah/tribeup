@@ -5,7 +5,21 @@ import HeaderSkeleton from "../../ui/Skeleton/HeaderSkeleton";
 import CreatePost from "../../ui/CreatePost/CreatePost";
 
 function TribeHeader({ tribe }) {
-    const { groupProfilePicture, groupName, description, membersCount } = tribe;
+    const {
+        groupProfilePicture,
+        groupName,
+        description,
+        membersCount,
+        groupRelationType,
+    } = tribe;
+
+    const canManage =
+        groupRelationType === "Owner" || groupRelationType === "Admin";
+
+    const isFollower = groupRelationType === "Follower";
+
+    const MemberOrAbove =
+        groupRelationType !== "Follower" && groupRelationType !== "None";
 
     return (
         <div className="flex flex-col gap-[5px]">
@@ -36,24 +50,21 @@ function TribeHeader({ tribe }) {
                                 Members
                             </p>
                         </div>
-                        {/* {isOwnProfile && (
-                        <SecondaryButton
-                            to="/settings/account"
-                            className="px-6 py-4"
-                        >
-                            Edit profile
-                        </SecondaryButton>
-                    )} */}
+
                         <div className="flex gap-1">
-                            <SecondaryButton
-                                to={"settings"}
-                                className="px-6 py-4"
-                            >
-                                Settings
-                            </SecondaryButton>
-                            <SecondaryButton className="px-6 py-4">
-                                Following
-                            </SecondaryButton>
+                            {canManage && (
+                                <SecondaryButton
+                                    to={"settings"}
+                                    className="px-6 py-4"
+                                >
+                                    Settings
+                                </SecondaryButton>
+                            )}
+                            {!MemberOrAbove && (
+                                <SecondaryButton className="px-6 py-4">
+                                    {isFollower ? "Following" : "Follow"}
+                                </SecondaryButton>
+                            )}
                         </div>
                     </div>
                 </div>

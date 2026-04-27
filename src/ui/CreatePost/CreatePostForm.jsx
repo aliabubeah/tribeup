@@ -40,7 +40,7 @@ function CreatePostForm({ onClose, id }) {
 
     useEffect(() => {
         async function getGroups() {
-            const res = await MyGroupsAPI(accessToken);
+            const res = await MyGroupsAPI({ accessToken });
             setGroups(res);
 
             // Only set default if not coming from tribe page

@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 function PrivacySelector({ value, onChange }) {
     const options = [
         {

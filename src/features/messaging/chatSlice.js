@@ -14,6 +14,8 @@ const initialState = {
     activeGroupId: null,
 };
 
+// ===================== THUNKS ===================== //
+
 export const fetchChatInbox = createAsyncThunk(
     "chat/fetchChatInbox",
     async ({ accessToken }, { rejectWithValue }) => {
@@ -31,7 +33,6 @@ export const fetchRoomMessages = createAsyncThunk(
     async ({ accessToken, groupId, page }, { rejectWithValue }) => {
         try {
             const res = await getMessagesAPI(accessToken, groupId, page);
-
             return { groupId, ...res };
         } catch (err) {
             return rejectWithValue(err.message);
@@ -39,17 +40,20 @@ export const fetchRoomMessages = createAsyncThunk(
     },
 );
 
+// ✅ FIXED: return full backend response (includes sentAt)
 export const sendMessage = createAsyncThunk(
     "chat/sendMessage",
     async ({ accessToken, groupId, content }, { rejectWithValue }) => {
         try {
-            await sendMessageAPI(accessToken, groupId, content);
-            return { groupId, content };
+            const res = await sendMessageAPI(accessToken, groupId, content);
+            return res; // ✅ IMPORTANT
         } catch (err) {
             return rejectWithValue(err.message);
         }
     },
 );
+
+// ===================== SLICE ===================== //
 
 const chatSlice = createSlice({
     name: "chat",
@@ -69,7 +73,7 @@ const chatSlice = createSlice({
             if (!chat) return;
 
             chat.lastMessageContent = message.content;
-            chat.lastMessageSenderName = message.userName;
+            chat.lastMessageSenderName = message.senderName;
             chat.lastMessageSentAt = message.sentAt;
 
             // move chat to top
@@ -98,7 +102,6 @@ const chatSlice = createSlice({
 
             if (!room) return;
 
-            // deduplicate by id
             const exists = room.messages.some((m) => m.id === msg.id);
             if (exists) return;
 
@@ -109,6 +112,7 @@ const chatSlice = createSlice({
     extraReducers: (builder) => {
         builder
 
+            // ===== Inbox =====
             .addCase(fetchChatInbox.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -124,12 +128,11 @@ const chatSlice = createSlice({
                 state.error = action.payload;
             })
 
+            // ===== Messages =====
             .addCase(fetchRoomMessages.pending, (state, action) => {
                 const { groupId } = action.meta.arg;
 
-                if (state.rooms[groupId]?.isLoading) {
-                    return;
-                }
+                if (state.rooms[groupId]?.isLoading) return;
 
                 if (!state.rooms[groupId]) {
                     state.rooms[groupId] = {
@@ -148,20 +151,39 @@ const chatSlice = createSlice({
                 const room = state.rooms[groupId];
 
                 const existingIds = new Set(room.messages.map((m) => m.id));
+
                 const uniqueItems = items.filter((m) => !existingIds.has(m.id));
 
                 room.messages.unshift(...uniqueItems);
                 room.hasMore = hasMore;
-                if (!hasMore) return;
-                room.page += 1;
+
+                if (hasMore) {
+                    room.page += 1;
+                }
+
                 room.isLoading = false;
             })
 
             .addCase(fetchRoomMessages.rejected, (state, action) => {
                 const { groupId } = action.meta.arg;
+
                 if (state.rooms[groupId]) {
                     state.rooms[groupId].isLoading = false;
                 }
+            })
+
+            // ===== ✅ FIXED sendMessage =====
+            .addCase(sendMessage.fulfilled, (state, action) => {
+                const msg = action.payload;
+                const room = state.rooms[msg.groupId];
+
+                if (!room) return;
+
+                // prevent duplicates (important with realtime)
+                const exists = room.messages.some((m) => m.id === msg.id);
+                if (exists) return;
+
+                room.messages.push(msg);
             });
     },
 });

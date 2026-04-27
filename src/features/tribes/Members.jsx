@@ -13,6 +13,7 @@ import {
 } from "../../services/groups";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useConfirm } from "../../contexts/ConfirmContext";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { getCleanImageUrl } from "../../services/http";
@@ -29,7 +30,7 @@ function Members() {
         enabled: !!accessToken && !!tribeId,
     });
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
         useInfiniteQuery({
             queryKey: ["members", tribeId],
 
@@ -65,7 +66,7 @@ function Members() {
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    if (status === "pending") {
+    if (isPending) {
         return <div>Loading members...</div>;
     }
 
@@ -144,6 +145,21 @@ function Member({ member, tribeId, userRole, currentUserId }) {
 
     const tribeMemberId = member.id;
 
+    const confirm = useConfirm();
+
+    const handleKick = async () => {
+        const ok = await confirm({ type: "kick" });
+        if (!ok) return;
+
+        kick({
+            accessToken,
+            tribeId,
+            tribeMemberId,
+        });
+    };
+
+    if (!userRole) return <p>loading....</p>;
+
     return (
         <div className="flex justify-between">
             {/* Left */}
@@ -191,13 +207,7 @@ function Member({ member, tribeId, userRole, currentUserId }) {
                     <SecondaryButton
                         disabled={isKicking}
                         className="ml-2 !border-red-500 !text-red-500"
-                        onClick={() =>
-                            kick({
-                                accessToken,
-                                tribeId,
-                                tribeMemberId,
-                            })
-                        }
+                        onClick={() => handleKick()}
                     >
                         Kick
                     </SecondaryButton>
