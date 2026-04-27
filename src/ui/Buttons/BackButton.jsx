@@ -1,13 +1,15 @@
 import { useNavigate } from "react-router-dom";
 
-function BackButton() {
+function BackButton({ to }) {
     const navigate = useNavigate();
+
+    const go = to ? to : -1;
 
     return (
         <div className="flex items-center gap-1 justify-self-start px-4 text-sm md:text-lg">
             <button
                 className="icon-outlined text-xl"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate(go)}
             >
                 arrow_back
             </button>
