@@ -4,14 +4,14 @@ function BackButton() {
     const navigate = useNavigate();
 
     return (
-        <div className="flex items-center justify-center gap-1 justify-self-start px-4 py-3">
+        <div className="flex items-center gap-1 justify-self-start px-4 text-sm md:text-lg">
             <button
-                className="icon-outlined text-2xl"
+                className="icon-outlined text-xl"
                 onClick={() => navigate(-1)}
             >
                 arrow_back
             </button>
-            <span className="text-xl font-semibold">Back</span>
+            <span className="font-semibold">Back</span>
         </div>
     );
 }

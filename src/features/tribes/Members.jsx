@@ -123,7 +123,7 @@ function Member({ member, tribeId, userRole, currentUserId }) {
     const color =
         role === "Owner"
             ? "text-white bg-black"
-            : role === "Admin"
+            : role === "Member"
               ? "bg-neutral-200 text-neutral-800"
               : "bg-neutral-500 text-neutral-100";
 
