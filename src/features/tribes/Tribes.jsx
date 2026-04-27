@@ -8,7 +8,7 @@ import TribesTabs from "./TribesTabs";
 
 function Tribes() {
     return (
-        <div className="flex flex-col gap-3 p-5 pr-20">
+        <div className="flex flex-col gap-3 md:p-5 md:pr-20">
             {/* Header */}
             <div className="rounded-xl bg-white p-4 shadow-sm">
                 <h1 className="mb-3 text-lg font-semibold">My tribes</h1>
@@ -21,7 +21,7 @@ function Tribes() {
                 />
 
                 {/* Create button */}
-                <MainButton className="mb-4 w-full !p-3 ">
+                <MainButton className="mb-4 w-full !p-3">
                     + Create your own
                 </MainButton>
 

@@ -34,7 +34,7 @@ function TribeCard({ tribe }) {
     };
 
     return (
-        <div className="flex h-[100px] gap-4 rounded-xl bg-white shadow-sm">
+        <div className="flex rounded-xl bg-white shadow-sm md:h-[100px] md:gap-4">
             {/* Image */}
             <img
                 src={getCleanImageUrl(tribe.groupProfilePicture)}
@@ -42,25 +42,27 @@ function TribeCard({ tribe }) {
             />
 
             {/* Content */}
-            <div className="flex flex-1 justify-between p-4">
-                <div>
+            <div className="flex flex-1 flex-col gap-3 p-4 md:flex-row md:justify-between md:gap-0">
+                <div className="flex flex-col">
                     <h1 className="text-xl font-semibold">{tribe.groupName}</h1>
-                    <p className="text-base">{tribe.description}</p>
-
-                    <p className="mt-1 flex gap-1 text-sm">
+                    <p className="mt-1 flex gap-1 text-sm md:order-3">
                         <span className="icon-outlined">group</span>
                         {tribe.membersCount}
                     </p>
+                    <p className="text-base">{tribe.description}</p>
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col gap-2">
-                    <SecondaryButton to={`/tribes/${tribe.id}`}>
-                        View
+                <div className="flex gap-2 md:flex-col">
+                    <SecondaryButton
+                        to={`/tribes/${tribe.id}`}
+                        className="grow md:grow-0"
+                    >
+                        view
                     </SecondaryButton>
                     <SecondaryButton
                         disabled={isLeaving}
-                        className="!border-red-500 !text-red-500"
+                        className="grow !border-red-500 !text-red-500 md:grow-0"
                         onClick={() => handleKick()}
                     >
                         Leave

@@ -28,7 +28,7 @@ function NotificationItem({ notification }) {
             to={link || "#"}
             className={`flex items-start gap-3 p-4 transition ${
                 isRead ? "bg-white" : "bg-neutral-100"
-            } hover:bg-neutral-100`}
+            } hover:bg-neutral-50`}
             onClick={() => markRead({ accessToken, id })}
         >
             {/* Avatar */}
