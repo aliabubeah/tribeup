@@ -19,7 +19,7 @@ export async function getNotificationsAPI({ accessToken, page = 1 }) {
     return data;
 }
 
-export async function sendNotificationAPI({ accessToken, id }) {
+export async function markReadAPI({ accessToken, id }) {
     const res = await fetch(`${BASEURL}/api/Notification/${id}/read`, {
         method: "put",
         headers: {
@@ -30,7 +30,7 @@ export async function sendNotificationAPI({ accessToken, id }) {
     if (res.ok) {
         return true;
     }
-
     const data = await res.json();
-    return handleApiError(data);
+    console.log(handleApiError(data));
+    handleApiError(data);
 }
