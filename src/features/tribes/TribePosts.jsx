@@ -1,13 +1,23 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton";
 import Post from "../../ui/posts/Post";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAuth } from "../../contexts/AuthContext";
 import { GroupFeedAPI } from "../../services/posts";
+import PostModal from "../../ui/posts/PostModal";
 
 function TribePosts({ tribeId }) {
     const { accessToken } = useAuth();
+    const [activePost, setActivePost] = useState(null);
+
+    const handleOpenComments = useCallback((post) => {
+        setActivePost(post);
+    }, []);
+
+    const handleCloseModal = () => {
+        setActivePost(null);
+    };
 
     const {
         data: tribePosts,
@@ -62,15 +72,31 @@ function TribePosts({ tribeId }) {
                 if (index === posts.length - 1) {
                     return (
                         <div ref={ref} key={post.postId}>
-                            <Post post={post} />
+                            <Post
+                                post={post}
+                                onOpenComments={handleOpenComments}
+                            />
                         </div>
                     );
                 }
 
-                return <Post key={post.postId} post={post} />;
+                return (
+                    <Post
+                        key={post.postId}
+                        post={post}
+                        onOpenComments={handleOpenComments}
+                    />
+                );
             })}
 
             {isFetchingNextPage && <PostCardSkeleton />}
+            {activePost && (
+                <PostModal
+                    post={activePost}
+                    isOpen={true}
+                    onClose={handleCloseModal}
+                />
+            )}
         </div>
     );
 }

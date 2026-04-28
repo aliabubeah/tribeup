@@ -1,5 +1,5 @@
 import Post from "../../ui/posts/Post";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed } from "./feedSlice.js";
 import { useAuth } from "../../contexts/AuthContext.jsx";
@@ -18,6 +18,15 @@ function Feed() {
     const { ids, entities, hasMore, isLoading, page } = useSelector(
         (state) => state.feed,
     );
+    const [activePost, setActivePost] = useState(null);
+
+    const handleOpenComments = useCallback((post) => {
+        setActivePost(post);
+    }, []);
+
+    const handleCloseModal = () => {
+        setActivePost(null);
+    };
 
     const selectedPost = postId ? entities[postId] : null;
     const observerRef = useRef(null);
@@ -57,7 +66,11 @@ function Feed() {
             <CreatePost />
             <div className="flex flex-col gap-3">
                 {ids.map((id) => (
-                    <Post key={id} post={entities[id]} />
+                    <Post
+                        key={id}
+                        post={entities[id]}
+                        onOpenComments={handleOpenComments}
+                    />
                 ))}
             </div>
 
@@ -70,11 +83,11 @@ function Feed() {
                 </div>
             )}
 
-            {selectedPost && (
+            {activePost && (
                 <PostModal
-                    post={selectedPost}
+                    post={activePost}
                     isOpen={true}
-                    onClose={() => navigate("/")}
+                    onClose={handleCloseModal}
                 />
             )}
         </>

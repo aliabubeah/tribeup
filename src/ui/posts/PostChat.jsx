@@ -1,138 +1,123 @@
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import avatar from "../../assets/avatar.jpeg";
-import { getCleanImageUrl } from "../../services/http";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
 import { useAuth } from "../../contexts/AuthContext";
 import {
-    addComment,
-    deleteComment,
-    editComment,
-    fetchComments,
-    likeComment,
-    likeCommentOptimistic,
-} from "../../features/comments/commentsSlice";
+    addCommentAPI,
+    deletePostCommentAPI,
+    editCommentAPI,
+    getPostCommentsAPI,
+    likeCommentAPI,
+} from "../../services/posts";
+import { getCleanImageUrl } from "../../services/http";
 import { formatPostDate } from "../../utils/helper";
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
+
 import CommentSkeleton from "../Skeleton/CommentSkeleton";
 import PostActionsMenu from "./PostActionMenu";
-import { deletePostCommentAPI } from "../../services/posts";
-import { Link } from "react-router-dom";
 
 function PostChat({ postId }) {
-    const observerRef = useRef(null);
-    const loadMoreRef = useRef(null);
-    const { user, accessToken } = useAuth();
+    const { accessToken } = useAuth();
+    const { ref, inView } = useInView();
 
-    const dispatch = useDispatch();
-    const commentsState = useSelector(
-        (state) => state.comments.byPostId[postId],
-    );
-
-    const entities = commentsState?.entities || {};
-    const ids = commentsState?.ids || [];
-    const page = commentsState?.page || 1;
-    const hasMore = commentsState?.hasMore;
-    const isInitialLoading = commentsState?.isInitialLoading;
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+        useInfiniteQuery({
+            queryKey: ["comments", postId, accessToken],
+            queryFn: ({ pageParam = 1 }) =>
+                getPostCommentsAPI({
+                    accessToken,
+                    postId,
+                    page: pageParam,
+                }),
+            getNextPageParam: (lastPage) =>
+                lastPage.hasMore ? lastPage.page + 1 : undefined,
+            enabled: !!postId,
+        });
 
     useEffect(() => {
-        if (!hasMore || commentsState?.isFetchingMore) return;
-        if (!loadMoreRef.current) return;
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+        }
+    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                dispatch(
-                    fetchComments({
-                        accessToken,
-                        postId,
-                        page,
-                    }),
-                );
-            }
-        });
-        observer.observe(loadMoreRef.current);
+    if (status === "pending") return <CommentSkeleton />;
 
-        return () => observer.disconnect();
-    }, [hasMore, isInitialLoading, accessToken, postId, page, dispatch]);
-
-    if (!commentsState || commentsState?.isInitialLoading) {
-        return <CommentSkeleton />;
-    }
+    const comments = data?.pages?.flatMap((page) => page.items ?? []) ?? [];
 
     return (
         <div className="flex min-h-0 flex-1 flex-col">
             <div className="flex-1 p-2 lg:overflow-y-auto">
-                {ids.map((id) => {
-                    const comment = entities[id];
-                    return (
-                        <PostComment
-                            postId={comment.postId}
-                            id={comment.id}
-                            dispatch={dispatch}
-                            key={id}
-                            likesCount={comment.likesCount}
-                            content={comment.content}
-                            createdAt={comment.createdAt}
-                            profilePicture={comment.profilePicture}
-                            userName={comment.username}
-                            accessToken={accessToken}
-                            isLikedByCurrentUser={comment.isLikedByCurrentUser}
-                            permissions={comment.permissions}
-                        />
-                    );
-                })}
-                <div ref={loadMoreRef} className="h-10">
-                    {commentsState.isFetchingMore && (
-                        <CommentSkeleton length={1} />
-                    )}
+                {comments.map((comment) => (
+                    <PostComment key={comment.id} comment={comment} />
+                ))}
+
+                {/* trigger */}
+                <div ref={ref} className="h-10">
+                    {isFetchingNextPage && <CommentSkeleton length={1} />}
                 </div>
             </div>
-            <AddComment
-                token={accessToken}
-                userPic={user.profilePicture}
-                userName={user.userName}
-                postId={postId}
-                className="sticky bottom-0 left-0 right-0 lg:static"
-            />
+
+            <AddComment postId={postId} />
         </div>
     );
 }
 
 export default PostChat;
 
-function PostComment({
-    dispatch,
-    postId,
-    id,
-    content,
-    createdAt,
-    profilePicture,
-    userName,
-    likesCount,
-    accessToken,
-    isLikedByCurrentUser,
-    permissions,
-}) {
-    const [favoriteToggle, setFavoriteToggle] = useState(isLikedByCurrentUser);
-    const [isEdit, setIsEdit] = useState(false);
-    function handleToggle() {
-        dispatch(likeCommentOptimistic({ postId, commentId: id }));
-        setFavoriteToggle((e) => !e);
+function PostComment({ comment }) {
+    const { accessToken } = useAuth();
+    const queryClient = useQueryClient();
 
-        dispatch(
-            likeComment({
+    const [favoriteToggle, setFavoriteToggle] = useState(
+        comment.isLikedByCurrentUser,
+    );
+    const [likesCount, setLikesCount] = useState(comment.likesCount);
+    const [isEdit, setIsEdit] = useState(false);
+
+    const likeMutation = useMutation({
+        mutationFn: () =>
+            likeCommentAPI({
                 accessToken,
-                commentId: id,
+                commentId: comment.id,
             }),
-        );
+
+        onMutate: () => {
+            const newValue = !favoriteToggle;
+
+            setFavoriteToggle(newValue);
+            setLikesCount((count) => (newValue ? count + 1 : count - 1));
+        },
+
+        onError: () => {
+            const rollback = !favoriteToggle;
+
+            setFavoriteToggle(rollback);
+            setLikesCount((count) => (rollback ? count + 1 : count - 1));
+        },
+    });
+
+    function handleToggle() {
+        likeMutation.mutate();
     }
 
-    async function handleDelete() {
-        const result = await dispatch(
-            deleteComment({ accessToken, postId, commentId: id }),
-        );
+    const deleteMutation = useMutation({
+        mutationFn: () =>
+            deletePostCommentAPI({
+                accessToken,
+                commentId: comment.id,
+            }),
 
-        if (deleteComment.rejected.match(result)) {
-            dispatch(fetchComments({ accessToken, postId, page: 1 }));
-        }
+        onSuccess: () => {
+            queryClient.invalidateQueries(["comments", comment.postId]);
+        },
+    });
+
+    function handleDelete() {
+        deleteMutation.mutate();
     }
 
     function handleEdit() {
@@ -142,27 +127,29 @@ function PostComment({
     return isEdit ? (
         <EditComment
             onEdit={setIsEdit}
-            content={content}
+            content={comment.content}
             accessToken={accessToken}
-            postId={postId}
-            commentId={id}
+            postId={comment.postId}
+            commentId={comment.id}
         />
     ) : (
         <div className="flex p-2">
             <div className="flex grow items-start gap-2">
-                <Link to={`/${userName}`}>
+                <Link to={`/${comment.username}`}>
                     <img
-                        src={getCleanImageUrl(profilePicture)}
+                        src={getCleanImageUrl(comment.profilePicture)}
                         alt=""
                         className="h-9 w-9 rounded-full"
                     />
                 </Link>
 
                 <div className="text-left">
-                    <h1 className="text-sm font-semibold">{userName}</h1>
-                    <p className="text-sm">{content}</p>
+                    <h1 className="text-sm font-semibold">
+                        {comment.username}
+                    </h1>
+                    <p className="text-sm">{comment.content}</p>
                     <p className="text-xs text-neutral-700">
-                        {formatPostDate(createdAt)}
+                        {formatPostDate(comment.createdAt)}
                     </p>
                 </div>
             </div>
@@ -170,17 +157,20 @@ function PostComment({
             <div className="flex items-center">
                 <div className="flex flex-col items-center justify-center">
                     <button
-                        className={`icon-outlined ${favoriteToggle ? "icon-filled text-red-500 " : ""} transition-all duration-150 ease-in-out`}
+                        className={`icon-outlined ${
+                            favoriteToggle ? "icon-filled text-red-500 " : ""
+                        } transition-all duration-150 ease-in-out`}
                         onClick={handleToggle}
                     >
                         favorite
                     </button>
                     <p className="text-xs font-medium">{likesCount}</p>
                 </div>
-                {permissions?.canDelete && (
+
+                {comment.permissions?.canDelete && (
                     <PostActionsMenu
-                        onDelete={(e) => handleDelete()}
-                        onEdit={(e) => handleEdit()}
+                        onDelete={handleDelete}
+                        onEdit={handleEdit}
                         remove="comment"
                         icon="more_vert"
                         size="text-lg"
@@ -191,31 +181,32 @@ function PostComment({
     );
 }
 
-function AddComment({ className, token, postId }) {
+function AddComment({ postId, className }) {
     const [content, setContent] = useState("");
-    const dispatch = useDispatch();
+    const { accessToken, user } = useAuth();
+    const queryClient = useQueryClient();
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-
-        if (!content.trim()) return;
-
-        const result = await dispatch(
-            addComment({
-                accessToken: token,
+    const mutation = useMutation({
+        mutationFn: () =>
+            addCommentAPI({
+                accessToken,
                 postId,
                 content,
             }),
-        );
 
-        if (addComment.fulfilled.match(result)) {
+        onSuccess: () => {
+            queryClient.invalidateQueries(["comments", postId]);
             setContent("");
-        }
-    }
+        },
+    });
 
     return (
         <form
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+                e.preventDefault();
+                if (!content.trim()) return;
+                mutation.mutate();
+            }}
             className={`flex h-14 gap-2 border-t bg-white p-2 ${className}`}
         >
             <input
@@ -224,6 +215,7 @@ function AddComment({ className, token, postId }) {
                 placeholder="Type msg..."
                 className="grow rounded-3xl bg-neutral-100 p-2 outline-none placeholder:text-sm placeholder:font-normal placeholder:text-neutral-500"
             />
+
             <button
                 type="submit"
                 className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl hover:bg-neutral-200 active:bg-neutral-400"
@@ -237,23 +229,29 @@ function AddComment({ className, token, postId }) {
 function EditComment({ content, accessToken, postId, commentId, onEdit }) {
     const [comment, setComment] = useState(content);
     const { user } = useAuth();
-    const dispatch = useDispatch();
+    const queryClient = useQueryClient();
 
-    function handleSubmit(e) {
-        e.preventDefault();
-
-        if (!content.trim()) return;
-
-        dispatch(
-            editComment({
+    const mutation = useMutation({
+        mutationFn: () =>
+            editCommentAPI({
                 accessToken,
                 postId,
                 commentId,
                 content: comment,
             }),
-        );
 
-        onEdit(false);
+        onSuccess: () => {
+            queryClient.invalidateQueries(["comments", postId]);
+            onEdit(false);
+        },
+    });
+
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        if (!comment.trim()) return;
+
+        mutation.mutate();
     }
 
     return (

@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { GetGroupAPI } from "../../services/groups";
 import { useAuth } from "../../contexts/AuthContext";
+import { GetGroupAPI } from "../../services/groups";
+import { GroupFeedAPI } from "../../services/posts";
+
+import BackButton from "../../ui/Buttons/BackButton";
 import TribeHeader from "./TribeHeader";
 import TribePosts from "./TribePosts";
 import HeaderSkeleton from "../../ui/Skeleton/HeaderSkeleton";
 import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton";
-import { GroupFeedAPI } from "../../services/posts";
 
 function Tribe() {
     const { tribeId } = useParams();
@@ -32,9 +34,12 @@ function Tribe() {
     if (error) return <div>Error</div>;
 
     return (
-        <div className="flex flex-col gap-4">
-            <TribeHeader tribe={tribe} />
-            <TribePosts tribeId={tribeId} />
+        <div className="flex flex-col gap-1">
+            <BackButton className="!p-0">Back</BackButton>
+            <div className="flex flex-col gap-4">
+                <TribeHeader tribe={tribe} />
+                <TribePosts tribeId={tribeId} />
+            </div>
         </div>
     );
 }

@@ -130,7 +130,7 @@ function Member({ member, tribeId, userRole, currentUserId }) {
     const isOwner = userRole === "Owner";
     const isAdmin = userRole === "Admin";
 
-    const isSelf = member.id === currentUserId;
+    const isSelf = member.userId === currentUserId;
 
     const isMember = role === "Member";
     const isAdminMember = role === "Admin";

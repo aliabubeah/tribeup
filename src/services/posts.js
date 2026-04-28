@@ -63,7 +63,12 @@ export async function deletePostAPI(postId, accessToken) {
     return data;
 }
 
-export async function getPostCommentsAPI(accessToken, postId, page, size = 20) {
+export async function getPostCommentsAPI({
+    accessToken,
+    postId,
+    page,
+    size = 20,
+}) {
     const res = await fetch(
         `${BASEURL}/api/Comment/${postId}/Comments?page=${page}&pageSize=${size}`,
         {
@@ -82,7 +87,7 @@ export async function getPostCommentsAPI(accessToken, postId, page, size = 20) {
     return data;
 }
 
-export async function addCommentAPI(accessToken, postId, content) {
+export async function addCommentAPI({ accessToken, postId, content }) {
     const formData = new FormData();
     formData.append("Content", content);
     // formData.append("TaggedUserIds", "");
@@ -105,7 +110,7 @@ export async function addCommentAPI(accessToken, postId, content) {
     return data;
 }
 
-export async function likeCommentAPI(accessToken, commentId) {
+export async function likeCommentAPI({ accessToken, commentId }) {
     const res = await fetch(
         `${BASEURL}/api/Comment/${commentId}/CommentToggleLike`,
         {
@@ -166,7 +171,7 @@ export async function createPostAPI({
     return data;
 }
 
-export async function deletePostCommentAPI(accessToken, commentId) {
+export async function deletePostCommentAPI({ accessToken, commentId }) {
     const res = await fetch(
         `${BASEURL}/api/Comment/${commentId}/DeleteComment`,
         {
@@ -189,12 +194,12 @@ export async function deletePostCommentAPI(accessToken, commentId) {
     return data;
 }
 
-export async function editCommentAPI(
+export async function editCommentAPI({
     accessToken,
     commentId,
     content,
     taggedUserIds = [],
-) {
+}) {
     const res = await fetch(`${BASEURL}/api/Comment/${commentId}/EditComment`, {
         method: "put",
         headers: {

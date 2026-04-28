@@ -10,37 +10,37 @@ import { useAuth } from "../../contexts/AuthContext";
 import { fetchComments } from "../../features/comments/commentsSlice";
 
 function PostModal({ post, isOpen = false, onClose }) {
-    const dispatch = useDispatch();
-    const { accessToken } = useAuth();
-    const hasFetchedRef = useRef(false);
+    // const dispatch = useDispatch();
+    // const { accessToken } = useAuth();
+    // const hasFetchedRef = useRef(false);
 
-    const commentsState = useSelector(
-        (state) => state.comments.byPostId[post.postId],
-    );
+    // const commentsState = useSelector(
+    //     (state) => state.comments.byPostId[post.postId],
+    // );
 
-    const page = commentsState?.page || 1;
+    // const page = commentsState?.page || 1;
 
     // ✅ Fetch once per post (kept from optimization)
-    useEffect(() => {
-        if (!post?.postId) return;
+    // useEffect(() => {
+    //     if (!post?.postId) return;
 
-        if (!commentsState && !hasFetchedRef.current) {
-            hasFetchedRef.current = true;
+    //     if (!commentsState && !hasFetchedRef.current) {
+    //         hasFetchedRef.current = true;
 
-            dispatch(
-                fetchComments({
-                    accessToken,
-                    postId: post.postId,
-                    page,
-                }),
-            );
-        }
-    }, [post.postId, accessToken, dispatch, commentsState]);
+    //         dispatch(
+    //             fetchComments({
+    //                 accessToken,
+    //                 postId: post.postId,
+    //                 page,
+    //             }),
+    //         );
+    //     }
+    // }, [post.postId, accessToken, dispatch, commentsState]);
 
     // reset when switching post
-    useEffect(() => {
-        hasFetchedRef.current = false;
-    }, [post.postId]);
+    // useEffect(() => {
+    //     hasFetchedRef.current = false;
+    // }, [post.postId]);
 
     return (
         <Transition appear show={isOpen} as={Fragment}>

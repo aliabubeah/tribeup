@@ -1,16 +1,15 @@
-import { useNavigate } from "react-router-dom";
 import PostActions from "./PostActions";
 import PostContent from "./PostContent";
 import PostHeader from "./PostHeader";
 import PostMedia from "./PostMedia";
 import React from "react";
 
-function Post({ post }) {
-    const navigate = useNavigate();
+function Post({ post, onOpenComments }) {
     function handleOpenComments(e) {
         e.stopPropagation();
-        navigate(`/posts/${post.postId}?focus=comments`);
+        onOpenComments?.(post);
     }
+
     return (
         <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
             <PostHeader
@@ -24,7 +23,9 @@ function Post({ post }) {
             />
 
             {post.media.length > 0 && <PostMedia media={post.media} />}
+
             <PostContent caption={post.caption} />
+
             <PostActions
                 isLikedByCurrentUser={post.isLikedByCurrentUser}
                 postId={post.postId}
