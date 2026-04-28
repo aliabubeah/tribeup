@@ -39,7 +39,6 @@ function ConfirmModal({
                 </Transition.Child>
 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    {/* ✅ Lightweight modal animation */}
                     <Transition.Child
                         as={Fragment}
                         enter="transition-all duration-150 ease-out"

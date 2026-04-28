@@ -3,15 +3,34 @@ import { getCleanImageUrl } from "../../services/http";
 import SecondaryButton from "../../ui/Buttons/SecondaryButton";
 import HeaderSkeleton from "../../ui/Skeleton/HeaderSkeleton";
 import CreatePost from "../../ui/CreatePost/CreatePost";
+import { toggleFollowAPI } from "../../services/groups";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { useAuth } from "../../contexts/AuthContext";
 
 function TribeHeader({ tribe }) {
     const {
+        id,
         groupProfilePicture,
         groupName,
         description,
         membersCount,
         groupRelationType,
     } = tribe;
+
+    const tribeId = id;
+    const queryClient = useQueryClient();
+    const { accessToken } = useAuth();
+
+    const { isPending: isFollowing, mutate: follow } = useMutation({
+        mutationFn: toggleFollowAPI,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["tribe", tribeId],
+            });
+        },
+        onError: (err) => toast.error(err.message),
+    });
 
     const canManage =
         groupRelationType === "Owner" || groupRelationType === "Admin";
@@ -61,7 +80,16 @@ function TribeHeader({ tribe }) {
                                 </SecondaryButton>
                             )}
                             {!MemberOrAbove && (
-                                <SecondaryButton className="px-6 py-4">
+                                <SecondaryButton
+                                    disabled={isFollowing}
+                                    className="px-6 py-4"
+                                    onClick={() =>
+                                        follow({
+                                            accessToken,
+                                            groupId: tribeId,
+                                        })
+                                    }
+                                >
                                     {isFollower ? "Following" : "Follow"}
                                 </SecondaryButton>
                             )}

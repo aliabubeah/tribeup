@@ -19,7 +19,7 @@ function Tribe() {
     } = useQuery({
         queryKey: ["tribe", tribeId],
         queryFn: () => GetGroupAPI(accessToken, tribeId),
-        enabled: !!accessToken && !!tribeId,
+        // enabled: !!tribeId,
     });
 
     if (isLoading)

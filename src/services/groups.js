@@ -21,6 +21,38 @@ export async function MyGroupsAPI({ accessToken, page = 1 }) {
     return data;
 }
 
+export async function discoverGroupsAPI({
+    accessToken,
+    page,
+    pageSize = 20,
+    search,
+}) {
+    const params = {
+        page,
+        pageSize,
+    };
+
+    if (search) params.search = search;
+
+    const queryParams = new URLSearchParams(params).toString();
+
+    const res = await fetch(
+        `${BASEURL}/api/Groups/ExploreGroups?${queryParams}`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+    return data;
+}
+
 export async function GetAllGroupsAPI(accessToken) {
     const res = await fetch(`${BASEURL}/api/Groups/GetAllGroups`, {
         headers: {
@@ -230,5 +262,26 @@ export async function getFollowersAPI({
         console.log(handleApiError(data));
         return handleApiError(data);
     }
+    return data;
+}
+
+export async function toggleFollowAPI({ accessToken, groupId }) {
+    const res = await fetch(
+        `${BASEURL}/api/groups/${groupId}/GetFollowers/ToggleFollow`,
+        {
+            method: "post",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+    console.log(data);
     return data;
 }

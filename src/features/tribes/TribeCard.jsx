@@ -1,12 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCleanImageUrl } from "../../services/http";
 import SecondaryButton from "../../ui/Buttons/SecondaryButton";
-import { leaveAPI } from "../../services/groups";
+import { leaveAPI, toggleFollowAPI } from "../../services/groups";
 import toast from "react-hot-toast";
 import { useConfirm } from "../../contexts/ConfirmContext";
 import { useAuth } from "../../contexts/AuthContext";
+import MainButton from "../../ui/Buttons/MainButton";
+import { useNavigate } from "react-router-dom";
 
-function TribeCard({ tribe }) {
+function TribeCard({ tribe, debouncedSearch }) {
+    const navigate = useNavigate();
     const { accessToken } = useAuth();
     const queryClient = useQueryClient();
 
@@ -15,6 +18,16 @@ function TribeCard({ tribe }) {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["tribes"],
+            });
+        },
+        onError: (err) => toast.error(err.message),
+    });
+
+    const { isPending: isFollowing, mutate: follow } = useMutation({
+        mutationFn: toggleFollowAPI,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["discoverTribes", accessToken, debouncedSearch],
             });
         },
         onError: (err) => toast.error(err.message),
@@ -34,11 +47,15 @@ function TribeCard({ tribe }) {
     };
 
     return (
-        <div className="flex rounded-xl bg-white shadow-sm md:h-[100px] md:gap-4">
+        <div
+            className="flex rounded-xl bg-white shadow-sm transition-all duration-300 ease-in-out hover:bg-neutral-50 md:h-[100px] md:gap-4"
+            role="button"
+            onClick={() => navigate(`/tribes/${tribe.id}`)}
+        >
             {/* Image */}
             <img
                 src={getCleanImageUrl(tribe.groupProfilePicture)}
-                className="h-full w-56 rounded-lg object-cover"
+                className="h-40 w-56 rounded-lg object-cover md:h-full"
             />
 
             {/* Content */}
@@ -54,19 +71,43 @@ function TribeCard({ tribe }) {
 
                 {/* Actions */}
                 <div className="flex gap-2 md:flex-col">
-                    <SecondaryButton
-                        to={`/tribes/${tribe.id}`}
-                        className="grow md:grow-0"
-                    >
+                    <SecondaryButton className="w-full md:grow-0">
                         view
                     </SecondaryButton>
-                    <SecondaryButton
-                        disabled={isLeaving}
-                        className="grow !border-red-500 !text-red-500 md:grow-0"
-                        onClick={() => handleKick()}
-                    >
-                        Leave
-                    </SecondaryButton>
+                    {tribe.userRelation === 0 ? (
+                        <MainButton
+                            disabled={isFollowing}
+                            className="w-full"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                follow({ accessToken, groupId: id });
+                            }}
+                        >
+                            follow
+                        </MainButton>
+                    ) : tribe.userRelation === 1 ? (
+                        <MainButton
+                            disabled={isFollowing}
+                            className="w-full"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                follow({ accessToken, groupId: id });
+                            }}
+                        >
+                            Unfollow
+                        </MainButton>
+                    ) : (
+                        <SecondaryButton
+                            disabled={isLeaving}
+                            className="w-full !border-red-500 !text-red-500 md:grow-0"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleKick();
+                            }}
+                        >
+                            Leave
+                        </SecondaryButton>
+                    )}
                 </div>
             </div>
         </div>

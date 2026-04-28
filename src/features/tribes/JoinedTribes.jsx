@@ -55,7 +55,6 @@ function JoinedTribes() {
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     if (isPending) return <p>loading...</p>;
-    if (isFetchingNextPage) return <p>loading...</p>;
 
     if (error) return <p>{error.message}</p>;
 

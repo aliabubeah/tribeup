@@ -1,12 +1,16 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@headlessui/react";
 import { MyGroupsAPI } from "../../services/groups";
 import MainButton from "../../ui/Buttons/MainButton";
 
 import { Outlet } from "react-router-dom";
 import TribesTabs from "./TribesTabs";
+import { useState } from "react";
 
 function Tribes() {
+    const [search, setSearch] = useState("");
+    const navigate = useNavigate();
+
     return (
         <div className="flex flex-col gap-3 md:p-5 md:pr-20">
             {/* Header */}
@@ -18,6 +22,10 @@ function Tribes() {
                     type="text"
                     placeholder="Search tribes..."
                     className="mb-3 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        navigate("/tribes/discover");
+                    }}
                 />
 
                 {/* Create button */}
@@ -30,7 +38,7 @@ function Tribes() {
             </div>
 
             {/* Content */}
-            <Outlet />
+            <Outlet context={{ search }} />
         </div>
     );
 }

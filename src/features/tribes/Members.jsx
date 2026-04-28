@@ -27,7 +27,7 @@ function Members() {
     const { data: tribeData } = useQuery({
         queryKey: ["tribe", tribeId],
         queryFn: () => GetGroupAPI(accessToken, tribeId),
-        enabled: !!accessToken && !!tribeId,
+        // enabled: !!tribeId,
     });
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
