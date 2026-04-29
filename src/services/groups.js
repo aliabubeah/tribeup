@@ -285,3 +285,54 @@ export async function toggleFollowAPI({ accessToken, groupId }) {
     console.log(data);
     return data;
 }
+
+export async function createInvitationAPI({
+    accessToken,
+    groupId,
+    maxUse,
+    expireAt,
+}) {
+    const res = await fetch(
+        `${BASEURL}/api/GroupInvitations/CreateInvitations/${groupId}`,
+        {
+            method: "post",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                expiresAt: expireAt,
+                maxUses: maxUse,
+            }),
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+    return data;
+}
+
+export async function tribeInvitationsAPI({ accessToken, groupId }) {
+    const res = await fetch(
+        `${BASEURL}/api/GroupInvitations/GroupInvitations/${groupId}?page=1&pageSize=10`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}

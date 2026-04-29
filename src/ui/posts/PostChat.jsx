@@ -48,6 +48,20 @@ function PostChat({ postId }) {
 
     const comments = data?.pages?.flatMap((page) => page.items ?? []) ?? [];
 
+    if (comments.length === 0) {
+        return (
+            <div className="flex min-h-0 flex-1 flex-col">
+                <div className="flex flex-1 flex-col items-center justify-center p-2 text-neutral-500 lg:overflow-y-auto">
+                    <span className="icon-outlined text-9xl">
+                        chat_bubble_off
+                    </span>
+                    <p className="text-2xl font-semibold">No comments yet </p>
+                </div>
+                <AddComment postId={postId} />
+            </div>
+        );
+    }
+
     return (
         <div className="flex min-h-0 flex-1 flex-col">
             <div className="flex-1 p-2 lg:overflow-y-auto">
