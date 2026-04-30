@@ -49,7 +49,7 @@ function MessageContent({
             ) : (
                 <div className={`${spacingClass} flex gap-2`}>
                     {showAvatar && (
-                        <Link to={`${senderName}`}>
+                        <Link to={`/${senderName}`}>
                             <img
                                 src={getCleanImageUrl(senderProfilePic)}
                                 alt=""

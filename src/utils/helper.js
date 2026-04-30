@@ -39,6 +39,8 @@ export function formatPostDate(isoString) {
 }
 
 export function getDateLabel(dateString, locale = navigator.language) {
+    if (!dateString) return;
+
     const safe = dateString.endsWith("Z") ? dateString : dateString + "Z";
     const messageDate = new Date(safe);
 

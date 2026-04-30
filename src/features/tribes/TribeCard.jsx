@@ -59,14 +59,19 @@ function TribeCard({ tribe, debouncedSearch }) {
             />
 
             {/* Content */}
-            <div className="flex flex-1 flex-col gap-3 p-4 md:flex-row md:justify-between md:gap-0">
-                <div className="flex flex-col">
+            <div className="flex min-w-0 flex-1 flex-col gap-3 p-4 md:flex-row md:justify-between md:gap-0">
+                <div className="flex min-w-0 flex-col">
                     <h1 className="text-xl font-semibold">{tribe.groupName}</h1>
                     <p className="mt-1 flex gap-1 text-sm md:order-3">
                         <span className="icon-outlined">group</span>
                         {tribe.membersCount}
                     </p>
-                    <p className="text-base">{tribe.description}</p>
+                    <p
+                        className="!overflow-clip truncate text-base leading-tight"
+                        title={tribe.description}
+                    >
+                        {tribe.description}
+                    </p>
                 </div>
 
                 {/* Actions */}

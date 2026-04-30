@@ -17,6 +17,7 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
     const {
         data: createdInvite,
         isPending,
+        reset: resetCreate,
         mutate: createInvite,
     } = useMutation({
         mutationFn: createInvitationAPI,
@@ -28,12 +29,13 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
         onError: (err) => toast.error(err.message),
     });
 
-    const invite = validInviations || createdInvite;
+    const invite = validInviations ?? createdInvite ?? null;
 
     const { isPending: isRevoking, mutate: revoke } = useMutation({
         mutationFn: revokeInvitaionAPI,
 
         onSuccess: () => {
+            resetCreate();
             queryClient.invalidateQueries(["tribeInvitations", groupId]);
         },
 
@@ -92,9 +94,7 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
                             <div className="mt-4 space-y-3">
                                 <label className="text-sm">Expire at:</label>
                                 <input
-                                    placeholder={
-                                        invite?.expiresAt || "enter Date "
-                                    }
+                                    required
                                     type="date"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
@@ -104,6 +104,7 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
 
                                 <label className="text-sm">Max uses:</label>
                                 <input
+                                    required
                                     type="number"
                                     min={0}
                                     placeholder={invite?.maxUses || "max use"}
@@ -237,8 +238,8 @@ function InviteInfo({ icon, type, title, data, className }) {
 
             <div className="flex flex-col font-medium">
                 <p className="text-xs">{title}</p>
-                <p className="text-sm font-semibold text-neutral-950">
-                    {isDate ? getDateLabel(data) : data}
+                <p className="text-xs font-semibold text-neutral-950">
+                    {isDate ? (data ? getDateLabel(data) : "-") : (data ?? "-")}
                 </p>
             </div>
         </div>

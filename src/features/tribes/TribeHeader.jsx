@@ -33,7 +33,12 @@ function TribeHeader({ tribe }) {
         enabled: false,
     });
 
-    const validInviations = data?.items[0] ?? null;
+    let validInviations;
+
+    if (data?.id) {
+        validInviations = data ?? null;
+    }
+    // const validInviations = data ?? null;
 
     const queryClient = useQueryClient();
 

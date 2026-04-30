@@ -315,7 +315,7 @@ export async function createInvitationAPI({
 
 export async function tribeInvitationsAPI({ accessToken, groupId }) {
     const res = await fetch(
-        `${BASEURL}/api/GroupInvitations/GroupInvitations/${groupId}?page=1&pageSize=10`,
+        `${BASEURL}/api/GroupInvitations/GetActiveInvitation/${groupId}?page=1&pageSize=10`,
         {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
