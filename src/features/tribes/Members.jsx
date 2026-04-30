@@ -19,6 +19,7 @@ import { useInView } from "react-intersection-observer";
 import { getCleanImageUrl } from "../../services/http";
 import SecondaryButton from "../../ui/Buttons/SecondaryButton";
 import toast from "react-hot-toast";
+import PostActionsMenu from "../../ui/posts/PostActionMenu";
 
 function Members() {
     const { tribeId } = useParams();
@@ -188,30 +189,53 @@ function Member({ member, tribeId, userRole, currentUserId }) {
 
             {/* Right */}
             {canManage && (
-                <div>
-                    <SecondaryButton
-                        disabled={isPending}
-                        onClick={() =>
-                            changeRole({
-                                action:
-                                    role === "Member" ? "promote" : "demote",
-                                accessToken,
-                                tribeId,
-                                tribeMemberId,
-                            })
-                        }
-                    >
-                        {role === "Member" ? "Promote" : "Demote"}
-                    </SecondaryButton>
+                <>
+                    <div className="md:hidden">
+                        <PostActionsMenu
+                            icon="more_vert"
+                            remove="kick"
+                            edit={role === "Member" ? "Promote" : "Demote"}
+                            onDelete={() => handleKick()}
+                            onEdit={() =>
+                                changeRole({
+                                    action:
+                                        role === "Member"
+                                            ? "promote"
+                                            : "demote",
+                                    accessToken,
+                                    tribeId,
+                                    tribeMemberId,
+                                })
+                            }
+                        />
+                    </div>
+                    <div className="hidden md:block">
+                        <SecondaryButton
+                            disabled={isPending}
+                            onClick={() =>
+                                changeRole({
+                                    action:
+                                        role === "Member"
+                                            ? "promote"
+                                            : "demote",
+                                    accessToken,
+                                    tribeId,
+                                    tribeMemberId,
+                                })
+                            }
+                        >
+                            {role === "Member" ? "Promote" : "Demote"}
+                        </SecondaryButton>
 
-                    <SecondaryButton
-                        disabled={isKicking}
-                        className="ml-2 !border-red-500 !text-red-500"
-                        onClick={() => handleKick()}
-                    >
-                        Kick
-                    </SecondaryButton>
-                </div>
+                        <SecondaryButton
+                            disabled={isKicking}
+                            className="ml-2 !border-red-500 !text-red-500"
+                            onClick={() => handleKick()}
+                        >
+                            Kick
+                        </SecondaryButton>
+                    </div>
+                </>
             )}
         </div>
     );

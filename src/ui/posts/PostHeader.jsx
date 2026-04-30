@@ -39,10 +39,6 @@ function PostHeader({
                     </Link>
                 </div>
             </div>
-            {/* <PostActionsMenu
-                onDelete={(e) => handleDelete()}
-                onEdit={(e) => console.log("edit")}
-            /> */}
             {canModerate && (
                 <PostActionsMenu
                     onDelete={(e) => handleDelete()}

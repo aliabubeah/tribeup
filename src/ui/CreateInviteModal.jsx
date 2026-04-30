@@ -1,10 +1,11 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Fragment, useState } from "react";
-import { createInvitationAPI } from "../services/groups";
+import { createInvitationAPI, revokeInvitaionAPI } from "../services/groups";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { getDateLabel } from "../utils/helper";
+import SecondaryButton from "./Buttons/SecondaryButton";
 
 function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
     const { accessToken } = useAuth();
@@ -29,6 +30,16 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
 
     const invite = validInviations || createdInvite;
 
+    const { isPending: isRevoking, mutate: revoke } = useMutation({
+        mutationFn: revokeInvitaionAPI,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries(["tribeInvitations", groupId]);
+        },
+
+        onError: (err) => toast.error(err.message),
+    });
+
     function handleCreate() {
         createInvite({
             accessToken,
@@ -39,7 +50,7 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
     }
 
     function handleRevoke() {
-        queryClient.invalidateQueries(["tribeInvitations", groupId]);
+        revoke({ accessToken, invitationId: invite.id });
     }
 
     return (
@@ -81,6 +92,9 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
                             <div className="mt-4 space-y-3">
                                 <label className="text-sm">Expire at:</label>
                                 <input
+                                    placeholder={
+                                        invite?.expiresAt || "enter Date "
+                                    }
                                     type="date"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
@@ -92,7 +106,7 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
                                 <input
                                     type="number"
                                     min={0}
-                                    placeholder="maxuse"
+                                    placeholder={invite?.maxUses || "max use"}
                                     value={maxUse}
                                     onChange={(e) => setMaxUse(e.target.value)}
                                     className="w-full rounded-lg border p-2 text-sm"
@@ -130,101 +144,76 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
                                         </h3>
 
                                         <div className="flex flex-col gap-3 rounded-lg border p-4 text-sm">
-                                            <p className="truncate rounded-md bg-neutral-50 px-3 py-[6px] text-sm text-neutral-700">
+                                            <p
+                                                className="cursor-pointer truncate rounded-md bg-neutral-50 px-3 py-[6px] text-sm text-neutral-700 active:bg-neutral-100"
+                                                title="copy"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(
+                                                        invite?.invitationUrl ||
+                                                            "",
+                                                    );
+                                                    toast.success(
+                                                        "copied to clipboard",
+                                                    );
+                                                }}
+                                            >
                                                 {invite?.invitationUrl}
+                                                {/* <span className="rounded-md bg-green-100 px-2 py-1 text-green-600">
+                                                    Active
+                                                </span> */}
                                             </p>
 
-                                            <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-                                                <div className="flex gap-1">
-                                                    <span className="icon-outlined text-2xl">
-                                                        date_range
-                                                    </span>
+                                            <div className="mt-2 grid grid-cols-[1fr_auto] gap-y-4 text-xs text-gray-500">
+                                                <InviteInfo
+                                                    title="Created"
+                                                    icon="date_range"
+                                                    type="date"
+                                                    data={invite?.createdAt}
+                                                />
 
-                                                    <div className="flex flex-col font-medium">
-                                                        <p className="text-xs">
-                                                            Created
-                                                        </p>
-                                                        <p className="text-sm font-semibold text-neutral-950">
-                                                            {invite?.expiresAt
-                                                                ? getDateLabel(
-                                                                      invite.expiresAt,
-                                                                  )
-                                                                : "-"}
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                                <InviteInfo
+                                                    title="Expires "
+                                                    icon="hourglass_bottom"
+                                                    type="date"
+                                                    data={invite?.expiresAt}
+                                                />
 
-                                                <div className="flex gap-1">
-                                                    <span className="icon-outlined text-2xl">
-                                                        hourglass_bottom
-                                                    </span>
+                                                <InviteInfo
+                                                    title="Max Usage"
+                                                    icon="group"
+                                                    data={invite?.maxUses}
+                                                />
 
-                                                    <div className="flex flex-col font-medium">
-                                                        <p className="text-xs">
-                                                            Expires
-                                                        </p>
-                                                        <p className="text-sm font-semibold text-neutral-950">
-                                                            {invite?.expiresAt
-                                                                ? getDateLabel(
-                                                                      invite.expiresAt,
-                                                                  )
-                                                                : "-"}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-                                                <div className="flex gap-1">
-                                                    <span className="icon-outlined text-2xl">
-                                                        group
-                                                    </span>
-
-                                                    <div className="flex flex-col font-medium">
-                                                        <p className="text-xs">
-                                                            Max Usage
-                                                        </p>
-                                                        <p className="text-sm font-semibold text-neutral-950">
-                                                            {invite?.maxUses}
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex gap-1">
-                                                    <span className="icon-outlined text-2xl">
-                                                        date_range
-                                                    </span>
-
-                                                    <div className="flex flex-col font-medium">
-                                                        <p className="text-xs">
-                                                            Used Count
-                                                        </p>
-                                                        <p className="text-sm font-semibold text-neutral-950">
-                                                            {invite?.usedCount}
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                                <InviteInfo
+                                                    title="Used Count"
+                                                    icon="date_range"
+                                                    data={invite?.usedCount}
+                                                />
                                             </div>
 
                                             <div className="mt-4 flex gap-2">
-                                                <button
+                                                <SecondaryButton
+                                                    disabled={isRevoking}
                                                     onClick={handleRevoke}
-                                                    className="flex-1 rounded-lg border border-red-500 py-1 text-red-500"
+                                                    className="flex-1 rounded-lg !border-red-500 !py-3 !text-red-500"
                                                 >
                                                     Revoke
-                                                </button>
+                                                </SecondaryButton>
 
-                                                <button
-                                                    onClick={() =>
+                                                <SecondaryButton
+                                                    onClick={() => {
                                                         navigator.clipboard.writeText(
                                                             invite?.invitationUrl ||
                                                                 "",
-                                                        )
-                                                    }
-                                                    className="flex-1 rounded-lg border py-1"
+                                                        );
+                                                        toast.success(
+                                                            "copied to clipboard",
+                                                        );
+                                                    }}
+                                                    className="flex-1 rounded-lg border !py-3"
                                                 >
                                                     Copy link
-                                                </button>
+                                                </SecondaryButton>
                                             </div>
                                         </div>
                                     </div>
@@ -239,3 +228,19 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
 }
 
 export default CreateInviteModal;
+
+function InviteInfo({ icon, type, title, data, className }) {
+    const isDate = type === "date";
+    return (
+        <div className={`flex items-center gap-1 ${className}`}>
+            <span className="icon-outlined text-2xl">{icon}</span>
+
+            <div className="flex flex-col font-medium">
+                <p className="text-xs">{title}</p>
+                <p className="text-sm font-semibold text-neutral-950">
+                    {isDate ? getDateLabel(data) : data}
+                </p>
+            </div>
+        </div>
+    );
+}

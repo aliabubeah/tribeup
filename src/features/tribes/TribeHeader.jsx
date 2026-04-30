@@ -30,10 +30,10 @@ function TribeHeader({ tribe }) {
     const { data, error, isPending, refetch } = useQuery({
         queryKey: ["tribeInvitations", id],
         queryFn: () => tribeInvitationsAPI({ accessToken, groupId: id }),
-        enabled: !!tribeId && !!accessToken,
+        enabled: false,
     });
 
-    const validInviations = data?.items[0] || null;
+    const validInviations = data?.items[0] ?? null;
 
     const queryClient = useQueryClient();
 
@@ -99,7 +99,6 @@ function TribeHeader({ tribe }) {
                             <div className="flex gap-1">
                                 {canManage && (
                                     <MainButton
-                                        disabled={isPending}
                                         className="text-base font-medium"
                                         onClick={async () => {
                                             await refetch();

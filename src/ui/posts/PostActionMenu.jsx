@@ -5,8 +5,9 @@ export default function PostActionsMenu({
     onEdit,
     onDelete,
     icon = "more_horiz",
-    remove = "post",
+    remove = "delete",
     size = "text-2xl",
+    edit = "Edit",
 }) {
     return (
         <Menu as="div" className="relative">
@@ -34,7 +35,7 @@ export default function PostActionsMenu({
                                     active ? "bg-neutral-100" : ""
                                 } w-full px-4 py-2 text-left text-sm`}
                             >
-                                Edit
+                                {edit}
                             </button>
                         )}
                     </Menu.Item>
@@ -47,7 +48,7 @@ export default function PostActionsMenu({
                                     active ? "bg-red-50" : ""
                                 } w-full px-4 py-2 text-left text-sm text-red-600`}
                             >
-                                Delete {remove}
+                                {remove}
                             </button>
                         )}
                     </Menu.Item>
