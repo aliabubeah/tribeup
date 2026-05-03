@@ -354,3 +354,44 @@ export async function revokeInvitaionAPI({ accessToken, invitationId }) {
 
     return true;
 }
+
+export async function invitationInfoAPI(accessToken, token) {
+    const res = await fetch(
+        `${BASEURL}/api/GroupInvitations/Details/${token}`,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}
+
+export async function acceptInviteAPI({ accessToken, token }) {
+    const res = await fetch(
+        `${BASEURL}/api/GroupInvitations/AcceptInvitations/${token}`,
+        {
+            method: "post",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return true;
+}

@@ -40,6 +40,8 @@ import Followers from "./features/tribes/Followers";
 import DiscoverTribes from "./features/tribes/DiscoverTribes";
 import JoinedTribes from "./features/tribes/JoinedTribes";
 import { ConfirmProvider } from "./contexts/ConfirmContext";
+import Invitation from "./features/tribes/Invitation";
+import TribeSettingsGuard from "./features/tribes/TribeSettingsGuard";
 
 const router = createBrowserRouter([
     {
@@ -102,6 +104,7 @@ const router = createBrowserRouter([
                 path: "/messages",
                 element: <Mesaage />,
             },
+
             {
                 path: "settings",
                 element: <Settings />,
@@ -118,7 +121,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/tribes/:tribeId/settings",
-                element: <TribeSettings />,
+                element: (
+                    <TribeSettingsGuard>
+                        <TribeSettings />
+                    </TribeSettingsGuard>
+                ),
                 children: [
                     { index: true, element: <Navigate to="general" replace /> },
                     { path: "general", element: <General /> },
@@ -152,6 +159,15 @@ const router = createBrowserRouter([
                 action: resetAction,
             },
         ],
+    },
+    {
+        path: "/tribes/join/:token",
+        element: (
+            <ProtectedRoute>
+                <Invitation />,
+            </ProtectedRoute>
+        ),
+        errorElement: <Error />,
     },
 ]);
 
