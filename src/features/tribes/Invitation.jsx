@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { acceptInviteAPI, invitationInfoAPI } from "../../services/groups";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
+import { getCleanImageUrl } from "../../services/http";
 
 function Invitation() {
     const { accessToken } = useAuth();
@@ -41,7 +42,7 @@ function Invitation() {
             <div className="w-full max-w-sm rounded-xl bg-white p-6 text-center shadow-xl">
                 {/* Image */}
                 <img
-                    src={inviteData?.groupPicture}
+                    src={getCleanImageUrl(inviteData?.groupPicture)}
                     alt="group"
                     className="mx-auto mb-4 h-20 w-20 rounded-lg object-cover"
                 />
