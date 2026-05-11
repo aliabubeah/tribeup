@@ -36,6 +36,8 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
 
         onSuccess: () => {
             resetCreate();
+            queryClient.setQueryData(["tribeInvitations", groupId], null);
+
             queryClient.invalidateQueries(["tribeInvitations", groupId]);
         },
 
@@ -159,9 +161,6 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
                                                 }}
                                             >
                                                 {invite?.invitationUrl}
-                                                {/* <span className="rounded-md bg-green-100 px-2 py-1 text-green-600">
-                                                    Active
-                                                </span> */}
                                             </p>
 
                                             <div className="mt-2 grid grid-cols-[1fr_auto] gap-y-4 text-xs text-gray-500">

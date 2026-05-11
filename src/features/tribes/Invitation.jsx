@@ -44,7 +44,7 @@ function Invitation() {
                 <img
                     src={getCleanImageUrl(inviteData?.groupPicture)}
                     alt="group"
-                    className="mx-auto mb-4 h-20 w-20 rounded-lg object-cover"
+                    className="mx-auto mb-4 h-20 w-28 rounded-xl object-cover"
                 />
 
                 {/* Text */}
@@ -56,8 +56,8 @@ function Invitation() {
                     {inviteData?.groupName}
                 </h2>
 
-                <p className="text-xs text-gray-400">
-                    {inviteData?.membersCount}
+                <p className="text-sm text-neutral-700">
+                    {inviteData?.membersCount} Members
                 </p>
 
                 {/* Actions */}
@@ -74,7 +74,7 @@ function Invitation() {
                         to="/"
                         className="flex-1 rounded-lg border border-red-400 py-2 text-sm font-medium text-red-500 transition hover:bg-red-50 disabled:opacity-50"
                     >
-                        decline
+                        Decline
                     </Link>
                 </div>
             </div>
