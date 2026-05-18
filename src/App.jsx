@@ -164,7 +164,7 @@ const router = createBrowserRouter([
         path: "/tribes/join/:token",
         element: (
             <ProtectedRoute>
-                <Invitation />,
+                <Invitation />
             </ProtectedRoute>
         ),
         errorElement: <Error />,
