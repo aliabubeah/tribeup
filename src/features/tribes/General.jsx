@@ -184,8 +184,6 @@ function General() {
             setSelectedImage(null);
             setIsEdit(false);
             setForm(null);
-
-            toast.success("Changes saved successfully");
         } catch (err) {
             toast.error(err.message);
         }

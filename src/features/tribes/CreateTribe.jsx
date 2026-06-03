@@ -6,8 +6,11 @@ import { CreateGroupAPI } from "../../services/groups";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
+import ImageCropModal from "../../ui/ImageCropModal";
+import getCroppedImg from "../../utils/cropImage";
 
 function CreateTribe() {
+    const [cropImage, setCropImage] = useState(null);
     const navigate = useNavigate();
     const { accessToken } = useAuth();
     const [form, setForm] = useState({
@@ -23,14 +26,26 @@ function CreateTribe() {
 
     function handleImageChange(e) {
         const file = e.target.files?.[0];
+
         if (!file) return;
+
+        const url = URL.createObjectURL(file);
+
+        setCropImage(url);
+        e.target.value = "";
+    }
+
+    async function handleCropSave(croppedAreaPixels) {
+        const croppedFile = await getCroppedImg(cropImage, croppedAreaPixels);
 
         setForm((prev) => ({
             ...prev,
-            image: file,
+            image: croppedFile,
         }));
 
-        setPreview(URL.createObjectURL(file));
+        setPreview(URL.createObjectURL(croppedFile));
+
+        setCropImage(null);
     }
 
     const { mutate: createGroup, isPending: isCreating } = useMutation({
@@ -75,7 +90,7 @@ function CreateTribe() {
                 {/* Image Upload */}
                 <div>
                     <h2 className="mb-3 font-medium">Choose Image</h2>
-                    {/* flex h-52 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 transition hover:bg-neutral-100 */}
+
                     <label
                         htmlFor="tribe-image"
                         className="flex h-56 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-neutral-300 bg-neutral-50 transition hover:bg-neutral-100"
@@ -159,6 +174,14 @@ function CreateTribe() {
                     {isCreating ? "Creating...." : "Create"}
                 </MainButton>
             </div>
+            {cropImage && (
+                <ImageCropModal
+                    image={cropImage}
+                    aspect={1}
+                    onClose={() => setCropImage(null)}
+                    onCropComplete={handleCropSave}
+                />
+            )}
         </div>
     );
 }
