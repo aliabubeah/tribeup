@@ -15,7 +15,15 @@ function Tribes() {
         <div className="flex flex-col gap-3 md:p-5 md:pr-20">
             {/* Header */}
             <div className="rounded-xl bg-white p-4 shadow-sm">
-                <h1 className="mb-3 text-lg font-semibold">My tribes</h1>
+                <div className="mb-4 flex items-center justify-between">
+                    <h1 className="mb-3 text-lg font-semibold">My tribes</h1>
+                    <MainButton
+                        className="!rounded-3xl !p-2"
+                        to={"create-tribe"}
+                    >
+                        + Create your own
+                    </MainButton>
+                </div>
 
                 {/* Search */}
                 <input
@@ -29,9 +37,6 @@ function Tribes() {
                 />
 
                 {/* Create button */}
-                <MainButton className="mb-4 w-full !p-3">
-                    + Create your own
-                </MainButton>
 
                 {/* Tabs */}
                 <TribesTabs />

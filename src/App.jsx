@@ -42,6 +42,7 @@ import JoinedTribes from "./features/tribes/JoinedTribes";
 import { ConfirmProvider } from "./contexts/ConfirmContext";
 import Invitation from "./features/tribes/Invitation";
 import TribeSettingsGuard from "./features/tribes/TribeSettingsGuard";
+import CreateTribe from "./features/tribes/CreateTribe";
 
 const router = createBrowserRouter([
     {
@@ -133,6 +134,7 @@ const router = createBrowserRouter([
                     { path: "followers", element: <Followers /> },
                 ],
             },
+            { path: "tribes/create-tribe", element: <CreateTribe /> },
         ],
     },
     {

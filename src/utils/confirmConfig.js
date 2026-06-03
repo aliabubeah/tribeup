@@ -23,4 +23,17 @@ export const confirmConfig = {
         confirmText: "Demote",
         variant: "default",
     },
+    deleteGroup: {
+        title: "Delete Tribe",
+        description:
+            "This action cannot be undone. All posts, members, and tribe data will be permanently removed.",
+        confirmText: "delete",
+        variant: "danger",
+    },
+    deleteGroupPicture: {
+        title: "Remove picture",
+        description: "The tribe picture will be removed.",
+        confirmText: "Remove",
+        variant: "danger",
+    },
 };

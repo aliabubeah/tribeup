@@ -96,17 +96,21 @@ export async function CreateGroupAPI({
 }) {
     const queryParams = new URLSearchParams({
         GroupName: groupName,
-        Description: description,
         Accessibility: accessibility,
-    }).toString();
+    });
+
+    if (description?.trim()) {
+        queryParams.append("Description", description.trim());
+    }
 
     const formData = new FormData();
+
     if (groupProfilePicture) {
         formData.append("GroupProfilePicture", groupProfilePicture);
     }
 
     const res = await fetch(
-        `${BASEURL}/api/Groups/CreateGroup?${queryParams}`,
+        `${BASEURL}/api/Groups/CreateGroup?${queryParams.toString()}`,
         {
             method: "POST",
             headers: {
@@ -119,8 +123,98 @@ export async function CreateGroupAPI({
     const data = await res.json();
 
     if (!res.ok) {
+        throw handleApiError(data);
+    }
+
+    return data;
+}
+
+export async function deleteGroupAPI({ accessToken, groupId }) {
+    const res = await fetch(`${BASEURL}/api/Groups/DeleteGroup/${groupId}`, {
+        method: "delete",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
         console.log(handleApiError(data));
         return handleApiError(data);
+    }
+
+    return true;
+}
+
+export async function updateGroupAPI({
+    accessToken,
+    groupId,
+    groupName,
+    description,
+    accessibility,
+}) {
+    const res = await fetch(`${BASEURL}/api/Groups/UpdateGroup/${groupId}`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            groupName,
+            description,
+            accessibility,
+        }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw handleApiError(data);
+    }
+
+    return data;
+}
+
+export async function updateGroupPictureAPI({ accessToken, groupId, picture }) {
+    const formData = new FormData();
+
+    formData.append("Picture", picture);
+
+    const res = await fetch(
+        `${BASEURL}/api/Groups/UpdateGroupPicture/${groupId}`,
+        {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: formData,
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw handleApiError(data);
+    }
+
+    return data;
+}
+
+export async function deleteGroupPictureAPI({ accessToken, groupId }) {
+    const res = await fetch(
+        `${BASEURL}/api/Groups/DeleteGroupPicture/${groupId}`,
+        {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw handleApiError(data);
     }
 
     return data;
