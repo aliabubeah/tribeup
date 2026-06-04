@@ -62,7 +62,7 @@ function TribePosts({ tribeId }) {
 
     if (isLoading) return <PostCardSkeleton />;
 
-    if (posts.totalCount === 0) {
+    if (posts.length === 0) {
         return <div className="py-4 text-center">No posts yet</div>;
     }
 

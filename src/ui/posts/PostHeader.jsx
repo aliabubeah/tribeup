@@ -2,7 +2,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { getCleanImageUrl } from "../../services/http";
 import { deletePostAPI } from "../../services/posts";
 import PostActionsMenu from "./PostActionMenu";
-import groupPfp from "../../assets/GroupPfp.png";
 import { Link } from "react-router-dom";
 
 function PostHeader({
@@ -23,10 +22,13 @@ function PostHeader({
     return (
         <div className="flex items-center justify-between">
             <div className="flex gap-2">
-                <img
-                    src={getCleanImageUrl(groupPicture)}
-                    className="h-12 w-12 rounded-full"
-                />
+                <Link to={`/tribes/${groupId}`}>
+                    <img
+                        src={getCleanImageUrl(groupPicture)}
+                        className="h-12 w-12 rounded-full"
+                    />
+                </Link>
+
                 <div className="flex flex-col text-start">
                     <Link to={`/tribes/${groupId}`} className="font-semibold">
                         {groupName}

@@ -1,47 +1,12 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment } from "react";
 import PostHeader from "./PostHeader";
 import PostContent from "./PostContent";
 import PostActions from "./PostActions";
 import PostChat from "./PostChat";
 import PostMediaModal from "./PostMediaModal";
-import { useDispatch, useSelector } from "react-redux";
-import { useAuth } from "../../contexts/AuthContext";
-import { fetchComments } from "../../features/comments/commentsSlice";
 
 function PostModal({ post, isOpen = false, onClose }) {
-    // const dispatch = useDispatch();
-    // const { accessToken } = useAuth();
-    // const hasFetchedRef = useRef(false);
-
-    // const commentsState = useSelector(
-    //     (state) => state.comments.byPostId[post.postId],
-    // );
-
-    // const page = commentsState?.page || 1;
-
-    // ✅ Fetch once per post (kept from optimization)
-    // useEffect(() => {
-    //     if (!post?.postId) return;
-
-    //     if (!commentsState && !hasFetchedRef.current) {
-    //         hasFetchedRef.current = true;
-
-    //         dispatch(
-    //             fetchComments({
-    //                 accessToken,
-    //                 postId: post.postId,
-    //                 page,
-    //             }),
-    //         );
-    //     }
-    // }, [post.postId, accessToken, dispatch, commentsState]);
-
-    // reset when switching post
-    // useEffect(() => {
-    //     hasFetchedRef.current = false;
-    // }, [post.postId]);
-
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={onClose}>

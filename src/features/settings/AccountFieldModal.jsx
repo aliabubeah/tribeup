@@ -1,75 +1,76 @@
-import { Dialog, Transition, TransitionChild } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import MainButton from "../../ui/Buttons/MainButton";
-import SecondaryButton from "../../ui/Buttons/SecondaryButton";
-import { useDispatch, useSelector } from "react-redux";
-import {
-    udpateFullName,
-    updateBio,
-    updatePassword,
-    updatePhoneNumber,
-} from "./settingsSlice";
-import { useAuth } from "../../contexts/AuthContext";
+import { Dialog, Transition } from "@headlessui/react";
 
-function AccountFieldModal({ field, isOpen, onClose }) {
-    const { account } = useSelector((state) => state.settings);
-    const { accessToken } = useAuth();
-    const dispatch = useDispatch();
-    const { firstName, lastName, bio, phoneNumber } = account;
+import useUpdateName from "./hooks/useUpdateName";
+import useUpdateBio from "./hooks/useUpdateBio";
+import useUpdatePhone from "./hooks/useUpdatePhone";
+import useUpdatePassword from "./hooks/useUpdatePassword";
+
+import MainButton from "../../ui/Buttons/MainButton";
+
+function AccountFieldModal({ field, isOpen, onClose, account }) {
+    const updateNameMutation = useUpdateName();
+    const updateBioMutation = useUpdateBio();
+    const updatePhoneMutation = useUpdatePhone();
+    const updatePasswordMutation = useUpdatePassword();
 
     const [form, setForm] = useState({
-        firstName: firstName || "",
-        lastName: lastName || "",
-        phoneNumber: phoneNumber || "",
-        bio: bio || "",
+        firstName: account?.firstName || "",
+        lastName: account?.lastName || "",
+        phoneNumber: account?.phoneNumber || "",
+        bio: account?.bio || "",
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
     });
 
     async function handleCall() {
-        switch (field.type) {
-            case "fullName":
-                await dispatch(
-                    udpateFullName({
-                        accessToken,
+        try {
+            switch (field.type) {
+                case "fullName":
+                    await updateNameMutation.mutateAsync({
                         firstName: form.firstName,
                         lastName: form.lastName,
-                    }),
-                ).unwrap();
-                break;
-            case "bio":
-                await dispatch(
-                    updateBio({
-                        accessToken,
-                        bio: form.bio,
-                    }),
-                ).unwrap();
-                break;
-            case "phone":
-                await dispatch(
-                    updatePhoneNumber({
-                        accessToken,
-                        phoneNumber: form.phoneNumber,
-                    }),
-                ).unwrap();
-                break;
+                    });
+                    break;
 
-            case "password":
-                await dispatch(
-                    updatePassword({
-                        accessToken,
+                case "bio":
+                    await updateBioMutation.mutateAsync(form.bio);
+                    break;
+
+                case "phone":
+                    await updatePhoneMutation.mutateAsync(form.phoneNumber);
+                    break;
+
+                case "password":
+                    await updatePasswordMutation.mutateAsync({
                         currentPassword: form.currentPassword,
+
                         newPassword: form.newPassword,
+
                         confirmPassword: form.confirmPassword,
-                    }),
-                ).unwrap();
-                break;
+                    });
+
+                    setForm((prev) => ({
+                        ...prev,
+                        currentPassword: "",
+                        newPassword: "",
+                        confirmPassword: "",
+                    }));
+                    break;
+
+                default:
+                    return;
+            }
+
+            onClose();
+        } catch (error) {
+            console.error(error);
         }
-        onClose();
     }
 
     if (!field) return null;
+
     function renderFields() {
         switch (field.type) {
             case "fullName":
@@ -78,7 +79,7 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                         <input
                             placeholder="First name"
                             className="input"
-                            defaultValue={form.firstName}
+                            value={form.firstName}
                             onChange={(e) =>
                                 setForm((prev) => ({
                                     ...prev,
@@ -86,10 +87,11 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                                 }))
                             }
                         />
+
                         <input
                             placeholder="Last name"
                             className="input"
-                            defaultValue={form.lastName}
+                            value={form.lastName}
                             onChange={(e) =>
                                 setForm((prev) => ({
                                     ...prev,
@@ -105,11 +107,14 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                     <input
                         placeholder="Phone number"
                         className="input"
-                        defaultValue={form.phoneNumber}
+                        type="tel"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={form.phoneNumber}
                         onChange={(e) =>
                             setForm((prev) => ({
                                 ...prev,
-                                phoneNumber: e.target.value,
+                                phoneNumber: e.target.value.replace(/\D/g, ""),
                             }))
                         }
                     />
@@ -120,7 +125,7 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                     <textarea
                         placeholder="Bio"
                         className="input"
-                        defaultValue={form.bio}
+                        value={form.bio}
                         onChange={(e) =>
                             setForm((prev) => ({
                                 ...prev,
@@ -137,6 +142,7 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                             type="password"
                             placeholder="Current password"
                             className="input"
+                            value={form.currentPassword}
                             onChange={(e) =>
                                 setForm((prev) => ({
                                     ...prev,
@@ -144,10 +150,12 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                                 }))
                             }
                         />
+
                         <input
                             type="password"
                             placeholder="New password"
                             className="input"
+                            value={form.newPassword}
                             onChange={(e) =>
                                 setForm((prev) => ({
                                     ...prev,
@@ -155,10 +163,12 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                                 }))
                             }
                         />
+
                         <input
                             type="password"
                             placeholder="Confirm password"
                             className="input"
+                            value={form.confirmPassword}
                             onChange={(e) =>
                                 setForm((prev) => ({
                                     ...prev,
@@ -174,6 +184,12 @@ function AccountFieldModal({ field, isOpen, onClose }) {
         }
     }
 
+    const isSubmitting =
+        updateNameMutation.isPending ||
+        updateBioMutation.isPending ||
+        updatePhoneMutation.isPending ||
+        updatePasswordMutation.isPending;
+
     return (
         <Transition
             appear
@@ -186,11 +202,7 @@ function AccountFieldModal({ field, isOpen, onClose }) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
         >
-            <Dialog
-                as="div"
-                className="duration- relative z-50"
-                onClose={onClose}
-            >
+            <Dialog as="div" className="relative z-50" onClose={onClose}>
                 <div className="fixed inset-0 bg-black/25" />
 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -198,13 +210,15 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                         <Dialog.Title className="flex items-center justify-between text-lg font-semibold">
                             <div>
                                 <h1 className="text-2xl">{field.modalTitle}</h1>
+
                                 <p className="text-sm font-medium text-neutral-700">
                                     {field.modalDesc}
                                 </p>
                             </div>
+
                             <span
                                 className="icon-outlined cursor-pointer"
-                                onClick={(e) => onClose()}
+                                onClick={onClose}
                             >
                                 close
                             </span>
@@ -217,9 +231,10 @@ function AccountFieldModal({ field, isOpen, onClose }) {
                         <div className="flex justify-end gap-2">
                             <MainButton
                                 className="grow !py-3"
+                                disabled={isSubmitting}
                                 onClick={handleCall}
                             >
-                                Update
+                                {isSubmitting ? "Updating..." : "Update"}
                             </MainButton>
                         </div>
                     </Dialog.Panel>

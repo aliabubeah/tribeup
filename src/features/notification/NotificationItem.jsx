@@ -1,12 +1,13 @@
+import toast from "react-hot-toast";
+
 import { Link } from "react-router-dom";
 import { getCleanImageUrl } from "../../services/http";
 import { formatPostDate } from "../../utils/helper";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { markReadAPI } from "../../services/notifications";
-import toast from "react-hot-toast";
 import { useAuth } from "../../contexts/AuthContext";
 
-function NotificationItem({ notification }) {
+function NotificationItem({ notification, className }) {
     const { id, isRead, message, createAt, actorPicture, link, title } =
         notification;
     const { accessToken } = useAuth();
@@ -26,9 +27,9 @@ function NotificationItem({ notification }) {
     return (
         <Link
             to={link || "#"}
-            className={`flex items-start gap-3 p-4 transition ${
+            className={`flex items-start gap-3 p-4 transition duration-300 ease-in-out ${
                 isRead ? "bg-white" : "bg-neutral-100"
-            } hover:bg-neutral-50`}
+            } hover:bg-neutral-50 ${className}`}
             onClick={() => markRead({ accessToken, id })}
         >
             {/* Avatar */}

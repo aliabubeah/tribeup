@@ -148,12 +148,12 @@ export async function resetPasswordAPI(
     }
 }
 
-export async function changePasswordAPI(
+export async function changePasswordAPI({
     currentPassword,
     newPassword,
     confirmNewPassword,
     accessToken,
-) {
+}) {
     const result = await fetch(
         `${BASEURL}/api/Authentication/Change-Password`,
 

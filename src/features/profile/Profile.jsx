@@ -5,6 +5,7 @@ import { fetchUserProfile } from "./profileSlice";
 import { useParams } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { personalFeedAPI } from "../../services/posts";
+
 import ProfileHeader from "./ProfileHeader";
 import ProfilePosts from "./ProfilePosts";
 import HeaderSkeleton from "../../ui/Skeleton/HeaderSkeleton";

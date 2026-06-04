@@ -3,12 +3,14 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+
 import NotificationItem from "./NotificationItem";
+import NotificationSkeleton from "../../ui/Skeleton/NotificationSkeleton.jsx";
 
 function Notifications() {
     const { accessToken } = useAuth();
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
         useInfiniteQuery({
             queryKey: ["notifications", accessToken],
 
@@ -44,15 +46,20 @@ function Notifications() {
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    if (status === "pending") {
-        return <div>Loading notifications...</div>;
+    if (isFetching) {
+        return (
+            <div>
+                <h1 className="px-4 text-2xl font-semibold">Notifications</h1>
+                <NotificationSkeleton />;
+            </div>
+        );
     }
 
     if (!notifications.length) {
         return <div className="py-4 text-center">No notifications yet</div>;
     }
     return (
-        <div className="divide-y">
+        <div>
             <div className="flex justify-between px-4 pb-2">
                 <h1 className="text-2xl font-semibold">Notifications</h1>
                 <button className="icon-outlined text-2xl text-tribe-500">
@@ -60,8 +67,12 @@ function Notifications() {
                 </button>
             </div>
             <div className="flex flex-col">
-                {notifications.map((n) => (
-                    <NotificationItem key={n.id} notification={n} />
+                {notifications.map((n, i) => (
+                    <NotificationItem
+                        key={n.id}
+                        notification={n}
+                        className={i === 0 ? "rounded-t-[20px]" : ""}
+                    />
                 ))}
             </div>
         </div>

@@ -38,7 +38,7 @@ function ConfirmProvider({ children }) {
     };
 
     const handleAfterLeave = () => {
-        // 🔥 clear AFTER animation ends
+        // clear AFTER animation ends
         setVisibleOptions(null);
     };
 

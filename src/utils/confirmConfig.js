@@ -36,4 +36,17 @@ export const confirmConfig = {
         confirmText: "Remove",
         variant: "danger",
     },
+    deleteBio: {
+        title: "Remove bio",
+        description: "Your bio will be permanently removed from your profile.",
+        confirmText: "Remove",
+        variant: "danger",
+    },
+
+    deletePhone: {
+        title: "Remove phone number",
+        description: "Your phone number will be removed from your profile.",
+        confirmText: "Remove",
+        variant: "danger",
+    },
 };

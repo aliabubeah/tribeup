@@ -3,10 +3,8 @@ import {
     redirect,
     useActionData,
     useNavigation,
-    useParams,
     useSearchParams,
 } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 import { resetPasswordAPI } from "../../services/auth";
 import Button from "../../ui/Button";
 import Auth from "./Auth";

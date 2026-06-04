@@ -1,18 +1,18 @@
 import { getCleanImageUrl } from "../../services/http";
-import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import coverImg from "../../assets/PostImg.jpeg";
-import avatar from "../../assets/avatar.jpeg";
-import Button from "../../ui/Button";
+import { useRef, useState } from "react";
+import { useConfirm } from "../../contexts/ConfirmContext";
+
+import useDeletePhone from "./hooks/useDeletePhone";
+import useProfile from "./hooks/useProfile";
+import useUpdateCoverPicture from "./hooks/useUpdateCoverPicture";
+import useUpdateProfilePicture from "./hooks/useUpdateProfilePicture";
+import useDeleteBio from "./hooks/useDeleteBio";
+
+import BackButton from "../../ui/Buttons/BackButton";
 import ProfileFieldInfo from "./ProfileFieldInfo";
 import AccountFieldModal from "./AccountFieldModal";
-import { useDispatch, useSelector } from "react-redux";
-import {
-    fetchProfileInfo,
-    updateCoverPicture,
-    updateProfilePicture,
-} from "./settingsSlice";
-import BackButton from "../../ui/Buttons/BackButton";
+import getCroppedImg from "../../utils/cropImage";
+import ImageCropModal from "../../ui/ImageCropModal";
 
 const ACCOUNT_FIELDS = {
     fullName: {
@@ -42,21 +42,23 @@ const ACCOUNT_FIELDS = {
 };
 
 function Account() {
-    const { accessToken } = useAuth();
-    const dispatch = useDispatch();
-    const { account, isLoading, error } = useSelector(
-        (state) => state.settings,
-    );
-
     const [activeField, setActiveField] = useState(null);
+    const [cropImage, setCropImage] = useState(null);
+    const [cropProfileImage, setCropProfileImage] = useState(null);
+
     const fileInputRef = useRef(null);
     const coverInputRef = useRef(null);
 
-    useEffect(() => {
-        if (!account && accessToken) {
-            dispatch(fetchProfileInfo({ accessToken }));
-        }
-    }, [account, accessToken, dispatch]);
+    const confirm = useConfirm();
+
+    const { data: account, isPending: isLoading, error } = useProfile();
+
+    const updateProfilePictureMutation = useUpdateProfilePicture();
+
+    const updateCoverPictureMutation = useUpdateCoverPicture();
+
+    const deleteBioMutation = useDeleteBio();
+    const deletePhoneMutation = useDeletePhone();
 
     function openModal(fieldKey) {
         setActiveField(ACCOUNT_FIELDS[fieldKey]);
@@ -69,32 +71,90 @@ function Account() {
     function openFileDialog() {
         fileInputRef.current?.click();
     }
+
     function coverFileDialog() {
         coverInputRef.current?.click();
     }
 
-    async function handleFileChange(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+    function handleFileChange(e) {
+        const file = e.target.files?.[0];
 
+        if (!file) return;
         if (!file.type.startsWith("image/")) return;
         if (file.size > 2 * 1024 * 1024) return;
 
-        await dispatch(updateProfilePicture({ accessToken, file })).unwrap();
+        const url = URL.createObjectURL(file);
+
+        setCropProfileImage(url);
+
+        e.target.value = "";
+    }
+
+    async function handleProfileCropSave(croppedAreaPixels) {
+        const croppedFile = await getCroppedImg(
+            cropProfileImage,
+            croppedAreaPixels,
+        );
+
+        await updateProfilePictureMutation.mutateAsync(croppedFile);
+
+        setCropProfileImage(null);
     }
 
     async function handleCoverPic(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+        const file = e.target.files?.[0];
 
+        if (!file) return;
         if (!file.type.startsWith("image/")) return;
         if (file.size > 2 * 1024 * 1024) return;
 
-        await dispatch(updateCoverPicture({ accessToken, file })).unwrap();
+        const url = URL.createObjectURL(file);
+
+        setCropImage(url);
+
+        e.target.value = "";
     }
 
-    if (isLoading) return <div>loading...</div>;
-    if (error) return <div className="text-red-500">{error}</div>;
+    async function handleCoverCropSave(croppedAreaPixels) {
+        const croppedFile = await getCroppedImg(cropImage, croppedAreaPixels);
+
+        await updateCoverPictureMutation.mutateAsync(croppedFile);
+
+        setCropImage(null);
+    }
+
+    async function handleDeletePhone() {
+        const ok = await confirm({
+            type: "deletePhone",
+        });
+
+        if (!ok) return;
+
+        await deletePhoneMutation.mutateAsync();
+    }
+
+    async function handleDeleteBio() {
+        const ok = await confirm({
+            type: "deleteBio",
+        });
+
+        if (!ok) return;
+
+        await deleteBioMutation.mutateAsync();
+    }
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="text-red-500">
+                {error?.message || "Something went wrong"}
+            </div>
+        );
+    }
+
     if (!account) return null;
 
     const {
@@ -108,13 +168,16 @@ function Account() {
     } = account;
 
     const fullName = `${firstName} ${lastName}`;
+
     const displayBio = bio || "You don't have bio yet.";
+
     const displayPhoneNumber =
         phoneNumber || "You don't have Phone number yet.";
 
     return (
         <div className="px-3 py-4">
             <BackButton />
+
             <div className="flex flex-col rounded-lg bg-white">
                 <div>
                     <div className="relative rounded-t-lg bg-neutral-200">
@@ -122,13 +185,16 @@ function Account() {
                             <img
                                 src={getCleanImageUrl(coverPicture)}
                                 className="h-44 w-full rounded-t-lg object-cover"
+                                alt="Cover"
                             />
+
                             <span
                                 className="icon-outlined absolute left-1/2 top-1/2 cursor-pointer text-xl text-neutral-950"
                                 onClick={coverFileDialog}
                             >
                                 add_a_photo
                             </span>
+
                             <input
                                 ref={coverInputRef}
                                 type="file"
@@ -137,6 +203,7 @@ function Account() {
                                 onChange={handleCoverPic}
                             />
                         </div>
+
                         <div
                             className="absolute -bottom-6 left-6 flex cursor-pointer"
                             onClick={openFileDialog}
@@ -144,7 +211,9 @@ function Account() {
                             <img
                                 src={getCleanImageUrl(profilePicture)}
                                 className="h-24 w-24 rounded-full"
+                                alt="Profile"
                             />
+
                             <span className="icon-outlined absolute bottom-3 right-1 text-xl text-neutral-50">
                                 add_a_photo
                             </span>
@@ -161,30 +230,34 @@ function Account() {
 
                     <div className="relative p-6 pt-12">
                         <h1 className="font-semibold">{fullName}</h1>
+
                         <p className="text-neutral-500">@{userName}</p>
                     </div>
                 </div>
+
                 <div className="flex flex-col gap-3 px-4 pb-4">
                     <ProfileFieldInfo
                         title="Full name"
-                        info={`${fullName}`}
+                        info={fullName}
                         onEdit={() => openModal("fullName")}
                     />
 
                     <ProfileFieldInfo
                         title="Phone number"
-                        info={`${displayPhoneNumber}`}
+                        info={displayPhoneNumber}
                         remove
-                        onEdit={() => openModal("phone")}
                         isNull={phoneNumber}
+                        onEdit={() => openModal("phone")}
+                        onRemove={handleDeletePhone}
                     />
 
                     <ProfileFieldInfo
                         title="Bio"
-                        info={`${displayBio}`}
+                        info={displayBio}
                         remove
-                        onEdit={() => openModal("bio")}
                         isNull={bio}
+                        onEdit={() => openModal("bio")}
+                        onRemove={handleDeleteBio}
                     />
 
                     <ProfileFieldInfo
@@ -193,12 +266,33 @@ function Account() {
                         onEdit={() => openModal("password")}
                     />
                 </div>
+
                 <AccountFieldModal
+                    key={activeField?.type}
+                    account={account}
                     field={activeField}
                     isOpen={!!activeField}
                     onClose={closeModal}
                 />
             </div>
+            {cropProfileImage && (
+                <ImageCropModal
+                    image={cropProfileImage}
+                    aspect={1}
+                    cropShape="round"
+                    onClose={() => setCropProfileImage(null)}
+                    onCropComplete={handleProfileCropSave}
+                />
+            )}
+
+            {cropImage && (
+                <ImageCropModal
+                    image={cropImage}
+                    aspect={16 / 5}
+                    onClose={() => setCropImage(null)}
+                    onCropComplete={handleCoverCropSave}
+                />
+            )}
         </div>
     );
 }

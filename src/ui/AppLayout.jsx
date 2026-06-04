@@ -1,15 +1,16 @@
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useAuth } from "../contexts/AuthContext";
 import { NavLink, Outlet } from "react-router-dom";
+import { createGroupChatConnection } from "../services/siganlR";
+import { receiveGroupMessage } from "../features/messaging/chatSlice";
+
 import Sidebar from "./Sidebar";
+import MobileSidebarDrawer from "./MobileSideBarDrawer";
+import ChatDrawer from "../features/messaging/ChatDrawer";
 import MobileNav from "./MobileNav";
 import MobileHeader from "./MobileHeader";
-import avatar from "../assets/avatar.jpeg";
-import ChatDrawer from "../features/messaging/ChatDrawer";
-import { useEffect, useRef, useState } from "react";
-import MobileSidebarDrawer from "./MobileSideBarDrawer";
-import { useAuth } from "../contexts/AuthContext";
-import { createGroupChatConnection } from "../services/siganlR";
-import { useDispatch } from "react-redux";
-import { receiveGroupMessage } from "../features/messaging/chatSlice";
+
 function AppLayout() {
     const dispatch = useDispatch();
     const { accessToken } = useAuth();
