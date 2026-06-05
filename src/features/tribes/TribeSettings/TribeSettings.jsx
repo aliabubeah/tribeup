@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useParams } from "react-router-dom";
-import BackButton from "../../ui/Buttons/BackButton";
+import BackButton from "../../../ui/Buttons/BackButton";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -12,7 +12,7 @@ function TribeSettings() {
         { name: "Members", path: `/tribes/${tribeId}/settings/members` },
         { name: "Followers", path: `/tribes/${tribeId}/settings/followers` },
     ];
-    // const candModerate = 
+    // const candModerate =
     return (
         <div className="flex flex-col px-8 pt-4">
             <BackButton className="self-start" to={`/tribes/${tribeId}`} />

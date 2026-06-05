@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
-import { getCleanImageUrl } from "../../services/http";
-import SecondaryButton from "../../ui/Buttons/SecondaryButton";
+import { getCleanImageUrl } from "../../../services/http";
+import SecondaryButton from "../../../ui/Buttons/SecondaryButton";
 import PrivacySelector from "./PrivacySelector";
-import MainButton from "../../ui/Buttons/MainButton";
+import MainButton from "../../../ui/Buttons/MainButton";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -11,11 +11,11 @@ import {
     GetGroupAPI,
     updateGroupAPI,
     updateGroupPictureAPI,
-} from "../../services/groups";
-import { useAuth } from "../../contexts/AuthContext";
+} from "../../../services/groups";
+import { useAuth } from "../../../contexts/AuthContext";
 import toast from "react-hot-toast";
-import ConfirmModal from "../../ui/ConfirmModal";
-import { useConfirm } from "../../contexts/ConfirmContext";
+import ConfirmModal from "../../../ui/ConfirmModal";
+import { useConfirm } from "../../../contexts/ConfirmContext";
 
 function General() {
     const [selectedImage, setSelectedImage] = useState(null);

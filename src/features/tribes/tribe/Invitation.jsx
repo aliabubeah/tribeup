@@ -1,10 +1,10 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import SplashScreen from "../../ui/SplashScreen";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { acceptInviteAPI, invitationInfoAPI } from "../../services/groups";
-import { useAuth } from "../../contexts/AuthContext";
+import { acceptInviteAPI, invitationInfoAPI } from "../../../services/groups";
+import { useAuth } from "../../../contexts/AuthContext";
 import toast from "react-hot-toast";
-import { getCleanImageUrl } from "../../services/http";
+import { getCleanImageUrl } from "../../../services/http";
+import SplashScreen from "../../../ui/SplashScreen";
 
 function Invitation() {
     const { accessToken } = useAuth();

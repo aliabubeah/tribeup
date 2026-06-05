@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { GetGroupAPI } from "../../services/groups";
-import { GroupFeedAPI } from "../../services/posts";
+import { useAuth } from "../../../contexts/AuthContext";
+import { GetGroupAPI } from "../../../services/groups";
+import { GroupFeedAPI } from "../../../services/posts";
 
-import BackButton from "../../ui/Buttons/BackButton";
+import BackButton from "../../../ui/Buttons/BackButton";
 import TribeHeader from "./TribeHeader";
 import TribePosts from "./TribePosts";
-import HeaderSkeleton from "../../ui/Skeleton/HeaderSkeleton";
-import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton";
+import HeaderSkeleton from "../../../ui/Skeleton/HeaderSkeleton";
+import PostCardSkeleton from "../../../ui/Skeleton/PostCardSkeleton";
 
 function Tribe() {
     const { tribeId } = useParams();

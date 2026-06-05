@@ -32,17 +32,17 @@ import Notifications from "./features/notification/Notifications";
 import Search from "./features/search/Search";
 import FullScreenLayout from "./ui/FullScreenLayout";
 import { MyGroupsAPI } from "./services/groups";
-import Tribe from "./features/tribes/Tribe";
-import TribeSettings from "./features/tribes/TribeSettings";
-import General from "./features/tribes/General";
-import Members from "./features/tribes/Members";
-import Followers from "./features/tribes/Followers";
+import TribeSettings from "./features/tribes/TribeSettings/TribeSettings";
+import General from "./features/tribes/TribeSettings/General";
+import Members from "./features/tribes/TribeSettings/Members";
+import Followers from "./features/tribes/TribeSettings/Followers";
 import DiscoverTribes from "./features/tribes/DiscoverTribes";
 import JoinedTribes from "./features/tribes/JoinedTribes";
 import { ConfirmProvider } from "./contexts/ConfirmContext";
-import Invitation from "./features/tribes/Invitation";
-import TribeSettingsGuard from "./features/tribes/TribeSettingsGuard";
+import TribeSettingsGuard from "./features/tribes/TribeSettings/TribeSettingsGuard";
 import CreateTribe from "./features/tribes/CreateTribe";
+import Tribe from "./features/tribes/tribe/Tribe";
+import Invitation from "./features/tribes/tribe/Invitation";
 
 const router = createBrowserRouter([
     {

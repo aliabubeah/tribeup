@@ -1,6 +1,13 @@
-import { getNotificationsAPI } from "../../services/notifications.js";
+import {
+    getNotificationsAPI,
+    markAllAsReadAPI,
+} from "../../services/notifications.js";
 import { useAuth } from "../../contexts/AuthContext";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -9,6 +16,7 @@ import NotificationSkeleton from "../../ui/Skeleton/NotificationSkeleton.jsx";
 
 function Notifications() {
     const { accessToken } = useAuth();
+    const queryClient = useQueryClient();
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
         useInfiniteQuery({
@@ -37,8 +45,38 @@ function Notifications() {
         threshold: 0.5,
     });
 
+    const { mutate: markAllAsRead, isPending: isMarkingAllRead } = useMutation({
+        mutationFn: () =>
+            markAllAsReadAPI({
+                accessToken,
+            }),
+
+        onSuccess: () => {
+            queryClient.setQueryData(
+                ["notifications", accessToken],
+                (oldData) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        pages: oldData.pages.map((page) => ({
+                            ...page,
+                            unreadCount: 0,
+                            notifications: page.notifications.map((n) => ({
+                                ...n,
+                                isRead: true,
+                            })),
+                        })),
+                    };
+                },
+            );
+        },
+    });
+
     const notifications =
         data?.pages?.flatMap((page) => page.notifications ?? []) ?? [];
+
+    const allRead = data?.pages?.[0]?.unreadCount === 0;
 
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
@@ -62,7 +100,11 @@ function Notifications() {
         <div>
             <div className="flex justify-between px-4 pb-2">
                 <h1 className="text-2xl font-semibold">Notifications</h1>
-                <button className="icon-outlined text-2xl text-tribe-500">
+                <button
+                    className="icon-outlined text-2xl text-tribe-500 disabled:cursor-not-allowed disabled:text-neutral-700"
+                    onClick={() => markAllAsRead()}
+                    disabled={isMarkingAllRead || allRead}
+                >
                     done_all
                 </button>
             </div>

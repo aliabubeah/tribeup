@@ -1,7 +1,7 @@
 import { Navigate, useParams } from "react-router-dom";
-import SplashScreen from "../../ui/SplashScreen";
-import { GetGroupAPI } from "../../services/groups";
-import { useAuth } from "../../contexts/AuthContext";
+import SplashScreen from "../../../ui/SplashScreen";
+import { GetGroupAPI } from "../../../services/groups";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 
 function TribeSettingsGuard({ children }) {

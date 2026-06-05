@@ -27,31 +27,35 @@ export default function PostActionsMenu({
                 leaveTo="opacity-0 scale-95"
             >
                 <Menu.Items className="absolute right-0 z-10 mt-2 w-40 overflow-hidden rounded-lg bg-white shadow-lg focus:outline-none">
-                    <Menu.Item>
-                        {({ active }) => (
-                            <button
-                                onClick={onEdit}
-                                className={`${
-                                    active ? "bg-neutral-100" : ""
-                                } w-full px-4 py-2 text-left text-sm`}
-                            >
-                                {edit}
-                            </button>
-                        )}
-                    </Menu.Item>
+                    {onEdit && (
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={onEdit}
+                                    className={`${
+                                        active ? "bg-neutral-100" : ""
+                                    } w-full px-4 py-2 text-left text-sm`}
+                                >
+                                    {edit}
+                                </button>
+                            )}
+                        </Menu.Item>
+                    )}
 
-                    <Menu.Item>
-                        {({ active }) => (
-                            <button
-                                onClick={onDelete}
-                                className={`${
-                                    active ? "bg-red-50" : ""
-                                } w-full px-4 py-2 text-left text-sm text-red-600`}
-                            >
-                                {remove}
-                            </button>
-                        )}
-                    </Menu.Item>
+                    {onDelete && (
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={onDelete}
+                                    className={`${
+                                        active ? "bg-red-50" : ""
+                                    } w-full px-4 py-2 text-left text-sm text-red-600`}
+                                >
+                                    {remove}
+                                </button>
+                            )}
+                        </Menu.Item>
+                    )}
                 </Menu.Items>
             </Transition>
         </Menu>

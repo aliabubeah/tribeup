@@ -16,11 +16,32 @@ function NotificationItem({ notification, className }) {
 
     const { mutate: markRead } = useMutation({
         mutationFn: markReadAPI,
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["notifications"],
-            });
+
+        onSuccess: (_, { id }) => {
+            queryClient.setQueryData(
+                ["notifications", accessToken],
+                (oldData) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        pages: oldData.pages.map((page) => ({
+                            ...page,
+                            notifications: page.notifications.map(
+                                (notification) =>
+                                    notification.id === id
+                                        ? {
+                                              ...notification,
+                                              isRead: true,
+                                          }
+                                        : notification,
+                            ),
+                        })),
+                    };
+                },
+            );
         },
+
         onError: (err) => toast.error(err.message),
     });
 

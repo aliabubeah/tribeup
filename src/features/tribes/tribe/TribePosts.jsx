@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton";
-import Post from "../../ui/posts/Post";
+import PostCardSkeleton from "../../../ui/Skeleton/PostCardSkeleton";
+import Post from "../../../ui/posts/Post";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useAuth } from "../../contexts/AuthContext";
-import { GroupFeedAPI } from "../../services/posts";
-import PostModal from "../../ui/posts/PostModal";
+import { useAuth } from "../../../contexts/AuthContext";
+import { GroupFeedAPI } from "../../../services/posts";
+import PostModal from "../../../ui/posts/PostModal";
 
 function TribePosts({ tribeId }) {
     const { accessToken } = useAuth();
@@ -63,7 +63,12 @@ function TribePosts({ tribeId }) {
     if (isLoading) return <PostCardSkeleton />;
 
     if (posts.length === 0) {
-        return <div className="py-4 text-center">No posts yet</div>;
+        return (
+            <div className="flex flex-col items-center justify-center grayscale">
+                <img src="/noposts.png" className="max-h-[300px]" />
+                <p>No posts yet 😔</p>
+            </div>
+        );
     }
 
     return (

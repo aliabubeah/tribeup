@@ -34,3 +34,19 @@ export async function markReadAPI({ accessToken, id }) {
     console.log(handleApiError(data));
     handleApiError(data);
 }
+
+export async function markAllAsReadAPI({ accessToken }) {
+    const res = await fetch(`${BASEURL}/api/Notification/read/all`, {
+        method: "put",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    if (res.ok) {
+        return true;
+    }
+    const data = await res.json();
+    console.log(handleApiError(data));
+    handleApiError(data);
+}

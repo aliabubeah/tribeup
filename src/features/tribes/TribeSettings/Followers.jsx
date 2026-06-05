@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { getFollowersAPI } from "../../services/groups";
+import { useAuth } from "../../../contexts/AuthContext";
+import { getFollowersAPI } from "../../../services/groups";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
-import { useConfirm } from "../../contexts/ConfirmContext";
-import { getCleanImageUrl } from "../../services/http";
+import { useConfirm } from "../../../contexts/ConfirmContext";
+import { getCleanImageUrl } from "../../../services/http";
 
 function Followers() {
     const { accessToken } = useAuth();

@@ -5,6 +5,7 @@ import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { discoverGroupsAPI } from "../../services/groups";
 import { useOutletContext } from "react-router-dom";
+import TribesSkeleton from "../../ui/Skeleton/TribesSkeleton";
 
 function useDebounce(value, delay = 400) {
     const [debounced, setDebounced] = useState(value);
@@ -72,14 +73,14 @@ function DiscoverTribes() {
     const isLoadingSearch =
         isPending || isTyping || (isFetching && !isFetchingNextPage);
 
-    if (isLoadingSearch && tribes.length === 0) return <p>loading tribes...</p>;
+    if (isLoadingSearch && tribes.length === 0) return <TribesSkeleton />;
     if (error) return <p>{error.message}</p>;
 
     if (!isLoadingSearch && tribes.length === 0) {
         return <p>No tribes found </p>;
     }
 
-    if (isPending) return <p>loading...</p>;
+    if (isPending) return <TribesSkeleton />;
 
     return (
         <div className="">
@@ -93,7 +94,7 @@ function DiscoverTribes() {
                 ))}
             </div>
 
-            {isFetchingNextPage && <p>Loading more...</p>}
+            {isFetchingNextPage && <TribesSkeleton />}
 
             <div ref={ref} />
         </div>

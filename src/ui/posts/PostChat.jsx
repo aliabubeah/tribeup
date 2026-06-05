@@ -184,8 +184,11 @@ function PostComment({ comment }) {
                 {comment.permissions?.canDelete && (
                     <PostActionsMenu
                         onDelete={handleDelete}
-                        onEdit={handleEdit}
-                        remove="comment"
+                        onEdit={
+                            comment?.permissions?.canEdit
+                                ? handleEdit
+                                : undefined
+                        }
                         icon="more_vert"
                         size="text-lg"
                     />
@@ -200,7 +203,7 @@ function AddComment({ postId, className }) {
     const { accessToken, user } = useAuth();
     const queryClient = useQueryClient();
 
-    const mutation = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: () =>
             addCommentAPI({
                 accessToken,
@@ -219,20 +222,22 @@ function AddComment({ postId, className }) {
             onSubmit={(e) => {
                 e.preventDefault();
                 if (!content.trim()) return;
-                mutation.mutate();
+                mutate();
             }}
             className={`flex h-14 gap-2 border-t bg-white p-2 ${className}`}
         >
             <input
+                disabled={isPending}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Type msg..."
-                className="grow rounded-3xl bg-neutral-100 p-2 outline-none placeholder:text-sm placeholder:font-normal placeholder:text-neutral-500"
+                className="grow rounded-3xl bg-neutral-100 p-2 outline-none placeholder:text-sm placeholder:font-normal placeholder:text-neutral-500 disabled:cursor-not-allowed"
             />
 
             <button
+                disabled={isPending}
                 type="submit"
-                className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl hover:bg-neutral-200 active:bg-neutral-400"
+                className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl hover:bg-neutral-200 active:bg-neutral-400 disabled:cursor-not-allowed"
             >
                 send
             </button>
@@ -245,7 +250,7 @@ function EditComment({ content, accessToken, postId, commentId, onEdit }) {
     const { user } = useAuth();
     const queryClient = useQueryClient();
 
-    const mutation = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: () =>
             editCommentAPI({
                 accessToken,
@@ -265,7 +270,7 @@ function EditComment({ content, accessToken, postId, commentId, onEdit }) {
 
         if (!comment.trim()) return;
 
-        mutation.mutate();
+        mutate();
     }
 
     return (
@@ -278,14 +283,16 @@ function EditComment({ content, accessToken, postId, commentId, onEdit }) {
                 className="h-9 w-9 rounded-full"
             />
             <input
+                disabled={isPending}
                 defaultValue={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Type msg..."
-                className="min-w-0 grow rounded-3xl bg-neutral-100 p-2 outline-none placeholder:text-sm placeholder:font-normal placeholder:text-neutral-500"
+                className="min-w-0 grow rounded-3xl bg-neutral-100 p-2 outline-none placeholder:text-sm placeholder:font-normal placeholder:text-neutral-500 disabled:cursor-not-allowed"
             />
             <button
+                disabled={isPending}
                 type="submit"
-                className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl hover:bg-neutral-200 active:bg-neutral-400"
+                className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl hover:bg-neutral-200 active:bg-neutral-400 disabled:cursor-not-allowed"
             >
                 send
             </button>

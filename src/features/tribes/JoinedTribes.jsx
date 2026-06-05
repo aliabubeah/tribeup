@@ -1,14 +1,10 @@
-import {
-    useQuery,
-    useMutation,
-    useQueryClient,
-    useInfiniteQuery,
-} from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAuth } from "../../contexts/AuthContext";
-import { leaveAPI, MyGroupsAPI } from "../../services/groups";
 import TribeCard from "./TribeCard";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
+import TribesSkeleton from "../../ui/Skeleton/TribesSkeleton";
+import { MyGroupsAPI } from "../../services/groups";
 
 function JoinedTribes() {
     const { accessToken } = useAuth();
@@ -54,7 +50,7 @@ function JoinedTribes() {
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    if (isPending) return <p>loading...</p>;
+    if (isPending) return <TribesSkeleton />;
 
     if (error) return <p>{error.message}</p>;
 
@@ -64,7 +60,7 @@ function JoinedTribes() {
                 <TribeCard key={tribe.id} tribe={tribe} />
             ))}
 
-            {isFetchingNextPage && <p>Loading more...</p>}
+            {isFetchingNextPage && <TribesSkeleton />}
 
             <div ref={ref} />
         </div>

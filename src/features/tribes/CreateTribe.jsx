@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainButton from "../../ui/Buttons/MainButton";
-import PrivacySelector from "./PrivacySelector";
+import PrivacySelector from "./TribeSettings/PrivacySelector";
 import { CreateGroupAPI } from "../../services/groups";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";

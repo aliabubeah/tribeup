@@ -10,16 +10,16 @@ import {
     demoteAdminAPI,
     kickAPI,
     GetGroupAPI,
-} from "../../services/groups";
+} from "../../../services/groups";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { useConfirm } from "../../contexts/ConfirmContext";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useConfirm } from "../../../contexts/ConfirmContext";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import { getCleanImageUrl } from "../../services/http";
-import SecondaryButton from "../../ui/Buttons/SecondaryButton";
+import { getCleanImageUrl } from "../../../services/http";
+import SecondaryButton from "../../../ui/Buttons/SecondaryButton";
 import toast from "react-hot-toast";
-import PostActionsMenu from "../../ui/posts/PostActionMenu";
+import PostActionsMenu from "../../../ui/posts/PostActionMenu";
 
 function Members() {
     const { tribeId } = useParams();

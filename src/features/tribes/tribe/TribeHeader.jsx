@@ -1,15 +1,15 @@
 import { Description } from "@headlessui/react";
-import { getCleanImageUrl } from "../../services/http";
-import SecondaryButton from "../../ui/Buttons/SecondaryButton";
-import HeaderSkeleton from "../../ui/Skeleton/HeaderSkeleton";
-import CreatePost from "../../ui/CreatePost/CreatePost";
-import { toggleFollowAPI, tribeInvitationsAPI } from "../../services/groups";
+import { getCleanImageUrl } from "../../../services/http";
+import SecondaryButton from "../../../ui/Buttons/SecondaryButton";
+import HeaderSkeleton from "../../../ui/Skeleton/HeaderSkeleton";
+import CreatePost from "../../../ui/CreatePost/CreatePost";
+import { toggleFollowAPI, tribeInvitationsAPI } from "../../../services/groups";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import MainButton from "../../ui/Buttons/MainButton";
-import CreateInviteModal from "../../ui/CreateInviteModal";
+import MainButton from "../../../ui/Buttons/MainButton";
+import CreateInviteModal from "../../../ui/CreateInviteModal";
 import { useState } from "react";
 
 function TribeHeader({ tribe }) {
