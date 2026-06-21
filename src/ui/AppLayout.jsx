@@ -3,10 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink, Outlet } from "react-router-dom";
 import { createGroupChatConnection } from "../services/siganlR";
-import {
-    fetchChatInbox,
-    receiveGroupMessage,
-} from "../features/messaging/chatSlice";
+import { fetchChatInbox } from "../features/messaging/chatSlice";
 
 import Sidebar from "./Sidebar";
 import MobileSidebarDrawer from "./MobileSideBarDrawer";
@@ -80,27 +77,6 @@ function AppLayout() {
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
-    // connect to signalR
-    useEffect(() => {
-        if (!accessToken) return;
-
-        const connection = createGroupChatConnection(accessToken);
-
-        connection
-            .start()
-            .then(() => {
-                console.log("SignalR connected");
-
-                connection.on("ReceiveGroupMessage", (message) => {
-                    dispatch(receiveGroupMessage(message));
-                });
-            })
-            .catch((err) => console.error("SignalR error:", err));
-
-        return () => {
-            connection.stop();
-        };
-    }, [accessToken]);
 
     return (
         <div className="flex min-h-screen flex-col bg-neutral-50">

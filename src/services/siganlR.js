@@ -4,6 +4,8 @@ import { BASEURL } from "./http";
 let connection = null;
 
 export function createGroupChatConnection(accessToken) {
+    if (connection) return connection;
+
     connection = new signalR.HubConnectionBuilder()
         .withUrl(`${BASEURL}/hubs/group-chat`, {
             accessTokenFactory: () => accessToken,
