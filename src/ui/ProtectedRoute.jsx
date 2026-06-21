@@ -5,14 +5,24 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import * as signalR from "@microsoft/signalr";
 
-import { createGroupChatConnection } from "../services/siganlR";
-import { receiveGroupMessage } from "../features/messaging/chatSlice";
+import {
+    createGroupChatConnection,
+    createNotificationConnection,
+} from "../services/siganlR";
+
+import {
+    receiveGroupMessage,
+    updateInboxLastMessage,
+} from "../features/messaging/chatSlice";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 function ProtectedRoute({ children }) {
     const { isAuthenticated, user, isLoading, accessToken } = useAuth();
-
-    const dispatch = useDispatch();
     const [showSplash, setShowSplash] = useState(true);
+    const dispatch = useDispatch();
+
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         if (!isLoading) {
@@ -24,53 +34,100 @@ function ProtectedRoute({ children }) {
         }
     }, [isLoading]);
 
-    // Global SignalR connection
     useEffect(() => {
         if (!accessToken) return;
 
-        const connection = createGroupChatConnection(accessToken);
+        const chatConnection = createGroupChatConnection(accessToken);
 
-        connection.off("ReceiveGroupMessage");
+        const notificationConnection =
+            createNotificationConnection(accessToken);
 
-        connection.on("ReceiveGroupMessage", (message) => {
+        // ================= CHAT HUB =================
+
+        chatConnection.off("ReceiveGroupMessage");
+        chatConnection.off("UpdateInbox");
+
+        chatConnection.on("ReceiveGroupMessage", (message) => {
             dispatch(receiveGroupMessage(message));
         });
 
-        if (
-            connection.state === signalR.HubConnectionState.Connected ||
-            connection.state === signalR.HubConnectionState.Connecting
-        ) {
-            return;
+        chatConnection.on("UpdateInbox", (message) => {
+            console.log("UpdateInbox", message);
+
+            dispatch(updateInboxLastMessage(message));
+        });
+
+        // ================= NOTIFICATION HUB =================
+
+        notificationConnection.off("notification-received");
+
+        notificationConnection.on("notification-received", (notification) => {
+            queryClient.setQueryData(
+                ["notifications", accessToken],
+                (oldData) => {
+                    if (!oldData) return oldData;
+
+                    return {
+                        ...oldData,
+                        pages: [
+                            {
+                                ...oldData.pages[0],
+                                unreadCount:
+                                    (oldData.pages[0].unreadCount ?? 0) + 1,
+                                notifications: [
+                                    notification,
+                                    ...oldData.pages[0].notifications,
+                                ],
+                            },
+                            ...oldData.pages.slice(1),
+                        ],
+                    };
+                },
+            );
+
+            toast.success(notification.title);
+        });
+
+        // ================= START CHAT HUB =================
+
+        if (chatConnection.state === signalR.HubConnectionState.Disconnected) {
+            chatConnection
+                .start()
+                .then(() => {
+                    console.log("Group Chat SignalR connected");
+                })
+                .catch((err) => {
+                    console.error("Group Chat SignalR error:", err);
+                });
         }
 
-        connection
-            .start()
-            .then(() => {
-                console.log("SignalR connected");
-            })
-            .catch((err) => {
-                console.error("SignalR error:", err);
-            });
+        // ================= START NOTIFICATION HUB =================
 
-        connection.onclose((err) => {
-            console.log("SignalR closed:", err);
-        });
-
-        connection.onreconnecting((err) => {
-            console.log("SignalR reconnecting:", err);
-        });
-
-        connection.onreconnected((id) => {
-            console.log("SignalR reconnected:", id);
-        });
+        if (
+            notificationConnection.state ===
+            signalR.HubConnectionState.Disconnected
+        ) {
+            notificationConnection
+                .start()
+                .then(() => {
+                    console.log("Notification SignalR connected");
+                })
+                .catch((err) => {
+                    console.error("Notification SignalR error:", err);
+                });
+        }
 
         return () => {
-            connection.off("ReceiveGroupMessage");
-            connection.stop();
+            chatConnection.off("ReceiveGroupMessage");
+            chatConnection.off("UpdateInbox");
+
+            notificationConnection.off("notification-received");
+
+            chatConnection.stop();
+            notificationConnection.stop();
         };
     }, [accessToken, dispatch]);
 
-    // still loading OR waiting for minimum splash duration
     if (isLoading || showSplash) {
         return <SplashScreen />;
     }

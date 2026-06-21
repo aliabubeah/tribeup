@@ -40,13 +40,13 @@ export const fetchRoomMessages = createAsyncThunk(
     },
 );
 
-// ✅ FIXED: return full backend response (includes sentAt)
+// return full backend response (includes sentAt)
 export const sendMessage = createAsyncThunk(
     "chat/sendMessage",
     async ({ accessToken, groupId, content }, { rejectWithValue }) => {
         try {
             const res = await sendMessageAPI(accessToken, groupId, content);
-            return res; // ✅ IMPORTANT
+            return res;
         } catch (err) {
             return rejectWithValue(err.message);
         }
@@ -68,15 +68,23 @@ const chatSlice = createSlice({
         updateInboxLastMessage(state, action) {
             const message = action.payload;
 
+            console.log("Reducer payload", message);
+
             const chat = state.inbox.find((c) => c.groupId === message.groupId);
 
-            if (!chat) return;
+            console.log("Found chat", chat);
 
-            chat.lastMessageContent = message.content;
-            chat.lastMessageSenderName = message.senderName;
+            if (!chat) {
+                console.log("Chat not found");
+                return;
+            }
+
+            chat.lastMessageContent = message.lastMessage;
             chat.lastMessageSentAt = message.sentAt;
+            chat.lastMessageSenderName = message.lastMessageSenderName;
 
-            // move chat to top
+            console.log("Updated chat", chat);
+
             state.inbox = [
                 chat,
                 ...state.inbox.filter((c) => c.groupId !== message.groupId),
@@ -172,7 +180,7 @@ const chatSlice = createSlice({
                 }
             })
 
-            // ===== ✅ FIXED sendMessage =====
+            // ===== FIXED sendMessage =====
             .addCase(sendMessage.fulfilled, (state, action) => {
                 const msg = action.payload;
                 const room = state.rooms[msg.groupId];
