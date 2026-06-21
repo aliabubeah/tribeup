@@ -186,3 +186,44 @@ export async function userProfileAPI(accessToken, userName) {
 
     return data;
 }
+
+export async function updateAvatarUrlAPI(accessToken, avatar) {
+    const res = await fetch(`${BASEURL}/api/Profile/Avatar`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+        },
+        // Assuming your .NET backend expects a JSON object with an 'avatarUrl' property. 
+        // Adjust the key name if your C# DTO property is named differently (e.g., 'AvatarLink')
+        body: JSON.stringify({
+            avatar,
+        }),
+    });
+
+    if (!res.ok) {
+        const data = await res.json();
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    console.log("Avatar successfully updated!");
+    return true;
+}
+
+export async function getUserAvatarAPI(accessToken) {
+    const res = await fetch(`${BASEURL}/api/Profile/Avatar`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}
