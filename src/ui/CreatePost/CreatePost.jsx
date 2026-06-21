@@ -18,7 +18,7 @@ function CreatePost({ className, id }) {
                 <img
                     src={getCleanImageUrl(user.profilePicture)}
                     alt=""
-                    className="h-9 w-9 cursor-pointer rounded-full"
+                    className="h-9 w-9 cursor-pointer rounded-full object-cover"
                     onClick={() => navigate(username)}
                 />
                 <p

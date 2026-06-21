@@ -19,6 +19,7 @@ function Settings() {
                 iconName="account_circle"
                 title="Avatar"
                 description="Edit your profile information"
+                to="avatar"
             />
             <SettingCard
                 iconName="account_circle"

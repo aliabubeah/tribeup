@@ -43,8 +43,6 @@ import TribeSettingsGuard from "./features/tribes/TribeSettings/TribeSettingsGua
 import CreateTribe from "./features/tribes/CreateTribe";
 import Tribe from "./features/tribes/tribe/Tribe";
 import Invitation from "./features/tribes/tribe/Invitation";
-import Invitation from "./features/tribes/Invitation";
-import TribeSettingsGuard from "./features/tribes/TribeSettingsGuard";
 import AvatarCreator from "./features/settings/AvatarCreator";
 import VirtualRoom from "./features/virtualRoom/VirtualRoom";
 
@@ -85,7 +83,7 @@ const router = createBrowserRouter([
             },
 
             { path: "settings/privacy", element: <Privacy /> },
-            { path: "avatar", element: <Avatar /> },
+
             {
                 path: "about",
                 element: <About />,
@@ -176,7 +174,7 @@ const router = createBrowserRouter([
         errorElement: <Error />,
     },
     {
-        path: "settings/avatar", // or overwrite an existing sub-route
+        path: "settings/avatar",
         element: (
             <ProtectedRoute>
                 <AvatarCreator />
@@ -184,7 +182,7 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: "groups/:groupId/virtualRoom", // Notice the :groupId parameter!
+        path: "groups/:groupId/virtualRoom",
         element: (
             <ProtectedRoute>
                 <VirtualRoom />

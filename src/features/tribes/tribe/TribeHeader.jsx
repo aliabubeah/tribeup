@@ -98,15 +98,24 @@ function TribeHeader({ tribe }) {
 
                             <div className="flex gap-1">
                                 {canManage && (
-                                    <MainButton
-                                        className="text-base font-medium"
-                                        onClick={async () => {
-                                            await refetch();
-                                            setIsInviteOpen(true);
-                                        }}
-                                    >
-                                        +Invite
-                                    </MainButton>
+                                    <>
+                                        <MainButton
+                                            className="text-base font-medium"
+                                            onClick={async () => {
+                                                await refetch();
+                                                setIsInviteOpen(true);
+                                            }}
+                                        >
+                                            +Invite
+                                        </MainButton>
+
+                                        <MainButton
+                                            className="!px-2 !py-1 text-base !font-medium"
+                                            to={`/groups/${id}/virtualroom`}
+                                        >
+                                            enter room
+                                        </MainButton>
+                                    </>
                                 )}
 
                                 {isMember && (

@@ -47,7 +47,7 @@ export default function AvatarCreator() {
   }, [accessToken]); // Re-run effect if token changes to keep it fresh
 
   return (
-    <div className="w-full h-[80vh] rounded-xl overflow-hidden border border-gray-300">
+    <div className="w-full h-[100dvh] rounded-xl overflow-hidden border border-gray-300">
       <iframe
         ref={iframeRef}
         src={AVATURN_URL}

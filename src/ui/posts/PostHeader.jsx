@@ -25,7 +25,7 @@ function PostHeader({
                 <Link to={`/tribes/${groupId}`}>
                     <img
                         src={getCleanImageUrl(groupPicture)}
-                        className="h-12 w-12 rounded-full"
+                        className="h-12 w-12 rounded-full object-cover"
                     />
                 </Link>
 

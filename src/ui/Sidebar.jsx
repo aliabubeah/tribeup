@@ -20,7 +20,7 @@ function Sidebar() {
                 <img
                     src={getCleanImageUrl(user.profilePicture)}
                     alt="profile"
-                    className="h-12 min-w-12 rounded-full"
+                    className="h-12 min-w-12 rounded-full object-cover"
                 />
                 <div className="flex-col md:hidden lg:flex">
                     <h1 className="font-semibold">{user.fullName}</h1>

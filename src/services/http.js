@@ -1,7 +1,7 @@
 import { refreshAPI } from "./auth";
 
 export const BASEURL = import.meta.env.VITE_API_BASE;
-console.log("BASEURL =", BASEURL);
+
 export function getCleanImageUrl(serverUrl) {
     if (!serverUrl) return "/default-avatar.png"; // Fallback
 
@@ -33,6 +33,7 @@ let queue = [];
 export function setAccessToken(token) {
     accessToken = token;
 }
+
 export function clearAccessToken() {
     accessToken = null;
 }

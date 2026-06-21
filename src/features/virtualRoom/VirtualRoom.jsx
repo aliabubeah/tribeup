@@ -1,5 +1,9 @@
 /* eslint-disable react/no-unknown-property */
-import { HubConnectionBuilder, LogLevel, HubConnectionState } from "@microsoft/signalr";
+import {
+    HubConnectionBuilder,
+    LogLevel,
+    HubConnectionState,
+} from "@microsoft/signalr";
 import { BASEURL } from "../../services/http";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -132,7 +136,9 @@ function HUD({ message, onRequestPointerLock, isLocked }) {
 
             {isLocked && (
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                    <div style={{ width: 16, height: 16, position: "relative" }}>
+                    <div
+                        style={{ width: 16, height: 16, position: "relative" }}
+                    >
                         <div
                             style={{
                                 position: "absolute",
@@ -275,7 +281,11 @@ export default function VirtualRoom() {
                     username: user.userName,
                     avatarUrl,
                 };
-                await connection.invoke("JoinVirtualRoom", groupId, selfParticipant);
+                await connection.invoke(
+                    "JoinVirtualRoom",
+                    groupId,
+                    selfParticipant,
+                );
 
                 // 1e. Load existing participants from REST and add as remote players
                 try {
@@ -314,7 +324,9 @@ export default function VirtualRoom() {
             const conn = connectionRef.current;
             if (!conn) return;
             if (conn.state === HubConnectionState.Connected) {
-                conn.invoke("LeaveVirtualRoom", groupId, user.id).catch(() => {});
+                conn.invoke("LeaveVirtualRoom", groupId, user.id).catch(
+                    () => {},
+                );
             }
             conn.stop();
             connectionRef.current = null;
@@ -334,7 +346,8 @@ export default function VirtualRoom() {
             isLockedRef.current = locked;
         };
         document.addEventListener("pointerlockchange", onChange);
-        return () => document.removeEventListener("pointerlockchange", onChange);
+        return () =>
+            document.removeEventListener("pointerlockchange", onChange);
     }, []);
 
     const requestPointerLock = useCallback(() => {

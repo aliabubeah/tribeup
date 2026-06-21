@@ -13,7 +13,7 @@ function MobileHeader({ hidden, onProfileClick }) {
                     <img
                         src={getCleanImageUrl(user.profilePicture)}
                         alt="profile pic"
-                        className="h-10 w-10 rounded-full"
+                        className="h-10 w-10 rounded-full object-cover"
                     />
                 </button>
                 <span className="text-lg font-semibold text-tribe-500">
