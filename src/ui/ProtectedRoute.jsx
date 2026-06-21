@@ -1,28 +1,31 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import SplashScreen from "./SplashScreen";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux"; // 👈 ضفنا useSelector
 import * as signalR from "@microsoft/signalr";
-
 import {
     createGroupChatConnection,
     createNotificationConnection,
 } from "../services/siganlR";
-
 import {
     receiveGroupMessage,
     updateInboxLastMessage,
 } from "../features/messaging/chatSlice";
-import { useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 
 function ProtectedRoute({ children }) {
     const { isAuthenticated, user, isLoading, accessToken } = useAuth();
-    const [showSplash, setShowSplash] = useState(true);
     const dispatch = useDispatch();
 
-    const queryClient = useQueryClient();
+    const { inbox } = useSelector((state) => state.chat);
+
+    const inboxRef = useRef(inbox);
+
+    useEffect(() => {
+        inboxRef.current = inbox;
+    }, [inbox]);
+
+    const [showSplash, setShowSplash] = useState(true);
 
     useEffect(() => {
         if (!isLoading) {
@@ -34,16 +37,16 @@ function ProtectedRoute({ children }) {
         }
     }, [isLoading]);
 
+    // ================= EFFECT 1: SETUP CONNECTION =================
+
     useEffect(() => {
         if (!accessToken) return;
 
         const chatConnection = createGroupChatConnection(accessToken);
-
         const notificationConnection =
             createNotificationConnection(accessToken);
 
         // ================= CHAT HUB =================
-
         chatConnection.off("ReceiveGroupMessage");
         chatConnection.off("UpdateInbox");
 
@@ -53,48 +56,36 @@ function ProtectedRoute({ children }) {
 
         chatConnection.on("UpdateInbox", (message) => {
             console.log("UpdateInbox", message);
-
             dispatch(updateInboxLastMessage(message));
         });
 
         // ================= NOTIFICATION HUB =================
-
         notificationConnection.off("notification-received");
 
         notificationConnection.on("notification-received", (notification) => {
-            queryClient.setQueryData(
-                ["notifications", accessToken],
-                (oldData) => {
-                    if (!oldData) return oldData;
-
-                    return {
-                        ...oldData,
-                        pages: [
-                            {
-                                ...oldData.pages[0],
-                                unreadCount:
-                                    (oldData.pages[0].unreadCount ?? 0) + 1,
-                                notifications: [
-                                    notification,
-                                    ...oldData.pages[0].notifications,
-                                ],
-                            },
-                            ...oldData.pages.slice(1),
-                        ],
-                    };
-                },
-            );
-
-            toast.success(notification.title);
+            console.log("🔥 notification-received", notification);
         });
 
         // ================= START CHAT HUB =================
-
         if (chatConnection.state === signalR.HubConnectionState.Disconnected) {
             chatConnection
                 .start()
                 .then(() => {
                     console.log("Group Chat SignalR connected");
+
+                    const currentInbox = inboxRef.current;
+                    if (currentInbox && currentInbox.length > 0) {
+                        currentInbox.forEach((chatItem) => {
+                            chatConnection
+                                .invoke("JoinGroupChat", chatItem.groupId)
+                                .catch((err) =>
+                                    console.error(
+                                        `Error joining ${chatItem.groupId}:`,
+                                        err,
+                                    ),
+                                );
+                        });
+                    }
                 })
                 .catch((err) => {
                     console.error("Group Chat SignalR error:", err);
@@ -102,7 +93,6 @@ function ProtectedRoute({ children }) {
         }
 
         // ================= START NOTIFICATION HUB =================
-
         if (
             notificationConnection.state ===
             signalR.HubConnectionState.Disconnected
@@ -120,13 +110,30 @@ function ProtectedRoute({ children }) {
         return () => {
             chatConnection.off("ReceiveGroupMessage");
             chatConnection.off("UpdateInbox");
-
             notificationConnection.off("notification-received");
-
-            chatConnection.stop();
-            notificationConnection.stop();
         };
     }, [accessToken, dispatch]);
+
+    // ================= EFFECT 2: DYNAMIC ROOM JOINING =================
+
+    useEffect(() => {
+        if (!accessToken || !inbox || inbox.length === 0) return;
+
+        const chatConnection = createGroupChatConnection(accessToken);
+
+        if (chatConnection.state === signalR.HubConnectionState.Connected) {
+            inbox.forEach((chatItem) => {
+                chatConnection
+                    .invoke("JoinGroupChat", chatItem.groupId)
+                    .catch((err) =>
+                        console.error(
+                            `Error joining group ${chatItem.groupId}:`,
+                            err,
+                        ),
+                    );
+            });
+        }
+    }, [inbox, accessToken]);
 
     if (isLoading || showSplash) {
         return <SplashScreen />;
