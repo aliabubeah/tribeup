@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink, Outlet } from "react-router-dom";
 import { createGroupChatConnection } from "../services/siganlR";
-import { receiveGroupMessage } from "../features/messaging/chatSlice";
+import {
+    fetchChatInbox,
+    receiveGroupMessage,
+} from "../features/messaging/chatSlice";
 
 import Sidebar from "./Sidebar";
 import MobileSidebarDrawer from "./MobileSideBarDrawer";
@@ -17,6 +20,14 @@ function AppLayout() {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const drawerRef = useRef(null);
+    const inbox = useSelector((state) => state.chat.inbox);
+
+    //fetch message inbox
+    useEffect(() => {
+        if (!accessToken || inbox.length) return;
+
+        dispatch(fetchChatInbox({ accessToken }));
+    }, [accessToken, inbox.length, dispatch]);
 
     // close the drawer when press esc key
     useEffect(() => {

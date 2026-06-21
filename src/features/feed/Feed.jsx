@@ -6,7 +6,6 @@ import { useAuth } from "../../contexts/AuthContext.jsx";
 import { ClipLoader } from "react-spinners";
 import { useNavigate, useParams } from "react-router-dom";
 import PostModal from "../../ui/posts/PostModal.jsx";
-import { fetchChatInbox } from "../messaging/chatSlice.js";
 import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton.jsx";
 import CreatePost from "../../ui/CreatePost/CreatePost.jsx";
 
@@ -36,7 +35,6 @@ function Feed() {
     useEffect(() => {
         if (!isLoading) {
             dispatch(fetchFeed({ accessToken }));
-            dispatch(fetchChatInbox({ accessToken }));
         }
     }, [dispatch, accessToken]);
 
