@@ -50,6 +50,11 @@ function SideMessageRoom({ onChatRoom, onClose }) {
                         page: room.page,
                     }),
                 );
+                console.log({
+                    scrollTop: el.scrollTop,
+                    scrollHeight: el.scrollHeight,
+                    clientHeight: el.clientHeight,
+                });
             }
         }
 
@@ -127,7 +132,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
     }
 
     return (
-        <div className="flex h-full min-h-0 w-full flex-col rounded-lg bg-neutral-50 shadow-xl">
+        <div className="flex h-[calc(100dvh-64px)] min-h-0 w-full flex-col rounded-lg bg-neutral-50 shadow-xl md:h-[100dvh]">
             {/* Header */}
             <MessageHeader
                 onChatRoom={onChatRoom}
@@ -192,7 +197,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
 
             {/* Input */}
 
-            <MessageForm className="mb-[63px] md:mb-0" />
+            <MessageForm className="md:mb-0" />
         </div>
     );
 }
