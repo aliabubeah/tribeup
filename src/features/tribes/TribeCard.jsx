@@ -33,6 +33,16 @@ function TribeCard({ tribe, debouncedSearch }) {
         onError: (err) => toast.error(err.message),
     });
 
+    const { isPending: following, mutate: unFollow } = useMutation({
+        mutationFn: toggleFollowAPI,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["followedTribes", accessToken, debouncedSearch],
+            });
+        },
+        onError: (err) => toast.error(err.message),
+    });
+
     const { id } = tribe;
     const confirm = useConfirm();
 
@@ -92,11 +102,11 @@ function TribeCard({ tribe, debouncedSearch }) {
                         </MainButton>
                     ) : tribe.userRelation === 1 ? (
                         <MainButton
-                            disabled={isFollowing}
+                            disabled={following}
                             className="w-full"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                follow({ accessToken, groupId: id });
+                                unFollow({ accessToken, groupId: id });
                             }}
                         >
                             Unfollow

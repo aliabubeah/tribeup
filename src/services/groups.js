@@ -70,6 +70,22 @@ export async function GetAllGroupsAPI(accessToken) {
     return data;
 }
 
+export async function followedGroupsAPI({accessToken}) {
+    const res = await fetch(`${BASEURL}/api/Groups/FollowedGroups`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+    return data;
+}
+
 export async function GetGroupAPI(accessToken, id) {
     const res = await fetch(`${BASEURL}/api/Groups/GetGroup/${id}`, {
         headers: {

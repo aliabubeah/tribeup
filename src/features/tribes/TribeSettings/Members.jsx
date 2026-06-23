@@ -167,7 +167,7 @@ function Member({ member, tribeId, userRole, currentUserId }) {
             <div className="flex gap-2">
                 <img
                     src={getCleanImageUrl(member.userProfilePicture)}
-                    className="h-9 w-9 rounded-full"
+                    className="h-9 w-9 rounded-full object-cover"
                 />
 
                 <div className="flex flex-col text-start">

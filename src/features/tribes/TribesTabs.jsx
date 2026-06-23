@@ -8,6 +8,7 @@ function TribesTabs() {
     const tabs = [
         { name: "Joined in", path: "/tribes/joined" },
         { name: "Discover", path: "/tribes/discover" },
+        { name: "Following", path: "/tribes/following" },
     ];
 
     return (

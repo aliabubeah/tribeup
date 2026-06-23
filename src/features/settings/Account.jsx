@@ -210,7 +210,7 @@ function Account() {
                         >
                             <img
                                 src={getCleanImageUrl(profilePicture)}
-                                className="h-24 w-24 rounded-full"
+                                className="h-24 w-24 rounded-full object-cover"
                                 alt="Profile"
                             />
 
