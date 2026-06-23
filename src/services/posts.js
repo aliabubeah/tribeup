@@ -132,45 +132,6 @@ export async function likeCommentAPI({ accessToken, commentId }) {
     return data;
 }
 
-export async function createPostAPI({
-    accessToken,
-    groupId,
-    caption,
-    accessibility,
-    taggedUserIds,
-    mediaFiles,
-}) {
-    const formData = new FormData();
-
-    formData.append("GroupId", groupId);
-    formData.append("Caption", caption);
-    formData.append("Accessibility", accessibility);
-
-    taggedUserIds?.forEach((id) => {
-        formData.append("TaggedUserIds", id);
-    });
-
-    mediaFiles?.forEach((file) => {
-        formData.append("mediaFiles", file);
-    });
-
-    const res = await fetch(`${BASEURL}/api/Posts/CreatePost`, {
-        method: "post",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-        body: formData,
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        console.log(handleApiError(data));
-        return handleApiError(data);
-    }
-    return data;
-}
-
 export async function deletePostCommentAPI({ accessToken, commentId }) {
     const res = await fetch(
         `${BASEURL}/api/Comment/${commentId}/DeleteComment`,
@@ -256,6 +217,109 @@ export async function GroupFeedAPI({ accessToken, groupId, page }) {
     if (!res.ok) {
         console.log(handleApiError(data));
         return handleApiError(data);
+    }
+    return data;
+}
+
+export async function getPostById({ accessToken, id }) {
+    const res = await fetch(`${BASEURL}/api/Posts/${id}/GetPostById`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}
+
+export async function createPostAPI({
+    accessToken,
+    groupId,
+    caption,
+    accessibility,
+    taggedUserIds,
+    mediaFiles,
+}) {
+    const formData = new FormData();
+
+    formData.append("GroupId", groupId);
+    formData.append("Caption", caption);
+    formData.append("Accessibility", accessibility);
+
+    taggedUserIds?.forEach((id) => {
+        formData.append("TaggedUserIds", id);
+    });
+
+    mediaFiles?.forEach((file) => {
+        formData.append("mediaFiles", file);
+    });
+
+    const res = await fetch(`${BASEURL}/api/Posts/CreatePost`, {
+        method: "post",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        const error = handleApiError(data);
+        console.log(error);
+        throw new Error(error.message);
+    }
+    return data;
+}
+
+export async function EditPostAPI({
+    accessToken,
+    groupId,
+    caption,
+    accessibility,
+    taggedUserIds,
+    newMediaFiles,
+    deleteMediaIds,
+    id,
+}) {
+    const formData = new FormData();
+
+    formData.append("GroupId", groupId);
+    formData.append("Caption", caption);
+    formData.append("Accessibility", accessibility);
+
+    taggedUserIds?.forEach((id) => {
+        formData.append("TaggedUserIds", id);
+    });
+
+    newMediaFiles?.forEach((file) => {
+        formData.append("newMediaFiles", file);
+    });
+
+    deleteMediaIds?.forEach((mediaId) => {
+        formData.append("deleteMediaIds", mediaId);
+    });
+
+    const res = await fetch(`${BASEURL}/api/Posts/${id}/EditPost`, {
+        method: "put",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        const error = handleApiError(data);
+        console.log(error);
+        throw new Error(error.message);
     }
     return data;
 }

@@ -8,7 +8,7 @@ function ProfilePosts({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    status,
+    isPending,
 }) {
     const [activePost, setActivePost] = useState(null);
 
@@ -30,11 +30,11 @@ function ProfilePosts({
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    if (status === "pending") {
+    if (isPending) {
         return <PostCardSkeleton />;
     }
 
-    if (!posts.length) {
+    if (posts.length === 0) {
         return <div className="py-4 text-center">No posts yet</div>;
     }
 
@@ -44,7 +44,10 @@ function ProfilePosts({
                 if (index === posts.length - 1) {
                     return (
                         <div ref={ref} key={post.postId}>
-                            <Post post={post} onOpenComments={handleOpenComments}/>
+                            <Post
+                                post={post}
+                                onOpenComments={handleOpenComments}
+                            />
                         </div>
                     );
                 }

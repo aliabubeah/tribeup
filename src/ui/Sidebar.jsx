@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { logoutAPI } from "../services/auth";
 import { getCleanImageUrl } from "../services/http";
@@ -17,11 +17,13 @@ function Sidebar() {
         <div className="fixed h-full">
             {/* Profile */}
             <div className="mb-8 flex justify-center gap-2 px-2 lg:justify-normal">
-                <img
-                    src={getCleanImageUrl(user.profilePicture)}
-                    alt="profile"
-                    className="h-12 min-w-12 rounded-full object-cover"
-                />
+                <Link to={username}>
+                    <img
+                        src={getCleanImageUrl(user.profilePicture)}
+                        alt="profile"
+                        className="h-12 min-w-12 rounded-full object-cover"
+                    />
+                </Link>
                 <div className="flex-col md:hidden lg:flex">
                     <h1 className="font-semibold">{user.fullName}</h1>
                     <p className="text-sm text-neutral-700">@{user.userName}</p>
@@ -35,7 +37,6 @@ function Sidebar() {
                     icon="notifications"
                     label="Notification"
                 />
-                <SidebarItem to="/search" icon="search" label="Search" />
                 <SidebarItem to="/messages" icon="mail" label="Chat" />
                 <SidebarItem to="/tribes" icon="groups" label="Tribes" />
                 <SidebarItem to="/settings" icon="settings" label="Settings" />

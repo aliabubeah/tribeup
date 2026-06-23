@@ -13,6 +13,7 @@ function Post({ post, onOpenComments }) {
     return (
         <div className="flex flex-col gap-3 rounded-xl bg-white p-4">
             <PostHeader
+                post={post}
                 postId={post.postId}
                 groupId={post.groupId}
                 userName={post.username}

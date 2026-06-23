@@ -1,8 +1,11 @@
 import Skeleton from "react-loading-skeleton";
 
-function PostCardSkeleton({ length = 3 }) {
+function PostCardSkeleton({ length = 3, className }) {
     return Array.from({ length: length }).map((_, i) => (
-        <div className="mb-3 rounded-2xl bg-white p-4 shadow-sm" key={i}>
+        <div
+            className={`mb-3 rounded-2xl bg-white p-4 shadow-sm ${className}`}
+            key={i}
+        >
             {/* Header */}
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">

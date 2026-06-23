@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { formatPostDate } from "../../utils/helper";
 import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../contexts/AuthContext";
-import { likePostOptimistic, toggleLike } from "../../features/feed/feedSlice";
+import { useMutation } from "@tanstack/react-query";
+import { toggleLikeAPI } from "../../services/posts";
 
 function PostActions({
     likesCount,
@@ -13,15 +13,34 @@ function PostActions({
     isLikedByCurrentUser,
     onCommentClick,
 }) {
-    const [favoriteToggle, setFavoriteToggle] = useState(isLikedByCurrentUser);
+    const [optimisticLike, setOptimisticLike] = useState(null);
+    const [optimisticLikesCount, setOptimisticLikesCount] = useState(null);
     const [copy, setCopy] = useState(false);
-    const dispatch = useDispatch();
     const { accessToken } = useAuth();
 
+    const favoriteToggle = optimisticLike ?? isLikedByCurrentUser;
+    const currentLikesCount = optimisticLikesCount ?? likesCount;
+
+    const { mutate: toggleLike, isPending } = useMutation({
+        mutationFn: () => toggleLikeAPI(accessToken, postId),
+        onError: () => {
+            setOptimisticLike(null);
+            setOptimisticLikesCount(null);
+            toast.error("Failed to update like");
+        },
+    });
+
     function handleToggle() {
-        dispatch(likePostOptimistic(postId));
-        setFavoriteToggle((e) => !e);
-        dispatch(toggleLike({ accessToken, postId }));
+        if (isPending) return;
+
+        const nextFavoriteToggle = !favoriteToggle;
+        setOptimisticLike(nextFavoriteToggle);
+        setOptimisticLikesCount(
+            nextFavoriteToggle
+                ? currentLikesCount + 1
+                : Math.max(currentLikesCount - 1, 0),
+        );
+        toggleLike();
     }
 
     async function handleSharePost() {
@@ -31,7 +50,7 @@ function PostActions({
             setTimeout(() => setCopy(false), 2000);
             setCopy(true);
             toast.success("Link copied to clipboard");
-        } catch (err) {
+        } catch {
             toast.error("Failed to copy link");
         }
     }
@@ -47,7 +66,7 @@ function PostActions({
                         >
                             favorite
                         </span>
-                        {likesCount}
+                        {currentLikesCount}
                     </button>
                     <button
                         className="flex items-center gap-1 outline-none"

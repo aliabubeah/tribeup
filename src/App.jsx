@@ -15,6 +15,7 @@ import ChangePassword, {
 } from "./features/auth/ChangePassword";
 import ForgetPassword from "./features/auth/ForgetPassword";
 import Feed from "./features/feed/Feed";
+import PostDetails from "./features/feed/PostDetails";
 import AppLayout from "./ui/AppLayout";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./ui/ProtectedRoute";
@@ -29,7 +30,6 @@ import AuthLayout from "./features/auth/AuthLayout";
 import Mesaage from "./features/messaging/Mesaage";
 import Tribes from "./features/tribes/Tribes";
 import Notifications from "./features/notification/Notifications";
-import Search from "./features/search/Search";
 import FullScreenLayout from "./ui/FullScreenLayout";
 import { MyGroupsAPI } from "./services/groups";
 import TribeSettings from "./features/tribes/TribeSettings/TribeSettings";
@@ -45,6 +45,8 @@ import Tribe from "./features/tribes/tribe/Tribe";
 import Invitation from "./features/tribes/tribe/Invitation";
 import AvatarCreator from "./features/settings/AvatarCreator";
 import VirtualRoom from "./features/virtualRoom/VirtualRoom";
+import FollowedTribes from "./features/tribes/FollowedTribes";
+import LeaderBoard from "./features/leaderBoard/LeaderBoard";
 
 const router = createBrowserRouter([
     {
@@ -62,8 +64,9 @@ const router = createBrowserRouter([
             },
             {
                 path: "/posts/:postId",
-                element: <Feed />,
+                element: <PostDetails />,
             },
+
             {
                 path: "/:username",
                 element: <Profile />,
@@ -76,10 +79,6 @@ const router = createBrowserRouter([
             {
                 path: "notifications",
                 element: <Notifications />,
-            },
-            {
-                path: "search",
-                element: <Search />,
             },
 
             { path: "settings/privacy", element: <Privacy /> },
@@ -107,7 +106,10 @@ const router = createBrowserRouter([
                 path: "/messages",
                 element: <Mesaage />,
             },
-
+            {
+                path: "leaderboard",
+                element: <LeaderBoard />,
+            },
             {
                 path: "settings",
                 element: <Settings />,
@@ -120,6 +122,7 @@ const router = createBrowserRouter([
                     { index: true, element: <Navigate to="joined" replace /> },
                     { path: "joined", element: <JoinedTribes /> },
                     { path: "discover", element: <DiscoverTribes /> },
+                    { path: "following", element: <FollowedTribes /> },
                 ],
             },
             {

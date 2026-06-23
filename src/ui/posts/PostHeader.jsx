@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { getCleanImageUrl } from "../../services/http";
 import { deletePostAPI } from "../../services/posts";
 import PostActionsMenu from "./PostActionMenu";
 import { Link } from "react-router-dom";
+import EditPost from "../CreatePost/EditPost";
 
 function PostHeader({
+    post,
     userName,
     groupName,
     postId,
@@ -14,7 +17,9 @@ function PostHeader({
     groupId,
 }) {
     const { accessToken } = useAuth();
-    const canModerate = isAuthor || postPermissions?.canDelete;
+    const [isEditOpen, setIsEditOpen] = useState(false);
+    const canEdit = isAuthor || postPermissions?.canEdit;
+    const canDelete = isAuthor || postPermissions?.canDelete;
     function handleDelete() {
         deletePostAPI(postId, accessToken);
     }
@@ -41,10 +46,17 @@ function PostHeader({
                     </Link>
                 </div>
             </div>
-            {canModerate && (
+            {(canEdit || canDelete) && (
                 <PostActionsMenu
-                    onDelete={(e) => handleDelete()}
-                    onEdit={(e) => console.log("edit")}
+                    onDelete={canDelete ? handleDelete : undefined}
+                    onEdit={canEdit ? () => setIsEditOpen(true) : undefined}
+                />
+            )}
+            {isEditOpen && post && (
+                <EditPost
+                    post={post}
+                    isOpen={true}
+                    onClose={() => setIsEditOpen(false)}
                 />
             )}
         </div>

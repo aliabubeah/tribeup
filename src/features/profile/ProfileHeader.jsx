@@ -31,7 +31,7 @@ function ProfileHeader() {
                 <div className="absolute -bottom-6 left-6 flex">
                     <img
                         src={getCleanImageUrl(profilePicture)}
-                        className="h-24 w-24 rounded-full"
+                        className="h-24 w-24 rounded-full object-cover"
                     />
                 </div>
             </div>

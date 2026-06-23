@@ -55,11 +55,18 @@ function PostModal({ post, isOpen = false, onClose }) {
                                 <div className="flex h-full min-h-0 flex-col border-l outline-none">
                                     <div className="flex flex-col gap-3 border-b p-4">
                                         <PostHeader
+                                            post={post}
+                                            postId={post.postId}
+                                            groupId={post.groupId}
                                             userName={post.username}
                                             groupName={post.groupName}
                                             groupPicture={
                                                 post.groupProfilePicture
                                             }
+                                            postPermissions={
+                                                post.postPermissions
+                                            }
+                                            isAuthor={post.isAuthor}
                                         />
 
                                         <div className="min-w-0 text-start">
