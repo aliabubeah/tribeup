@@ -1,22 +1,15 @@
 import Post from "../../ui/posts/Post";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchFeed } from "./feedSlice.js";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext.jsx";
-import { ClipLoader } from "react-spinners";
-import { useNavigate, useParams } from "react-router-dom";
 import PostModal from "../../ui/posts/PostModal.jsx";
 import PostCardSkeleton from "../../ui/Skeleton/PostCardSkeleton.jsx";
 import CreatePost from "../../ui/CreatePost/CreatePost.jsx";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
+import { feedAPI } from "../../services/posts.js";
 
 function Feed() {
-    const dispatch = useDispatch();
     const { accessToken } = useAuth();
-    const { postId } = useParams();
-    const navigate = useNavigate();
-    const { ids, entities, hasMore, isLoading, page } = useSelector(
-        (state) => state.feed,
-    );
     const [activePost, setActivePost] = useState(null);
 
     const handleOpenComments = useCallback((post) => {
@@ -27,58 +20,72 @@ function Feed() {
         setActivePost(null);
     };
 
-    const selectedPost = postId ? entities[postId] : null;
-    const observerRef = useRef(null);
-    const loadMoreRef = useRef(null);
-
-    /* Initial load */
-    useEffect(() => {
-        if (!isLoading) {
-            dispatch(fetchFeed({ accessToken }));
-        }
-    }, [dispatch, accessToken]);
-
-    /* Infinite scroll */
-    useEffect(() => {
-        if (!hasMore || isLoading) return;
-
-        observerRef.current = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                dispatch(fetchFeed({ accessToken, page }));
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isPending,
+        error,
+    } = useInfiniteQuery({
+        queryKey: ["feed", accessToken],
+        queryFn: ({ pageParam = 1 }) => feedAPI(accessToken, pageParam),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => {
+            if (lastPage.hasMore) {
+                return lastPage.page + 1;
             }
-        });
+            return undefined;
+        },
+        enabled: !!accessToken,
+    });
 
-        if (loadMoreRef.current) {
-            observerRef.current.observe(loadMoreRef.current);
+    const posts = data?.pages?.flatMap((page) => page.items ?? []) ?? [];
+
+    const { ref, inView } = useInView({
+        threshold: 0.5,
+    });
+
+    useEffect(() => {
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
         }
+    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-        return () => observerRef.current?.disconnect();
-    }, [hasMore, isLoading, dispatch, accessToken]);
-
-    if (isLoading || !ids) {
+    if (isPending) {
         return <PostCardSkeleton />;
     }
+
+    if (error) return <p>{error.message}</p>;
 
     return (
         <>
             <CreatePost />
             <div className="flex flex-col gap-3">
-                {ids.map((id) => (
-                    <Post
-                        key={id}
-                        post={entities[id]}
-                        onOpenComments={handleOpenComments}
-                    />
-                ))}
+                {posts.map((post, index) => {
+                    if (index === posts.length - 1) {
+                        return (
+                            <div ref={ref} key={post.postId}>
+                                <Post
+                                    post={post}
+                                    onOpenComments={handleOpenComments}
+                                />
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <Post
+                            key={post.postId}
+                            post={post}
+                            onOpenComments={handleOpenComments}
+                        />
+                    );
+                })}
             </div>
 
-            {/* Trigger element */}
-            <div ref={loadMoreRef} style={{ height: 40 }} />
-
-            {isLoading && (
-                <div className="flex justify-center py-2">
-                    <ClipLoader size={28} />
-                </div>
+            {isFetchingNextPage && (
+                <PostCardSkeleton length={1} className={"mt-2"} />
             )}
 
             {activePost && (
