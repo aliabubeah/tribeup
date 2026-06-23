@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function BackButton({ to, className }) {
+function BackButton({ to, className, name = "Back" }) {
     const navigate = useNavigate();
 
     const go = to ? to : -1;
@@ -15,7 +15,7 @@ function BackButton({ to, className }) {
             >
                 arrow_back
             </button>
-            <span className="font-semibold">Back</span>
+            <span className="font-semibold">{name}</span>
         </div>
     );
 }

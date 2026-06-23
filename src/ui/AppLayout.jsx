@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../contexts/AuthContext";
-import { NavLink, Outlet } from "react-router-dom";
-import { createGroupChatConnection } from "../services/siganlR";
+import { Outlet } from "react-router-dom";
 import { fetchChatInbox } from "../features/messaging/chatSlice";
 
 import Sidebar from "./Sidebar";
@@ -10,6 +9,7 @@ import MobileSidebarDrawer from "./MobileSideBarDrawer";
 import ChatDrawer from "../features/messaging/ChatDrawer";
 import MobileNav from "./MobileNav";
 import MobileHeader from "./MobileHeader";
+import MiniLeaderBoard from "../features/leaderBoard/MiniLeaderBoard";
 
 function AppLayout() {
     const dispatch = useDispatch();
@@ -96,11 +96,15 @@ function AppLayout() {
                         <Sidebar />
                     </aside>
                     {/* Main Content */}
-                    <main className="w-full flex-1 px-4 py-8 md:max-w-[600px]">
+                    <main className="w-full flex-1 px-4 py-8 md:w-[600px] lg:max-w-[672px]">
                         <Outlet />
                     </main>
                     {/* Right Column */}
-                    <aside className="r hidden w-80 shrink-0 xl:block"></aside>
+                    <aside className="hidden w-80 shrink-0 px-4 py-8 xl:block">
+                        <div className="sticky top-8">
+                            <MiniLeaderBoard />
+                        </div>
+                    </aside>
                 </div>
 
                 {/* message Drawer appears only on the big screens */}
