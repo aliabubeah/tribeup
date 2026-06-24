@@ -31,6 +31,16 @@ export function createGroupChatConnection(accessToken) {
     return connection;
 }
 
+export function createVirtualRoomConnection(accessToken) {
+    return new signalR.HubConnectionBuilder()
+        .withUrl(`${BASEURL}/hubs/virtual-room`, {
+            accessTokenFactory: () => accessToken,
+        })
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Warning)
+        .build();
+}
+
 export function getConnection() {
     return connection;
 }

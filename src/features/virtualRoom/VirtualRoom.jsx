@@ -1,19 +1,23 @@
 /* eslint-disable react/no-unknown-property */
-import {
-    HubConnectionBuilder,
-    LogLevel,
-    HubConnectionState,
-} from "@microsoft/signalr";
-import { BASEURL } from "../../services/http";
-import { useNavigate, useParams } from "react-router-dom";
+import { HubConnectionState } from "@microsoft/signalr";
+import { createVirtualRoomConnection } from "../../services/siganlR";
+import { useNavigate, useParams, useBlocker } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserAvatarAPI } from "../../services/profile";
+import {
+    joinVirtualRoomAPI,
+    leaveVirtualRoomAPI,
+    getVoiceTokenAPI,
+    getParticipantsAPI,
+} from "../../services/virtualRoom";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment, Html } from "@react-three/drei";
+import { Environment, Html, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import PlayerAvatar from "./PlayerAvatar";
 import LectureHall from "./LectureHall";
+import AvatarErrorBoundary from "./AvatarErrorBoundary";
+import { usePushToTalk } from "./hooks/usePushToTalk";
 
 function Loader() {
     return (
@@ -39,6 +43,38 @@ const CAM_CLAMP = {
 
 function clamp(v, min, max) {
     return Math.max(min, Math.min(max, v));
+}
+
+function EscMenu({ onResume, onLeave }) {
+    return (
+        <div
+            className="absolute inset-0 z-50 flex items-center justify-center"
+            style={{
+                background: "rgba(0,0,0,0.65)",
+                backdropFilter: "blur(4px)",
+            }}
+        >
+            <div className="flex w-64 flex-col gap-3 rounded-2xl border border-white/10 bg-gray-900 p-8 shadow-2xl">
+                <h2 className="mb-2 text-center text-xl font-bold tracking-wide text-white">
+                    Paused
+                </h2>
+
+                <button
+                    onClick={onResume}
+                    className="rounded-lg bg-purple-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-purple-600"
+                >
+                    ▶ Resume
+                </button>
+
+                <button
+                    onClick={onLeave}
+                    className="rounded-lg bg-red-700 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-600"
+                >
+                    🚪 Leave Room
+                </button>
+            </div>
+        </div>
+    );
 }
 
 // ── Camera Follow ─────────────────────────────────────────────────────────────
@@ -101,10 +137,10 @@ function CameraFollow({ target, isPointerLocked }) {
 }
 
 // ── HUD ───────────────────────────────────────────────────────────────────────
-function HUD({ message, onRequestPointerLock, isLocked }) {
+function HUD({ message, onRequestPointerLock, isLocked, isMenuOpen }) {
     return (
         <>
-            {!isLocked && (
+            {!isLocked && !isMenuOpen && (
                 <div
                     onClick={onRequestPointerLock}
                     className="absolute inset-0 flex cursor-pointer items-center justify-center"
@@ -116,15 +152,15 @@ function HUD({ message, onRequestPointerLock, isLocked }) {
                             Click to Enter
                         </div>
                         <div className="text-sm opacity-70">
-                            WASD to move · Mouse to look · Esc to unlock
+                            WASD to move · Mouse to look · V to talk · Esc Menu
                         </div>
                     </div>
                 </div>
             )}
 
-            {isLocked && (
+            {isLocked && !isMenuOpen && (
                 <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 select-none rounded-full bg-black bg-opacity-40 px-3 py-1 text-xs text-white">
-                    WASD · Mouse · Esc unlock
+                    WASD · Mouse · V to talk · Esc Menu
                 </div>
             )}
 
@@ -134,7 +170,7 @@ function HUD({ message, onRequestPointerLock, isLocked }) {
                 </div>
             )}
 
-            {isLocked && (
+            {isLocked && !isMenuOpen && (
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                     <div
                         style={{ width: 16, height: 16, position: "relative" }}
@@ -192,6 +228,33 @@ export default function VirtualRoom() {
     const [message, setMessage] = useState("");
     const [isLocked, setIsLocked] = useState(false);
 
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const hasJoinedRef = useRef(false); // guards against double-leave
+
+    const [voiceToken, setVoiceToken] = useState(null);
+    const [voiceUrl, setVoiceUrl] = useState(null);
+
+    const leaveRoom = useCallback(async () => {
+        if (!hasJoinedRef.current) return;
+        hasJoinedRef.current = false;
+
+        // REST leave
+        leaveVirtualRoomAPI(groupId, accessToken);
+
+        // SignalR leave
+        const conn = connectionRef.current;
+        if (conn?.state === HubConnectionState.Connected) {
+            conn.invoke("LeaveVirtualRoom", groupId, user.id).catch(() => {});
+        }
+        conn?.stop();
+        connectionRef.current = null;
+    }, [accessToken, groupId, user]);
+
+    const leaveRoomRef = useRef(leaveRoom);
+    useEffect(() => {
+        leaveRoomRef.current = leaveRoom;
+    }, [leaveRoom]);
+
     // ── Step 1: fetch local player's avatar, then connect SignalR ────────────
     useEffect(() => {
         if (!accessToken || !user) return;
@@ -224,17 +287,16 @@ export default function VirtualRoom() {
             setPlayers([localPlayer]);
 
             // 1c. Build SignalR connection
-            const connection = new HubConnectionBuilder()
-                .withUrl(`${BASEURL}/hubs/virtual-room`, {
-                    accessTokenFactory: () => accessToken,
-                })
-                .withAutomaticReconnect()
-                .configureLogging(LogLevel.Warning)
-                .build();
+            const connection = createVirtualRoomConnection(accessToken);
 
             // ── Incoming: another player joined ──────────────────────────────
             // participant shape: { id, username, avatarUrl }
             connection.on("PlayerJoined", (participant) => {
+                // Start downloading the GLB immediately — before the component mounts.
+                if (participant.avatarUrl) {
+                    useGLTF.preload(participant.avatarUrl);
+                }
+
                 setPlayers((prev) => {
                     if (prev.find((p) => p.id === participant.id)) return prev;
                     return [
@@ -268,10 +330,61 @@ export default function VirtualRoom() {
             // ── Incoming: high-frequency position update ──────────────────────
             // Written into a ref so PlayerAvatar lerps toward it every frame
             connection.on("PlayerMoved", (userId, position, rotationY) => {
-                remoteTargetsRef.current[userId] = { position, rotationY };
+                // Preserve isSitting so the sit state machine isn't reset by position ticks
+                const prev = remoteTargetsRef.current[userId];
+                remoteTargetsRef.current[userId] = {
+                    position,
+                    rotationY,
+                    isSitting: prev?.isSitting ?? false,
+                };
             });
 
-            // 1d. Start the connection, then announce ourselves
+            // ── Incoming: sit / stand event ───────────────────────────────────
+            connection.on("PlayerSat", (userId, isSitting) => {
+                const prev = remoteTargetsRef.current[userId];
+                remoteTargetsRef.current[userId] = {
+                    ...prev,
+                    isSitting,
+                };
+            });
+
+            // 1d. Call REST join first — this adds us to DB and checks membership
+            try {
+                const joinRes = await joinVirtualRoomAPI(groupId, accessToken);
+
+                if (joinRes.status === 403) {
+                    navigate("/", { replace: true });
+                    return;
+                }
+                if (joinRes.status === 400) {
+                    // Avatar is missing or deleted from Avaturn — send them to fix it
+                    navigate("/settings/avatar", { replace: true });
+                    return;
+                }
+                if (!joinRes.ok) throw new Error("Failed to join room");
+
+                hasJoinedRef.current = true;
+
+                // Fetch LiveKit voice token
+                try {
+                    const voiceData = await getVoiceTokenAPI(
+                        groupId,
+                        accessToken,
+                    );
+                    if (voiceData) {
+                        setVoiceToken(voiceData.token);
+                        setVoiceUrl(voiceData.url);
+                    }
+                } catch (err) {
+                    console.warn("Voice chat token fetch failed:", err);
+                }
+            } catch (err) {
+                console.error("REST JoinRoom failed:", err);
+                navigate("/", { replace: true });
+                return;
+            }
+
+            // 1e. Start SignalR and announce ourselves
             try {
                 await connection.start();
                 connectionRef.current = connection;
@@ -289,26 +402,23 @@ export default function VirtualRoom() {
 
                 // 1e. Load existing participants from REST and add as remote players
                 try {
-                    const res = await fetch(
-                        `${BASEURL}/api/groups/${groupId}/virtual-room/participants`,
-                        { headers: { Authorization: `Bearer ${accessToken}` } },
+                    const existing = await getParticipantsAPI(
+                        groupId,
+                        accessToken,
                     );
-                    if (res.ok) {
-                        const existing = await res.json();
-                        setPlayers((prev) => {
-                            const ids = new Set(prev.map((p) => p.id));
-                            const newcomers = existing
-                                .filter((p) => !ids.has(p.id))
-                                .map((p) => ({
-                                    id: p.id,
-                                    username: p.username,
-                                    avatarUrl: p.avatarUrl,
-                                    isLocal: false,
-                                    position: [0, 0, 1],
-                                }));
-                            return [...prev, ...newcomers];
-                        });
-                    }
+                    setPlayers((prev) => {
+                        const ids = new Set(prev.map((p) => p.id));
+                        const newcomers = existing
+                            .filter((p) => !ids.has(p.id))
+                            .map((p) => ({
+                                id: p.id,
+                                username: p.username,
+                                avatarUrl: p.avatarUrl,
+                                isLocal: false,
+                                position: [0, 0, 1],
+                            }));
+                        return [...prev, ...newcomers];
+                    });
                 } catch (err) {
                     console.warn("Could not fetch existing participants:", err);
                 }
@@ -321,18 +431,25 @@ export default function VirtualRoom() {
 
         // ── Cleanup: leave the room on unmount ───────────────────────────────
         return () => {
-            const conn = connectionRef.current;
-            if (!conn) return;
-            if (conn.state === HubConnectionState.Connected) {
-                conn.invoke("LeaveVirtualRoom", groupId, user.id).catch(
-                    () => {},
-                );
-            }
-            conn.stop();
-            connectionRef.current = null;
+            leaveRoom();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [accessToken, user]);
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key !== "Escape") return;
+
+            // If the menu is already open, pressing ESC should close it (resume).
+            // Opening the menu is now safely handled by the pointerlockchange event above.
+            if (isMenuOpen) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isMenuOpen]);
 
     // ── Pointer lock ──────────────────────────────────────────────────────────
     useEffect(() => {
@@ -342,9 +459,17 @@ export default function VirtualRoom() {
     useEffect(() => {
         const onChange = () => {
             const locked = !!document.pointerLockElement;
+
+            // FIX: If we were previously locked, and now we are not,
+            // the user pressed ESC (or tabbed out). Open the pause menu!
+            if (isLockedRef.current && !locked) {
+                setIsMenuOpen(true);
+            }
+
             setIsLocked(locked);
             isLockedRef.current = locked;
         };
+
         document.addEventListener("pointerlockchange", onChange);
         return () =>
             document.removeEventListener("pointerlockchange", onChange);
@@ -353,6 +478,41 @@ export default function VirtualRoom() {
     const requestPointerLock = useCallback(() => {
         document.body.requestPointerLock();
     }, []);
+
+    // Tab / window close to ensure player leaves the room
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            leaveRoom();
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () =>
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [leaveRoom]);
+
+    // Browser back button and direct URL navigation away from the room should also trigger leave
+    useEffect(() => {
+        const handlePopState = () => {
+            leaveRoom();
+        };
+
+        window.addEventListener("popstate", handlePopState);
+        return () => window.removeEventListener("popstate", handlePopState);
+    }, [leaveRoom]);
+
+    // React Router navigation blocker to catch in-app route changes away from the room
+    useBlocker(({ currentLocation, nextLocation }) => {
+        if (currentLocation.pathname !== nextLocation.pathname) {
+            leaveRoom();
+        }
+        return false; // always allow navigation
+    });
+
+    usePushToTalk({
+        token: voiceToken,
+        url: voiceUrl,
+        enabled: !!voiceToken && !!voiceUrl,
+    });
 
     // ── Guards ────────────────────────────────────────────────────────────────
     if (isFetchingAvatar) {
@@ -389,30 +549,65 @@ export default function VirtualRoom() {
 
                 <LectureHall />
 
-                <Suspense fallback={<Loader />}>
-                    <CameraFollow
-                        target={localAvatarRef}
-                        isPointerLocked={isLockedRef}
-                    />
+                <CameraFollow
+                    target={localAvatarRef}
+                    isPointerLocked={isLockedRef}
+                />
 
-                    {players.map((p) => (
-                        <PlayerAvatar
-                            key={p.id}
-                            player={p}
-                            avatarRef={p.isLocal ? localAvatarRef : undefined}
-                            connection={connectionRef.current}
-                            remoteTargetsRef={remoteTargetsRef}
-                            groupId={groupId}
-                        />
-                    ))}
-                </Suspense>
+                {players.map((p) => (
+                    <AvatarErrorBoundary
+                        key={p.id}
+                        fallback={
+                            <Suspense fallback={<Loader />}>
+                                <PlayerAvatar
+                                    player={{
+                                        ...p,
+                                        avatarUrl: "/default_avatar.glb",
+                                    }}
+                                    avatarRef={
+                                        p.isLocal ? localAvatarRef : undefined
+                                    }
+                                    connection={connectionRef.current}
+                                    remoteTargetsRef={remoteTargetsRef}
+                                    groupId={groupId}
+                                />
+                            </Suspense>
+                        }
+                    >
+                        <Suspense fallback={<Loader />}>
+                            <PlayerAvatar
+                                player={p}
+                                avatarRef={
+                                    p.isLocal ? localAvatarRef : undefined
+                                }
+                                connection={connectionRef.current}
+                                remoteTargetsRef={remoteTargetsRef}
+                                groupId={groupId}
+                            />
+                        </Suspense>
+                    </AvatarErrorBoundary>
+                ))}
             </Canvas>
 
             <HUD
                 message={message}
                 onRequestPointerLock={requestPointerLock}
                 isLocked={isLocked}
+                isMenuOpen={isMenuOpen}
             />
+
+            {isMenuOpen && (
+                <EscMenu
+                    onResume={() => {
+                        setIsMenuOpen(false);
+                        requestPointerLock();
+                    }}
+                    onLeave={() => {
+                        leaveRoom();
+                        navigate(`/tribes/${groupId}`, { replace: true });
+                    }}
+                />
+            )}
         </div>
     );
 }
