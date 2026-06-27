@@ -1,9 +1,10 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getCleanImageUrl } from "../../../services/http";
 // import avatar from "../../../assets/avatar.jpeg";
 
 function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
     const location = useLocation();
+    const navigate = useNavigate();
     const inMessages = location.pathname !== "/messages";
 
     return (
@@ -11,8 +12,11 @@ function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
             <div className="flex items-center gap-2">
                 <button
                     className="icon-outlined text-2xl"
-                    onClick={(e) => {
-                        onChatRoom(false);
+                    onClick={() => {
+                        onChatRoom?.(false);
+                        if (location.pathname.startsWith("/messages/")) {
+                            navigate("/messages");
+                        }
                     }}
                 >
                     arrow_back
@@ -31,7 +35,7 @@ function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
                 </div>
             </div>
             <div>
-                {inMessages && (
+                {inMessages && onClose && (
                     <button className="icon-outlined" onClick={onClose}>
                         close
                     </button>

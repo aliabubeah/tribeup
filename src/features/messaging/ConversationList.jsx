@@ -1,4 +1,3 @@
-import avatar from "../../assets/avatar.jpeg";
 import { useSelector } from "react-redux";
 import ConversationItem from "./ConversationItem";
 

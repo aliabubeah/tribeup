@@ -6,12 +6,7 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import MessageActionMenu from "../MessageActionMenu";
-import {
-    deleteMessage,
-    deleteRealtimeMessage,
-    editMessage,
-    editRealtimeMessage,
-} from "../chatSlice";
+import { deleteMessage, editMessage } from "../chatSlice";
 
 function MessageContent({
     message,
@@ -29,7 +24,7 @@ function MessageContent({
     const { user, accessToken } = useAuth();
     const dispatch = useDispatch();
 
-    const isMine = senderUserId === user.id;
+    const isMine = senderUserId === user?.id;
     const spacingClass = isSameSenderAsPrev ? "mt-1" : "mt-3";
 
     let formattedTime = "";
@@ -76,6 +71,7 @@ function MessageContent({
             deleteMessage({
                 accessToken,
                 messageId: message.id,
+                groupId: message.groupId,
             }),
         );
     }

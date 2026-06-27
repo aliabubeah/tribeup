@@ -120,14 +120,14 @@ function SideMessageRoom({ onChatRoom, onClose }) {
 
     if (!room || !room.messages.length) {
         return (
-            <div className="flex h-screen w-full items-center justify-center rounded-lg bg-neutral-50 shadow-xl">
+            <div className="flex h-screen w-full items-center justify-center bg-neutral-50">
                 <span className="text-neutral-500">Loading chat…</span>
             </div>
         );
     }
 
     return (
-        <div className="flex h-[calc(100dvh-64px)] min-h-0 w-full flex-col rounded-lg bg-neutral-50 shadow-xl md:h-[100dvh]">
+        <div className="flex h-[calc(100dvh-64px)] min-h-0 w-full flex-col border-l bg-neutral-50 md:h-[100dvh]">
             {/* Header */}
             <MessageHeader
                 onChatRoom={onChatRoom}

@@ -47,13 +47,15 @@ export async function sendMessageAPI(accessToken, groupId, content) {
         body: JSON.stringify({ content }),
     });
 
-    if (res.ok) {
-        return true;
-    }
-    const data = await res.json();
-
     if (!res.ok) {
+        const data = await res.json();
         return handleApiError(data);
+    }
+
+    try {
+        return await res.json();
+    } catch {
+        return true;
     }
 }
 

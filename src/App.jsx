@@ -47,6 +47,7 @@ import AvatarCreator from "./features/settings/AvatarCreator";
 import VirtualRoom from "./features/virtualRoom/VirtualRoom";
 import FollowedTribes from "./features/tribes/FollowedTribes";
 import LeaderBoard from "./features/leaderBoard/LeaderBoard";
+import ChatLayout from "./ui/ChatLayout";
 
 const router = createBrowserRouter([
     {
@@ -102,10 +103,10 @@ const router = createBrowserRouter([
         ),
         errorElement: <Error />,
         children: [
-            {
-                path: "/messages",
-                element: <Mesaage />,
-            },
+            // {
+            //     path: "/messages",
+            //     element: <Mesaage />,
+            // },
             {
                 path: "leaderboard",
                 element: <LeaderBoard />,
@@ -140,6 +141,24 @@ const router = createBrowserRouter([
                 ],
             },
             { path: "tribes/create-tribe", element: <CreateTribe /> },
+        ],
+    },
+    {
+        element: (
+            <ProtectedRoute>
+                <ChatLayout />
+            </ProtectedRoute>
+        ),
+        errorElement: <Error />,
+        children: [
+            {
+                path: "/messages",
+                element: <Mesaage />,
+            },
+            {
+                path: "/messages/:groupId",
+                element: <Mesaage />,
+            },
         ],
     },
     {

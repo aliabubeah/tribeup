@@ -47,7 +47,7 @@ export const sendMessage = createAsyncThunk(
     async ({ accessToken, groupId, content }, { rejectWithValue }) => {
         try {
             const res = await sendMessageAPI(accessToken, groupId, content);
-            return res;
+            return { groupId, content, sentMessage: res };
         } catch (err) {
             return rejectWithValue(err.message);
         }
@@ -69,12 +69,13 @@ export const editMessage = createAsyncThunk(
 
 export const deleteMessage = createAsyncThunk(
     "chat/deleteMessage",
-    async ({ accessToken, messageId }, { rejectWithValue }) => {
+    async ({ accessToken, messageId, groupId }, { rejectWithValue }) => {
         try {
             await deleteMessageAPI(accessToken, messageId);
 
             return {
                 messageId,
+                groupId,
             };
         } catch (err) {
             return rejectWithValue(err.message);
@@ -235,7 +236,13 @@ const chatSlice = createSlice({
 
             // ===== FIXED sendMessage =====
             .addCase(sendMessage.fulfilled, (state, action) => {
-                const msg = action.payload;
+                const { sentMessage } = action.payload;
+                const msg =
+                    sentMessage && typeof sentMessage === "object"
+                        ? sentMessage
+                        : null;
+                if (!msg) return;
+
                 const room = state.rooms[msg.groupId];
 
                 if (!room) return;
@@ -245,6 +252,38 @@ const chatSlice = createSlice({
                 if (exists) return;
 
                 room.messages.push(msg);
+            })
+
+            .addCase(editMessage.fulfilled, (state, action) => {
+                const msg = action.payload;
+                if (!msg?.id) return;
+
+                for (const room of Object.values(state.rooms)) {
+                    const existing = room.messages.find((m) => m.id === msg.id);
+                    if (existing) {
+                        existing.content = msg.content;
+                        existing.isEdited = msg.isEdited ?? true;
+                        break;
+                    }
+                }
+            })
+
+            .addCase(deleteMessage.fulfilled, (state, action) => {
+                const { messageId, groupId } = action.payload;
+                const rooms = groupId
+                    ? [state.rooms[groupId]].filter(Boolean)
+                    : Object.values(state.rooms);
+
+                for (const room of rooms) {
+                    const index = room.messages.findIndex(
+                        (m) => m.id === messageId,
+                    );
+
+                    if (index !== -1) {
+                        room.messages.splice(index, 1);
+                        break;
+                    }
+                }
             });
     },
 });
