@@ -56,3 +56,41 @@ export async function sendMessageAPI(accessToken, groupId, content) {
         return handleApiError(data);
     }
 }
+
+export async function deleteMessageAPI(accessToken, msgid) {
+    const res = await fetch(`${BASEURL}/api/GroupChat/${msgid}/DeleteMessage`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+
+    if (!res.ok) {
+        const data = await res.json();
+        throw new Error(handleApiError(data));
+    }
+
+    return msgid;
+}
+
+export async function editMessageAPI(accessToken, msgid, content) {
+    const res = await fetch(`${BASEURL}/api/GroupChat/${msgid}/EditMessage`, {
+        method: "put",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+            content,
+        }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        console.log(handleApiError(data));
+        return handleApiError(data);
+    }
+
+    return data;
+}

@@ -50,11 +50,6 @@ function SideMessageRoom({ onChatRoom, onClose }) {
                         page: room.page,
                     }),
                 );
-                console.log({
-                    scrollTop: el.scrollTop,
-                    scrollHeight: el.scrollHeight,
-                    clientHeight: el.clientHeight,
-                });
             }
         }
 
@@ -125,7 +120,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
 
     if (!room || !room.messages.length) {
         return (
-            <div className="flex h-[60vh] w-[364px] items-center justify-center rounded-lg bg-neutral-50 shadow-xl">
+            <div className="flex h-screen w-full items-center justify-center rounded-lg bg-neutral-50 shadow-xl">
                 <span className="text-neutral-500">Loading chat…</span>
             </div>
         );
@@ -182,6 +177,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
                             )}
 
                             <MessageContent
+                                message={msg}
                                 content={msg.content}
                                 senderName={msg.senderName}
                                 senderUserId={msg.senderUserId}

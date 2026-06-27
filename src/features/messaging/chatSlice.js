@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     chatInboxAPI,
+    deleteMessageAPI,
+    editMessageAPI,
     getMessagesAPI,
     sendMessageAPI,
 } from "../../services/chat";
@@ -40,13 +42,40 @@ export const fetchRoomMessages = createAsyncThunk(
     },
 );
 
-// return full backend response (includes sentAt)
 export const sendMessage = createAsyncThunk(
     "chat/sendMessage",
     async ({ accessToken, groupId, content }, { rejectWithValue }) => {
         try {
             const res = await sendMessageAPI(accessToken, groupId, content);
             return res;
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    },
+);
+
+export const editMessage = createAsyncThunk(
+    "chat/editMessage",
+    async ({ accessToken, messageId, content }, { rejectWithValue }) => {
+        try {
+            const res = await editMessageAPI(accessToken, messageId, content);
+
+            return res;
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
+    },
+);
+
+export const deleteMessage = createAsyncThunk(
+    "chat/deleteMessage",
+    async ({ accessToken, messageId }, { rejectWithValue }) => {
+        try {
+            await deleteMessageAPI(accessToken, messageId);
+
+            return {
+                messageId,
+            };
         } catch (err) {
             return rejectWithValue(err.message);
         }
@@ -65,14 +94,40 @@ const chatSlice = createSlice({
             state.error = null;
         },
 
+        editRealtimeMessage(state, action) {
+            const { groupId, id, content } = action.payload;
+
+            const room = state.rooms[groupId];
+
+            if (!room) return;
+
+            const msg = room.messages.find((m) => m.id === id);
+
+            if (msg) {
+                msg.content = content;
+                msg.isEdited = true;
+            }
+        },
+
+        deleteRealtimeMessage(state, action) {
+            const messageId = action.payload;
+
+            for (const room of Object.values(state.rooms)) {
+                const index = room.messages.findIndex(
+                    (m) => m.id === messageId,
+                );
+
+                if (index !== -1) {
+                    room.messages.splice(index, 1);
+                    break;
+                }
+            }
+        },
+
         updateInboxLastMessage(state, action) {
             const message = action.payload;
 
-            console.log("Reducer payload", message);
-
             const chat = state.inbox.find((c) => c.groupId === message.groupId);
-
-            console.log("Found chat", chat);
 
             if (!chat) {
                 console.log("Chat not found");
@@ -82,8 +137,6 @@ const chatSlice = createSlice({
             chat.lastMessageContent = message.lastMessage;
             chat.lastMessageSentAt = message.sentAt;
             chat.lastMessageSenderName = message.lastMessageSenderName;
-
-            console.log("Updated chat", chat);
 
             state.inbox = [
                 chat,
@@ -201,6 +254,8 @@ export const {
     updateInboxLastMessage,
     setActiveGroup,
     receiveGroupMessage,
+    editRealtimeMessage,
+    deleteRealtimeMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

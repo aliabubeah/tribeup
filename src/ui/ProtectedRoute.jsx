@@ -9,6 +9,8 @@ import {
     createNotificationConnection,
 } from "../services/siganlR";
 import {
+    deleteRealtimeMessage,
+    editRealtimeMessage,
     receiveGroupMessage,
     updateInboxLastMessage,
 } from "../features/messaging/chatSlice";
@@ -49,14 +51,25 @@ function ProtectedRoute({ children }) {
         // ================= CHAT HUB =================
         chatConnection.off("ReceiveGroupMessage");
         chatConnection.off("UpdateInbox");
+        chatConnection.off("ReceiveMessageEdit");
+        chatConnection.off("ReceiveMessageDeletion");
 
         chatConnection.on("ReceiveGroupMessage", (message) => {
             dispatch(receiveGroupMessage(message));
         });
 
         chatConnection.on("UpdateInbox", (message) => {
-            console.log("UpdateInbox", message);
             dispatch(updateInboxLastMessage(message));
+        });
+
+        chatConnection.on("ReceiveMessageEdit", (message) => {
+            console.log("EDIT EVENT", message);
+            dispatch(editRealtimeMessage(message));
+        });
+
+        chatConnection.on("ReceiveMessageDeletion", (message) => {
+            console.log("DELETE EVENT", message);
+            dispatch(deleteRealtimeMessage(message));
         });
 
         // ================= NOTIFICATION HUB =================
@@ -110,6 +123,8 @@ function ProtectedRoute({ children }) {
         return () => {
             chatConnection.off("ReceiveGroupMessage");
             chatConnection.off("UpdateInbox");
+            chatConnection.off("ReceiveMessageEdit");
+            chatConnection.off("ReceiveMessageDeletion");
             notificationConnection.off("notification-received");
         };
     }, [accessToken, dispatch]);
