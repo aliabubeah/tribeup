@@ -3,7 +3,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { updateProfilePictureAPI } from "../../../services/profile";
 
 export default function useUpdateProfilePicture() {
-    const { accessToken } = useAuth();
+    const { accessToken, updateUser } = useAuth();
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -18,6 +18,10 @@ export default function useUpdateProfilePicture() {
                 ...old,
                 profilePicture: previewUrl,
             }));
+
+            updateUser({
+                profilePicture: previewUrl,
+            });
         },
     });
 }

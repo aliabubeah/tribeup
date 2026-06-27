@@ -8,7 +8,7 @@ function ProfilePosts({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isPending,
+    isFetching,
 }) {
     const [activePost, setActivePost] = useState(null);
 
@@ -30,7 +30,7 @@ function ProfilePosts({
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    if (isPending) {
+    if (isFetching) {
         return <PostCardSkeleton />;
     }
 
@@ -61,7 +61,7 @@ function ProfilePosts({
                 );
             })}
 
-            {isFetchingNextPage && <PostCardSkeleton />}
+            {isFetchingNextPage && <PostCardSkeleton length={1} />}
 
             {activePost && (
                 <PostModal

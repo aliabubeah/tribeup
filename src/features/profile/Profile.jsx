@@ -17,7 +17,7 @@ function Profile() {
     const { username } = useParams();
     const { account, isLoading, error } = useSelector((state) => state.profile);
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
         useInfiniteQuery({
             queryKey: ["personalPosts", username, accessToken],
             queryFn: ({ pageParam = 1 }) =>
@@ -65,6 +65,7 @@ function Profile() {
                 fetchNextPage={fetchNextPage}
                 hasNextPage={hasNextPage}
                 isFetchingNextPage={isFetchingNextPage}
+                isFetching={isFetching}
             />
         </div>
     );

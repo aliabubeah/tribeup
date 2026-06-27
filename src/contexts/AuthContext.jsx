@@ -33,6 +33,15 @@ function reducer(state, action) {
                 isLoading: false,
             };
 
+        case "updateUser":
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    ...action.payload,
+                },
+            };
+
         case "logout":
             localStorage.removeItem("refreshToken");
             clearAccessToken();
@@ -71,6 +80,13 @@ function AuthProvider({ children }) {
         dispatch({
             type: "authenticate",
             payload: response,
+        });
+    }
+
+    function updateUser(data) {
+        dispatch({
+            type: "updateUser",
+            payload: data,
         });
     }
 
@@ -118,6 +134,7 @@ function AuthProvider({ children }) {
                 isLoading,
                 setAccessToken,
                 logout,
+                updateUser,
             }}
         >
             {children}
