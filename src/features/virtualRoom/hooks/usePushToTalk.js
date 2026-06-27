@@ -1,11 +1,12 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Room, RoomEvent, Track } from "livekit-client";
 
 export function usePushToTalk({ token, url, enabled }) {
     const roomRef = useRef(null);
     const isConnectedRef = useRef(false);
+    // NEW: State to track who is currently talking
+    const [activeSpeakers, setActiveSpeakers] = useState([]);
 
-    // Connect to LiveKit room when component mounts
     // Connect to LiveKit room when component mounts
     useEffect(() => {
         if (!token || !url || !enabled) return;
@@ -19,20 +20,16 @@ export function usePushToTalk({ token, url, enabled }) {
 
         roomRef.current = room;
 
-        // Listen for incoming audio from other players!
         room.on(
             RoomEvent.TrackSubscribed,
             (track, publication, participant) => {
                 if (track.kind === Track.Kind.Audio) {
-                    // track.attach() creates an HTML <audio> element and starts playing it
                     const audioElement = track.attach();
-                    // We append it to the body so the browser actually renders and plays it
                     document.body.appendChild(audioElement);
                 }
             },
         );
 
-        // Cleanup the audio element when they stop talking or leave
         room.on(
             RoomEvent.TrackUnsubscribed,
             (track, publication, participant) => {
@@ -42,11 +39,16 @@ export function usePushToTalk({ token, url, enabled }) {
             },
         );
 
+        // NEW: Listen for the active speakers changing
+        room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
+            // 'speakers' is an array of Participant objects.
+            // We extract their identity/name to display in the UI.
+            setActiveSpeakers(speakers.map((p) => p.name || p.identity));
+        });
+
         room.connect(url, token)
             .then(async () => {
                 isConnectedRef.current = true;
-
-                // Enable mic track but immediately mute it.
                 await room.localParticipant.setMicrophoneEnabled(true);
                 const micPub = room.localParticipant.getTrackPublication(
                     Track.Source.Microphone,
@@ -95,4 +97,7 @@ export function usePushToTalk({ token, url, enabled }) {
             window.removeEventListener("keyup", onKeyUp);
         };
     }, [enabled]);
+
+    // NEW: Expose the active speakers array to the component that calls this hook
+    return { activeSpeakers };
 }
