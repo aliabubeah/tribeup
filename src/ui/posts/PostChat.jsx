@@ -63,7 +63,7 @@ function PostChat({ postId }) {
     }
 
     return (
-        <div className="flex min-h-0 flex-1 flex-col">
+        <div className="relative flex min-h-0 flex-1 flex-col">
             <div className="flex-1 p-2 lg:overflow-y-auto">
                 {comments.map((comment) => (
                     <PostComment key={comment.id} comment={comment} />
@@ -74,8 +74,9 @@ function PostChat({ postId }) {
                     {isFetchingNextPage && <CommentSkeleton length={1} />}
                 </div>
             </div>
-
-            <AddComment postId={postId} />
+            <div className="sticky bottom-0">
+                <AddComment postId={postId} />
+            </div>
         </div>
     );
 }

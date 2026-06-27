@@ -36,11 +36,11 @@ function PostModal({ post, isOpen = false, onClose }) {
                     >
                         <Dialog.Panel className="h-[75vh] w-full max-w-5xl overflow-y-auto rounded-xl bg-white shadow-xl lg:h-[80vh]">
                             <div
-                                className={`grid grid-cols-1 ${
+                                className={`grid h-full overflow-y-auto lg:overflow-hidden ${
                                     post.media.length === 0
-                                        ? ""
-                                        : "lg:grid-cols-[auto_1fr]"
-                                } h-full overflow-y-auto lg:overflow-hidden`}
+                                        ? "grid-cols-1"
+                                        : "grid-cols-1 lg:grid-cols-2"
+                                }`}
                             >
                                 {/* LEFT */}
                                 <div

@@ -74,29 +74,10 @@ function ModalMediaImage({ src }) {
 
 function ModalMediaVideo({ src }) {
     const plyrRef = useRef(null);
-    const [isPortrait, setIsPortrait] = useState(false);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const video = plyrRef.current?.plyr?.media;
-            if (video?.videoWidth && video?.videoHeight) {
-                setIsPortrait(video.videoHeight > video.videoWidth);
-                clearInterval(interval);
-            }
-        }, 50);
-
-        return () => clearInterval(interval);
-    }, []);
 
     return (
         <div className="flex h-full w-full items-center justify-center bg-black">
-            <div
-                className={`flex items-center justify-center ${
-                    isPortrait
-                        ? "h-full max-h-[80vh] w-full max-w-[420px]"
-                        : "h-full w-full"
-                }`}
-            >
+            <div className="flex h-full w-full items-center justify-center">
                 <Video ref={plyrRef} src={src} />
             </div>
         </div>
