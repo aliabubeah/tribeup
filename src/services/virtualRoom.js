@@ -43,3 +43,19 @@ export async function getParticipantsAPI(groupId, accessToken) {
     if (!res.ok) return [];
     return res.json(); // returns array of { id, username, avatarUrl }
 }
+
+export async function uploadSlidePdfAPI(groupId, file, accessToken) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(
+        `${BASEURL}/api/groups/${groupId}/virtual-room/upload-slide-pdf`,
+        {
+            method: "POST",
+            headers: { Authorization: `Bearer ${accessToken}` },
+            body: formData,
+        },
+    );
+    if (!res.ok) throw new Error("PDF upload failed");
+    return res.json(); // returns { pdfUrl: "..." }
+}
