@@ -109,18 +109,10 @@ function Windows() {
 }
 
 // ─── Chalkboard / Whiteboard (front wall) ─────────────────
-function Board() {
-    return (
-        <group>
-            {/* Frame */}
-            <Box pos={[0, 3.2, 7.82]} size={[8.4, 2.8, 0.08]} color={C.boardFrame} />
-            {/* Board surface */}
-            <Box pos={[0, 3.2, 7.87]} size={[8.0, 2.4, 0.04]} color={C.board} />
-            {/* Chalk tray */}
-            <Box pos={[0, 2.1, 7.92]} size={[8.0, 0.1, 0.12]} color={C.boardFrame} />
-        </group>
-    );
-}
+// The board is now rendered by SlidePresenter.jsx which replaces this
+// component with a live CanvasTexture showing PDF slides.
+// LectureHall no longer renders a Board; VirtualRoom mounts SlidePresenter
+// as a sibling inside the same <Canvas>.
 
 // ─── Stage ────────────────────────────────────────────────
 function Stage() {
@@ -290,7 +282,7 @@ export default function LectureHall() {
             <Floor />
             <Walls />
             <Windows />
-            <Board />
+            {/* Board is rendered by <SlidePresenter> in VirtualRoom.jsx */}
             <Stage />
             <Podium />
             <TieredSeating />

@@ -16,6 +16,8 @@ import { Environment, Html, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import PlayerAvatar from "./PlayerAvatar";
 import LectureHall from "./LectureHall";
+import SlidePresenter from "./SlidePresenter";
+import PresenterControls from "./PresenterControls";
 import AvatarErrorBoundary from "./AvatarErrorBoundary";
 import { usePushToTalk } from "./hooks/usePushToTalk";
 
@@ -253,6 +255,16 @@ export default function VirtualRoom() {
     const [voiceToken, setVoiceToken] = useState(null);
     const [voiceUrl, setVoiceUrl] = useState(null);
 
+    // ── Presentation state ────────────────────────────────────────────────────
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [totalSlides, setTotalSlides] = useState(0);
+    const [pdfUrl, setPdfUrl] = useState(null);
+    const [presenterName, setPresenterName] = useState("");
+    // isPresenter: true when the local avatar is standing on stage
+    const [isPresenter, setIsPresenter] = useState(false);
+    // Poll local avatar position to detect stage entry/exit
+    const presenterPollRef = useRef(null);
+
     const leaveRoom = useCallback(async () => {
         if (!hasJoinedRef.current) return;
         hasJoinedRef.current = false;
@@ -349,7 +361,6 @@ export default function VirtualRoom() {
             // ── Incoming: high-frequency position update ──────────────────────
             // Written into a ref so PlayerAvatar lerps toward it every frame
             connection.on("PlayerMoved", (userId, position, rotationY) => {
-                // Preserve isSitting so the sit state machine isn't reset by position ticks
                 const prev = remoteTargetsRef.current[userId];
                 remoteTargetsRef.current[userId] = {
                     position,
@@ -361,10 +372,13 @@ export default function VirtualRoom() {
             // ── Incoming: sit / stand event ───────────────────────────────────
             connection.on("PlayerSat", (userId, isSitting) => {
                 const prev = remoteTargetsRef.current[userId];
-                remoteTargetsRef.current[userId] = {
-                    ...prev,
-                    isSitting,
-                };
+                remoteTargetsRef.current[userId] = { ...prev, isSitting };
+            });
+
+            // ── Incoming: slide change ────────────────────────────────────────
+            connection.on("SlideChanged", (slideIndex, senderName) => {
+                setCurrentSlide(slideIndex);
+                setPresenterName(senderName ?? "");
             });
 
             // 1d. Call REST join first — this adds us to DB and checks membership
@@ -470,6 +484,73 @@ export default function VirtualRoom() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isMenuOpen]);
 
+    // ── Stage detection: poll local avatar Z position every 200 ms ───────────
+    // When the local player walks onto the stage (z > 1.0 at stage height)
+    // the presenter controls become visible. Polling is cheaper than per-frame
+    // React state updates which would trigger a full re-render cascade.
+    useEffect(() => {
+        const STAGE_Z_MIN = 1.0;
+        const STAGE_Y_MIN = 0.3; // stage platform is at y=0.4
+        presenterPollRef.current = setInterval(() => {
+            const pos = localAvatarRef.current?.position;
+            if (!pos) return;
+            const onStage = pos.z > STAGE_Z_MIN && pos.y > STAGE_Y_MIN;
+            setIsPresenter((prev) => (prev !== onStage ? onStage : prev));
+        }, 200);
+        return () => clearInterval(presenterPollRef.current);
+    }, [localAvatarRef]);
+
+    // ── Slide navigation helpers ──────────────────────────────────────────────
+    const broadcastSlide = useCallback(
+        (index) => {
+            const conn = connectionRef.current;
+            if (conn?.state === HubConnectionState.Connected) {
+                conn.invoke(
+                    "ChangeSlide",
+                    groupId,
+                    user.id,
+                    user.userName,
+                    index,
+                ).catch((err) => console.error("ChangeSlide error:", err));
+            }
+            setCurrentSlide(index);
+        },
+        [groupId, user],
+    );
+
+    const handlePrev = useCallback(() => {
+        if (currentSlide > 0) broadcastSlide(currentSlide - 1);
+    }, [currentSlide, broadcastSlide]);
+
+    const handleNext = useCallback(() => {
+        if (currentSlide < totalSlides - 1) broadcastSlide(currentSlide + 1);
+    }, [currentSlide, totalSlides, broadcastSlide]);
+
+    // Left / right arrow keys control slides when on stage and not in a text field
+    useEffect(() => {
+        const handleKey = (e) => {
+            if (!isPresenter || !pdfUrl) return;
+            if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+                return;
+            if (e.key === "ArrowRight" || e.key === "ArrowDown") handleNext();
+            if (e.key === "ArrowLeft" || e.key === "ArrowUp") handlePrev();
+        };
+        window.addEventListener("keydown", handleKey);
+        return () => window.removeEventListener("keydown", handleKey);
+    }, [isPresenter, pdfUrl, handleNext, handlePrev]);
+
+    // ── PDF upload handler ────────────────────────────────────────────────────
+    const handlePdfUpload = useCallback(
+        (file) => {
+            if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+            const url = URL.createObjectURL(file);
+            setPdfUrl(url);
+            setCurrentSlide(0);
+            broadcastSlide(0);
+        },
+        [pdfUrl, broadcastSlide],
+    );
+
     // ── Pointer lock ──────────────────────────────────────────────────────────
     useEffect(() => {
         isLockedRef.current = isLocked;
@@ -568,6 +649,13 @@ export default function VirtualRoom() {
 
                 <LectureHall />
 
+                {/* Slide board — replaces the static Board mesh in LectureHall */}
+                <SlidePresenter
+                    currentSlide={currentSlide}
+                    pdfUrl={pdfUrl}
+                    onTotalPages={setTotalSlides}
+                />
+
                 <CameraFollow
                     target={localAvatarRef}
                     isPointerLocked={isLockedRef}
@@ -628,6 +716,17 @@ export default function VirtualRoom() {
                     }}
                 />
             )}
+
+            <PresenterControls
+                currentSlide={currentSlide}
+                totalSlides={totalSlides}
+                isPresenter={isPresenter}
+                pdfLoaded={!!pdfUrl}
+                onPrev={handlePrev}
+                onNext={handleNext}
+                onUpload={handlePdfUpload}
+                presenterName={presenterName}
+            />
         </div>
     );
 }
