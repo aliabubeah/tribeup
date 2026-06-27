@@ -64,10 +64,7 @@ function MiniLeaderBoard() {
 
 function LeaderBoardRow({ leader }) {
     return (
-        <Link
-            to={`/tribes/${leader.groupId}`}
-            className="grid grid-cols-[40px_40px_1fr_auto] items-center gap-2 rounded-lg bg-neutral-50 p-2 transition-colors hover:bg-neutral-100"
-        >
+        <div className="grid grid-cols-[40px_40px_1fr_auto] items-center gap-2 rounded-lg bg-neutral-50 p-2 transition-colors hover:bg-neutral-100">
             <div className="flex h-8 w-9 items-center justify-center rounded-md bg-neutral-950 text-base font-bold text-white">
                 #{leader.rank}
             </div>
@@ -100,7 +97,7 @@ function LeaderBoardRow({ leader }) {
                     bolt
                 </span>
             </div>
-        </Link>
+        </div>
     );
 }
 

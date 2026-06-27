@@ -10,22 +10,23 @@ function Settings() {
                 to="account"
             />
             <SettingCard
-                iconName="account_circle"
-                title="Privacy & Security"
-                description="Edit your profile information"
-                to="privacy"
-            />
-            <SettingCard
-                iconName="account_circle"
+                iconName="man"
                 title="Avatar"
                 description="Edit your profile information"
                 to="avatar"
             />
-            <SettingCard
+
+            {/* <SettingCard
+                iconName="account_circle"
+                title="Privacy & Security"
+                description="Edit your profile information"
+                to="privacy"
+            /> */}
+            {/* <SettingCard
                 iconName="account_circle"
                 title="About"
                 description="Edit your profile information"
-            />
+            /> */}
         </div>
     );
 }

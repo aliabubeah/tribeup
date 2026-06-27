@@ -51,9 +51,8 @@ function LeaderBoard() {
 
             <div className="space-y-2 rounded-xl bg-white">
                 {leaders.map((leader) => (
-                    <Link
+                    <div
                         key={leader.groupId}
-                        to={`/tribes/${leader.groupId}`}
                         className="grid grid-cols-[48px_52px_1fr_auto] items-center gap-3 rounded-xl p-3 shadow-sm transition-colors hover:bg-neutral-50"
                     >
                         <div className="flex h-10 w-11 items-center justify-center rounded-lg bg-neutral-950 font-bold text-white">
@@ -88,7 +87,7 @@ function LeaderBoard() {
                                 bolt
                             </span>
                         </div>
-                    </Link>
+                    </div>
                 ))}
             </div>
         </div>

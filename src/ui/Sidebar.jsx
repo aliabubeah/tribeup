@@ -37,6 +37,8 @@ function Sidebar() {
                     icon="notifications"
                     label="Notification"
                 />
+                <SidebarItem to="/leaderboard" icon="leaderboard" label="LeaderBoard" />
+
                 <SidebarItem to="/messages" icon="mail" label="Chat" />
                 <SidebarItem to="/tribes" icon="groups" label="Tribes" />
                 <SidebarItem to="/settings" icon="settings" label="Settings" />
