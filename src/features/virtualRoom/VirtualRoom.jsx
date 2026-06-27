@@ -137,9 +137,28 @@ function CameraFollow({ target, isPointerLocked }) {
 }
 
 // ── HUD ───────────────────────────────────────────────────────────────────────
-function HUD({ message, onRequestPointerLock, isLocked, isMenuOpen }) {
+function HUD({
+    message,
+    onRequestPointerLock,
+    isLocked,
+    isMenuOpen,
+    activeSpeakers = [],
+}) {
     return (
         <>
+            {/* NEW: Active Speakers Overlay Panel */}
+            <div className="pointer-events-none absolute left-4 top-4 z-40 flex flex-col gap-2 transition-all">
+                {activeSpeakers.map((speaker, index) => (
+                    <div
+                        key={index}
+                        className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm font-semibold text-white shadow-lg backdrop-blur-md"
+                    >
+                        <span className="animate-pulse text-green-400">🎙️</span>
+                        <span>{speaker}</span>
+                    </div>
+                ))}
+            </div>
+
             {!isLocked && !isMenuOpen && (
                 <div
                     onClick={onRequestPointerLock}
@@ -508,11 +527,11 @@ export default function VirtualRoom() {
         return false; // always allow navigation
     });
 
-    usePushToTalk({
+    const { activeSpeakers } = usePushToTalk({
         token: voiceToken,
         url: voiceUrl,
         enabled: !!voiceToken && !!voiceUrl,
-    });
+    }) || { activeSpeakers: [] };
 
     // ── Guards ────────────────────────────────────────────────────────────────
     if (isFetchingAvatar) {
@@ -594,6 +613,7 @@ export default function VirtualRoom() {
                 onRequestPointerLock={requestPointerLock}
                 isLocked={isLocked}
                 isMenuOpen={isMenuOpen}
+                activeSpeakers={activeSpeakers}
             />
 
             {isMenuOpen && (
