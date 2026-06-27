@@ -9,6 +9,7 @@ import {
     leaveVirtualRoomAPI,
     getVoiceTokenAPI,
     getParticipantsAPI,
+    uploadSlidePdfAPI,
 } from "../../services/virtualRoom";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
@@ -381,6 +382,12 @@ export default function VirtualRoom() {
                 setPresenterName(senderName ?? "");
             });
 
+            // ── Incoming: presenter shared a PDF URL ──────────────────────────
+            connection.on("PdfShared", (pdfUrl) => {
+                setPdfUrl(pdfUrl);
+                setCurrentSlide(0);
+            });
+
             // 1d. Call REST join first — this adds us to DB and checks membership
             try {
                 const joinRes = await joinVirtualRoomAPI(groupId, accessToken);
@@ -541,14 +548,23 @@ export default function VirtualRoom() {
 
     // ── PDF upload handler ────────────────────────────────────────────────────
     const handlePdfUpload = useCallback(
-        (file) => {
-            if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-            const url = URL.createObjectURL(file);
-            setPdfUrl(url);
-            setCurrentSlide(0);
-            broadcastSlide(0);
+        async (file) => {
+            try {
+                const { pdfUrl: uploadedUrl } = await uploadSlidePdfAPI(groupId, file, accessToken);
+                setPdfUrl(uploadedUrl);
+                setCurrentSlide(0);
+                broadcastSlide(0);
+                // Tell other players where to fetch the PDF from
+                const conn = connectionRef.current;
+                if (conn?.state === HubConnectionState.Connected) {
+                    conn.invoke("SharePdf", groupId, uploadedUrl)
+                        .catch((err) => console.error("SharePdf error:", err));
+                }
+            } catch (err) {
+                console.error("PDF upload failed:", err);
+            }
         },
-        [pdfUrl, broadcastSlide],
+        [groupId, accessToken, broadcastSlide],
     );
 
     // ── Pointer lock ──────────────────────────────────────────────────────────
