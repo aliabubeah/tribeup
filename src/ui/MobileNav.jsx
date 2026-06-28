@@ -5,7 +5,7 @@ function MobileNav({ className }) {
         <div className={className}>
             <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 justify-around border-t border-gray-800 bg-neutral-100 py-2 md:hidden">
                 <MobileNavLink to="/" iconName="home" />
-                <MobileNavLink to="/search" iconName="Search" />
+                <MobileNavLink to="/leaderboard" iconName="leaderboard" />
                 <MobileNavLink to="/tribes" iconName="groups" />
                 <MobileNavLink to="/notifications" iconName="notifications" />
                 <MobileNavLink to="/messages" iconName="mail" />
