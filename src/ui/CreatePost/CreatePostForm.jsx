@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import MainButton from "../Buttons/MainButton";
 import { MyGroupsAPI } from "../../services/groups";
 import { useAuth } from "../../contexts/AuthContext";
 import { createPostAPI } from "../../services/posts";
 
 function CreatePostForm({ onClose, id }) {
-    const { accessToken } = useAuth();
+    const { accessToken, user } = useAuth();
+    const queryClient = useQueryClient();
 
     const [groups, setGroups] = useState(null);
     const [caption, setCaption] = useState("");
@@ -18,10 +20,60 @@ function CreatePostForm({ onClose, id }) {
     const isDisabled = Boolean(id);
 
     async function handleSubmit() {
+        const tempId = `temp-${Date.now()}`;
+
+        const selectedGroup = groups?.items?.find(
+            (g) => g.id === Number(groupId),
+        );
+
+        const optimisticPost = {
+            postId: tempId,
+            caption,
+            userId: user.id,
+            username: user.userName,
+            groupId: Number(groupId),
+            groupName: selectedGroup?.groupName,
+            groupProfilePicture: selectedGroup?.groupProfilePicture,
+            likesCount: 0,
+            commentCount: 0,
+            isAuthor: true,
+            isLikedByCurrentUser: false,
+            feedScore: 0,
+            createdAt: new Date().toISOString(),
+            media: previewUrls.map((url, index) => ({
+                mediaURL: url,
+                type: "image",
+                order: index,
+            })),
+            postPermissions: {
+                canDelete: true,
+                canModerate: true,
+            },
+            isDenied: false,
+            isOptimistic: true,
+        };
+
+        const previousFeed = queryClient.getQueryData(["feed", accessToken]);
+
+        queryClient.setQueryData(["feed", accessToken], (old) => {
+            if (!old) return old;
+
+            return {
+                ...old,
+                pages: [
+                    {
+                        ...old.pages[0],
+                        items: [optimisticPost, ...old.pages[0].items],
+                    },
+                    ...old.pages.slice(1),
+                ],
+            };
+        });
+
         try {
             setLoading(true);
 
-            await createPostAPI({
+            const res = await createPostAPI({
                 accessToken,
                 groupId: Number(groupId),
                 caption,
@@ -30,9 +82,25 @@ function CreatePostForm({ onClose, id }) {
                 mediaFiles: files,
             });
 
+            queryClient.setQueryData(["feed", accessToken], (old) => {
+                if (!old) return old;
+
+                return {
+                    ...old,
+                    pages: old.pages.map((page) => ({
+                        ...page,
+                        items: page.items.map((post) =>
+                            post.postId === tempId ? res.post : post,
+                        ),
+                    })),
+                };
+            });
+
             onClose();
         } catch (err) {
             console.error(err);
+
+            queryClient.setQueryData(["feed", accessToken], previousFeed);
         } finally {
             setLoading(false);
         }
@@ -43,7 +111,6 @@ function CreatePostForm({ onClose, id }) {
             const res = await MyGroupsAPI({ accessToken });
             setGroups(res);
 
-            // Only set default if not coming from tribe page
             if (!id && res?.items?.length > 0) {
                 setGroupId(String(res.items[0].id));
             }

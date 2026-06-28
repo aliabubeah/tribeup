@@ -15,31 +15,31 @@ function LeaderBoard() {
     });
 
     const leaders = Array.isArray(data) ? data : (data?.items ?? []);
-    function getRanktext(rank) {
-        switch (rank) {
-            case 1:
-                return "text-yellow-300";
-            case 2:
-                return "text-neutral-200";
-            case 3:
-                return "text-orange-300";
-            default:
-                return "text-white";
-        }
-    }
+    // function getRanktext(rank) {
+    //     switch (rank) {
+    //         case 1:
+    //             return "text-yellow-300";
+    //         case 2:
+    //             return "text-neutral-200";
+    //         case 3:
+    //             return "text-orange-300";
+    //         default:
+    //             return "text-white";
+    //     }
+    // }
 
-    function getRankBg(rank) {
-        switch (rank) {
-            case 1:
-                return "bg-yellow-300 rounded-t-lg";
-            case 2:
-                return "bg-neutral-200";
-            case 3:
-                return "bg-orange-300";
-            default:
-                return "bg-white";
-        }
-    }
+    // function getRankBg(rank) {
+    //     switch (rank) {
+    //         case 1:
+    //             return "bg-yellow-300 rounded-t-lg";
+    //         case 2:
+    //             return "bg-neutral-200";
+    //         case 3:
+    //             return "bg-orange-300";
+    //         default:
+    //             return "bg-white";
+    //     }
+    // }
 
     if (isPending) {
         return (
@@ -88,15 +88,11 @@ function LeaderBoard() {
                 {leaders.map((leader) => (
                     <div
                         key={leader.groupId}
-                        className={`grid grid-cols-[48px_52px_1fr_auto] items-center gap-3 p-3 shadow-sm transition-all duration-300 ease-in-out ${getRankBg(
-                            leader.rank,
-                        )}`}
+                        className={`grid grid-cols-[48px_52px_1fr_auto] items-center gap-3 p-3 shadow-sm transition-all duration-300 ease-in-out`}
                     >
                         <div
                             key={leader.groupId}
-                            className={`grid grid-cols-[48px_52px_1fr_auto] items-center gap-3 rounded-xl bg-neutral-900 p-3 text-xl font-bold transition-colors ${getRanktext(
-                                leader.rank,
-                            )}`}
+                            className={`grid grid-cols-[48px_52px_1fr_auto] items-center gap-3 rounded-xl bg-neutral-900 p-3 text-xl font-bold transition-colors text-neutral-50`}
                         >
                             #{leader.rank}
                         </div>

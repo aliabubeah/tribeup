@@ -72,14 +72,14 @@ function PostActions({
                         className="flex items-center gap-1 outline-none"
                         onClick={onCommentClick}
                     >
-                        <span className="icon-outlined text-xl transition-all duration-200 ease-in-out hover:text-neutral-700">
+                        <span className="icon-outlined text-xl transition-all duration-200 ease-in-out hover:text-neutral-500">
                             add_comment
                         </span>
                         {commentCount}
                     </button>
                 </div>
                 <button
-                    className="icon-outlined text-xl transition-all duration-200 ease-in-out hover:scale-110"
+                    className="icon-outlined text-xl transition-all duration-200 ease-in-out hover:text-neutral-500"
                     onClick={handleSharePost}
                     title={copy ? "copied" : "copy"}
                 >

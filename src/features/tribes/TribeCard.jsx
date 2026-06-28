@@ -58,14 +58,14 @@ function TribeCard({ tribe, debouncedSearch }) {
 
     return (
         <div
-            className="flex rounded-xl bg-white shadow-sm transition-all duration-300 ease-in-out hover:bg-neutral-50 md:h-[100px] md:gap-4"
+            className="flex rounded-xl border border-neutral-50 bg-white transition-all duration-300 ease-in-out hover:border hover:border-black  md:h-[100px] md:gap-4"
             role="button"
             onClick={() => navigate(`/tribes/${tribe.id}`)}
         >
             {/* Image */}
             <img
                 src={getCleanImageUrl(tribe.groupProfilePicture)}
-                className="h-40 w-56 rounded-lg object-cover md:h-full"
+                className="h-40 w-56 rounded-l-lg object-cover md:h-full"
             />
 
             {/* Content */}

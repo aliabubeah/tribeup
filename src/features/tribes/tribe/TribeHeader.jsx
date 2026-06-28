@@ -114,7 +114,7 @@ function TribeHeader({ tribe }) {
                                         >
                                             {isInviting
                                                 ? "Inviting..."
-                                                : "Invite+"}
+                                                : "Invite"}
                                         </MainButton>
 
                                         <MainButton

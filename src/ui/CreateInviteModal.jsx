@@ -45,11 +45,21 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
     });
 
     function handleCreate() {
+        const selectedDate = new Date(date);
+        const today = new Date();
+
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate < today) {
+            toast.error("Please select a valid date");
+            return;
+        }
+
         createInvite({
             accessToken,
             groupId,
             maxUse: Number(maxUse),
-            expireAt: new Date(date).toISOString(),
+            expireAt: selectedDate.toISOString(),
         });
     }
 
@@ -59,6 +69,8 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
 
     const isCreateDisabled =
         !!invite || isPending || !date || !maxUse.trim() || Number(maxUse) <= 0;
+
+    const today = new Date().toISOString().split("T")[0];
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
@@ -101,6 +113,7 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
                                 <input
                                     required
                                     type="date"
+                                    min={today}
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
                                     className="w-full rounded-lg border p-2 text-sm"
