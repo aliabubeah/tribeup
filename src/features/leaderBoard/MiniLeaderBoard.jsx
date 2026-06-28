@@ -41,7 +41,7 @@ function MiniLeaderBoard() {
                     Leader Board
                 </h2>
 
-                <span className="icon-outlined text-xl text-tribe-500">
+                <span className="icon-outlined text-xl text-neutral-900">
                     leaderboard
                 </span>
             </div>
@@ -64,7 +64,7 @@ function MiniLeaderBoard() {
 
 function LeaderBoardRow({ leader }) {
     return (
-        <div className="grid grid-cols-[40px_40px_1fr_auto] items-center gap-2 rounded-lg bg-neutral-50 p-2 transition-colors hover:bg-neutral-100">
+        <div className="grid grid-cols-[40px_40px_1fr_auto] items-center gap-2 rounded-lg p-2 transition-colors hover:bg-neutral-50">
             <div className="flex h-8 w-9 items-center justify-center rounded-md bg-neutral-950 text-base font-bold text-white">
                 #{leader.rank}
             </div>

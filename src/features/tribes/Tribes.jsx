@@ -12,13 +12,13 @@ function Tribes() {
     const navigate = useNavigate();
 
     return (
-        <div className="flex flex-col gap-3 md:p-5 md:pr-20">
+        <div className="flex flex-col gap-3 md:p-8 md:pr-20">
             {/* Header */}
             <div className="rounded-xl bg-white p-4 shadow-sm">
                 <div className="mb-4 flex items-center justify-between">
                     <h1 className="mb-3 text-lg font-semibold">My tribes</h1>
                     <MainButton
-                        className="!rounded-3xl !p-2"
+                        className="!rounded-lg !p-2"
                         to={"create-tribe"}
                     >
                         + Create your own

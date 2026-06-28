@@ -58,7 +58,7 @@ function Profile() {
     if (!account) return null;
 
     return (
-        <div className="flex flex-col gap-4 px-3 py-4">
+        <div className="flex flex-col gap-4 px-3">
             <ProfileHeader />
             <ProfilePosts
                 posts={posts}

@@ -130,6 +130,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
         <div className="flex h-[calc(100dvh-64px)] min-h-0 w-full flex-col border-l bg-neutral-50 md:h-[100dvh]">
             {/* Header */}
             <MessageHeader
+                groupId={room.messages[0].groupId}
                 onChatRoom={onChatRoom}
                 onClose={onClose}
                 groupName={room.messages[0].groupName}

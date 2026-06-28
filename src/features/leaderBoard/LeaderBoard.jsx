@@ -15,6 +15,31 @@ function LeaderBoard() {
     });
 
     const leaders = Array.isArray(data) ? data : (data?.items ?? []);
+    function getRanktext(rank) {
+        switch (rank) {
+            case 1:
+                return "text-yellow-300";
+            case 2:
+                return "text-neutral-200";
+            case 3:
+                return "text-orange-300";
+            default:
+                return "text-white";
+        }
+    }
+
+    function getRankBg(rank) {
+        switch (rank) {
+            case 1:
+                return "bg-yellow-300 rounded-t-lg";
+            case 2:
+                return "bg-neutral-200";
+            case 3:
+                return "bg-orange-300";
+            default:
+                return "bg-white";
+        }
+    }
 
     if (isPending) {
         return (
@@ -43,19 +68,36 @@ function LeaderBoard() {
     }
 
     return (
-        <div className="p-4">
+        <div className="px-4 py-8">
             <BackButton
                 className="mb-4 px-2 text-2xl font-semibold"
                 name="LeaderBoard"
             />
+            {/* black section  */}
+            <div className="mb-4 flex items-center justify-between rounded-lg bg-neutral-900 p-6 text-neutral-50">
+                <div>
+                    <h1 className="text-5xl font-bold">{leaders.length}</h1>
+                    <p>competing Tribes</p>
+                </div>
+                <span className="icon-outlined rounded-full bg-neutral-500 px-2 py-1 text-3xl">
+                    moving
+                </span>
+            </div>
 
-            <div className="space-y-2 rounded-xl bg-white">
+            <div className="rounded-xl bg-white p-6">
                 {leaders.map((leader) => (
                     <div
                         key={leader.groupId}
-                        className="grid grid-cols-[48px_52px_1fr_auto] items-center gap-3 rounded-xl p-3 shadow-sm transition-colors hover:bg-neutral-50"
+                        className={`grid grid-cols-[48px_52px_1fr_auto] items-center gap-3 p-3 shadow-sm transition-all duration-300 ease-in-out ${getRankBg(
+                            leader.rank,
+                        )}`}
                     >
-                        <div className="flex h-10 w-11 items-center justify-center rounded-lg bg-neutral-950 font-bold text-white">
+                        <div
+                            key={leader.groupId}
+                            className={`grid grid-cols-[48px_52px_1fr_auto] items-center gap-3 rounded-xl bg-neutral-900 p-3 text-xl font-bold transition-colors ${getRanktext(
+                                leader.rank,
+                            )}`}
+                        >
                             #{leader.rank}
                         </div>
 

@@ -4,7 +4,7 @@ function MessageActionMenu({ onEdit, onDelete }) {
     return (
         <Menu as="div" className="relative">
             <MenuButton className="rounded-full p-1 text-neutral-500 transition hover:bg-neutral-200">
-                <span className="icon-outlined text-lg">more_vert</span>
+                <span className="icon-outlined text-lg">more_horiz</span>
             </MenuButton>
 
             <MenuItems

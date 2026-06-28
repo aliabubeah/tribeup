@@ -16,19 +16,21 @@ function Sidebar() {
     return (
         <div className="fixed h-full">
             {/* Profile */}
-            <div className="mb-8 flex justify-center gap-2 px-2 lg:justify-normal">
-                <Link to={username}>
-                    <img
-                        src={getCleanImageUrl(user.profilePicture)}
-                        alt="profile"
-                        className="h-12 min-w-12 rounded-full object-cover"
-                    />
-                </Link>
+            <Link
+                to={username}
+                className="mb-6 flex cursor-pointer justify-center gap-2 rounded-lg px-2 py-2 hover:bg-neutral-100 lg:justify-normal"
+            >
+                <img
+                    src={getCleanImageUrl(user.profilePicture)}
+                    alt="profile"
+                    className="h-12 min-w-12 rounded-full object-cover"
+                />
+
                 <div className="flex-col md:hidden lg:flex">
                     <h1 className="font-semibold">{user.fullName}</h1>
                     <p className="text-sm text-neutral-700">@{user.userName}</p>
                 </div>
-            </div>
+            </Link>
 
             <ul className="flex flex-col items-start gap-4 md:items-center lg:items-start">
                 <SidebarItem to="/" end icon="home" label="Home" />
@@ -37,7 +39,11 @@ function Sidebar() {
                     icon="notifications"
                     label="Notification"
                 />
-                <SidebarItem to="/leaderboard" icon="leaderboard" label="LeaderBoard" />
+                <SidebarItem
+                    to="/leaderboard"
+                    icon="leaderboard"
+                    label="LeaderBoard"
+                />
 
                 <SidebarItem to="/messages" icon="mail" label="Chat" />
                 <SidebarItem to="/tribes" icon="groups" label="Tribes" />
@@ -52,7 +58,7 @@ function Sidebar() {
                 <li>
                     <button
                         onClick={handleClick}
-                        className="flex items-center gap-3 rounded-3xl px-3 py-1 text-lg text-red-500 transition-all duration-100 ease-out hover:bg-neutral-200"
+                        className="flex items-center gap-3 rounded-3xl px-3 py-1 text-lg text-red-500 transition-all duration-100 ease-out hover:bg-neutral-100"
                     >
                         <span className="icon-outlined text-3xl">logout</span>
                         <span className="md:hidden lg:inline">Logout</span>
@@ -69,7 +75,7 @@ function SidebarItem({ to, icon, label, end }) {
             <NavLink
                 to={to}
                 end={end}
-                className="flex items-center gap-3 rounded-3xl px-3 py-1 text-start text-lg transition-all duration-100 ease-out hover:bg-neutral-200"
+                className="flex items-center gap-3 rounded-3xl px-3 py-1 text-start text-lg transition-all duration-100 ease-out hover:bg-neutral-100"
             >
                 {({ isActive }) => (
                     <>

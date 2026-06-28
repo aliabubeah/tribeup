@@ -1,8 +1,8 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getCleanImageUrl } from "../../../services/http";
 // import avatar from "../../../assets/avatar.jpeg";
 
-function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
+function MessageHeader({ onClose, onChatRoom, groupName, groupPic, groupId }) {
     const location = useLocation();
     const navigate = useNavigate();
     const inMessages = location.pathname !== "/messages";
@@ -23,11 +23,13 @@ function MessageHeader({ onClose, onChatRoom, groupName, groupPic }) {
                 </button>
 
                 <div className="flex items-center gap-2">
-                    <img
-                        src={getCleanImageUrl(groupPic)}
-                        alt=""
-                        className="h-10 w-10 rounded-full"
-                    />
+                    <Link to={`/tribes/${groupId}`}>
+                        <img
+                            src={getCleanImageUrl(groupPic)}
+                            alt=""
+                            className="h-10 w-10 rounded-full object-cover"
+                        />
+                    </Link>
                     <div className="flex flex-col">
                         <h1 className="font-semibold">{groupName}</h1>
                         <p className="text-sm text-tribe-100">Active now</p>

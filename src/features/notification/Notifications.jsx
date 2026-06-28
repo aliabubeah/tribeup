@@ -87,7 +87,9 @@ function Notifications() {
     if (isFetching) {
         return (
             <div>
-                <h1 className="px-4 text-2xl font-semibold">Notifications</h1>
+                <h1 className="px-4 pb-2 text-2xl font-semibold">
+                    Notifications
+                </h1>
                 <NotificationSkeleton />;
             </div>
         );

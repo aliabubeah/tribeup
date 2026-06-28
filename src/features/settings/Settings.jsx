@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 function Settings() {
     return (
-        <div className="mx-4 my-6 cursor-pointer divide-y divide-neutral-200 rounded-xl bg-white">
+        <div className="mx-4 my-8 cursor-pointer divide-y divide-neutral-200 rounded-xl bg-white">
             <SettingCard
                 iconName="account_circle"
                 title="Account"

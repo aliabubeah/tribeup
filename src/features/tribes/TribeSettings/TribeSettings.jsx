@@ -14,8 +14,8 @@ function TribeSettings() {
     ];
     // const candModerate =
     return (
-        <div className="flex flex-col px-8 pt-4">
-            <BackButton className="self-start" to={`/tribes/${tribeId}`} />
+        <div className="flex flex-col p-8 pb-0">
+            <BackButton className="self-start !p-0" to={`/tribes/${tribeId}`} />
             <div className="flex rounded-xl rounded-b-none bg-neutral-100 p-1">
                 {tabs.map((tab) => (
                     <NavLink

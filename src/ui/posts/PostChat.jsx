@@ -279,10 +279,13 @@ function EditComment({ content, accessToken, postId, commentId, onEdit }) {
             onSubmit={handleSubmit}
             className={`flex h-14 w-full gap-2 bg-white p-2`}
         >
-            <img
+            <button
                 src={getCleanImageUrl(user.profilePicture)}
-                className="h-9 w-9 rounded-full"
-            />
+                className="icon-outlined rounded-full bg-red-300 px-3 py-[2px] text-red-500 hover:bg-red-400 hover:text-red-600"
+                onClick={() => onEdit(false)}
+            >
+                close
+            </button>
             <input
                 disabled={isPending}
                 defaultValue={comment}
@@ -293,9 +296,9 @@ function EditComment({ content, accessToken, postId, commentId, onEdit }) {
             <button
                 disabled={isPending}
                 type="submit"
-                className="icon-outlined self-center rounded-full bg-neutral-100 px-2 py-1 text-2xl hover:bg-neutral-200 active:bg-neutral-400 disabled:cursor-not-allowed"
+                className="icon-outlined self-center rounded-full bg-green-100 px-2 py-1 text-2xl hover:bg-green-200 active:bg-green-400 disabled:cursor-not-allowed"
             >
-                send
+                check
             </button>
         </form>
     );

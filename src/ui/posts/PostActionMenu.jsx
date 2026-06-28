@@ -26,7 +26,7 @@ export default function PostActionsMenu({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
             >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-40 overflow-hidden rounded-lg bg-white shadow-lg focus:outline-none">
+                <Menu.Items className="absolute right-0 z-10 mt-2 w-40 overflow-hidden rounded-lg border bg-white shadow-lg focus:outline-none">
                     {onEdit && (
                         <Menu.Item>
                             {({ active }) => (

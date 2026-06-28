@@ -27,7 +27,12 @@ function TribeHeader({ tribe }) {
     } = tribe;
     const tribeId = id;
 
-    const { data, error, isPending, refetch } = useQuery({
+    const {
+        data,
+        error,
+        isFetching: isInviting,
+        refetch,
+    } = useQuery({
         queryKey: ["tribeInvitations", id],
         queryFn: () => tribeInvitationsAPI({ accessToken, groupId: id }),
         enabled: false,
@@ -100,20 +105,23 @@ function TribeHeader({ tribe }) {
                                 {canManage && (
                                     <>
                                         <MainButton
+                                            disabled={isInviting}
                                             className="text-base font-medium"
                                             onClick={async () => {
                                                 await refetch();
                                                 setIsInviteOpen(true);
                                             }}
                                         >
-                                            +Invite
+                                            {isInviting
+                                                ? "Inviting..."
+                                                : "Invite+"}
                                         </MainButton>
 
                                         <MainButton
-                                            className="!px-2 !py-1 text-base !font-medium"
+                                            className="!px-2 !py-1 text-sm !font-normal"
                                             to={`/groups/${id}/virtualroom`}
                                         >
-                                            enter room
+                                            Enter VR
                                         </MainButton>
                                     </>
                                 )}

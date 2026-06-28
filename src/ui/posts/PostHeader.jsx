@@ -35,14 +35,20 @@ function PostHeader({
                 </Link>
 
                 <div className="flex flex-col text-start">
-                    <Link to={`/tribes/${groupId}`} className="font-semibold">
+                    <Link
+                        to={`/tribes/${groupId}`}
+                        className="font-semibold hover:underline"
+                    >
                         {groupName}
                     </Link>
                     <Link
                         to={`/${userName}`}
-                        className="text-sm text-neutral-700"
+                        className="text-sm text-neutral-700 hover:underline"
                     >
-                        from {userName}
+                        from{" "}
+                        <span className="font-semibold text-neutral-950">
+                            {userName}
+                        </span>
                     </Link>
                 </div>
             </div>

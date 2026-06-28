@@ -57,6 +57,9 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
         revoke({ accessToken, invitationId: invite.id });
     }
 
+    const isCreateDisabled =
+        !!invite || isPending || !date || !maxUse.trim() || Number(maxUse) <= 0;
+
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -120,11 +123,11 @@ function CreateInviteModal({ isOpen, onClose, groupId, validInviations }) {
                             {/* Create */}
                             <button
                                 onClick={handleCreate}
-                                disabled={!!invite || isPending}
+                                disabled={isCreateDisabled}
                                 className={`mt-4 w-full rounded-lg py-2 text-sm text-white transition ${
-                                    invite
+                                    isCreateDisabled
                                         ? "cursor-not-allowed bg-gray-300"
-                                        : "bg-tribe-600 hover:bg-tribe-700"
+                                        : "bg-tribe-500 hover:bg-tribe-600"
                                 }`}
                             >
                                 {isPending ? "Creating..." : "Create"}

@@ -61,7 +61,7 @@ function PostActions({
                 <div className="flex items-center gap-2">
                     <button className="flex items-center gap-1">
                         <span
-                            className={`icon-outlined text-xl transition-all duration-150 ${favoriteToggle ? "icon-filled text-red-500 " : ""}`}
+                            className={`icon-outlined text-xl transition-all duration-150 hover:text-red-400 ${favoriteToggle ? "icon-filled text-red-500 " : ""}`}
                             onClick={handleToggle}
                         >
                             favorite
@@ -72,7 +72,7 @@ function PostActions({
                         className="flex items-center gap-1 outline-none"
                         onClick={onCommentClick}
                     >
-                        <span className="icon-outlined text-xl">
+                        <span className="icon-outlined text-xl ">
                             add_comment
                         </span>
                         {commentCount}
