@@ -116,14 +116,15 @@ function TribeHeader({ tribe }) {
                                                 ? "Inviting..."
                                                 : "Invite"}
                                         </MainButton>
-
-                                        <MainButton
-                                            className="!px-2 !py-1 text-sm !font-normal"
-                                            to={`/groups/${id}/virtualroom`}
-                                        >
-                                            Enter VR
-                                        </MainButton>
                                     </>
+                                )}
+                                {MemberOrAbove && (
+                                    <MainButton
+                                        className="!px-2 !py-1 text-sm !font-normal"
+                                        to={`/groups/${id}/virtualroom`}
+                                    >
+                                        Enter VR
+                                    </MainButton>
                                 )}
 
                                 {isMember && (
