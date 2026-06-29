@@ -14,6 +14,7 @@ function MessageActionMenu({ onEdit, onDelete }) {
                 <MenuItem>
                     {({ focus }) => (
                         <button
+                            onMouseDown={(e) => e.stopPropagation()}
                             onClick={onEdit}
                             className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm ${
                                 focus ? "bg-neutral-100" : ""
@@ -28,6 +29,7 @@ function MessageActionMenu({ onEdit, onDelete }) {
                 <MenuItem>
                     {({ focus }) => (
                         <button
+                            onMouseDown={(e) => e.stopPropagation()}
                             onClick={onDelete}
                             className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-500 ${
                                 focus ? "bg-red-50" : ""

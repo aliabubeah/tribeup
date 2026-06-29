@@ -17,9 +17,14 @@ function SideMessageRoom({ onChatRoom, onClose }) {
 
     const dispatch = useDispatch();
     const activeGroupId = useSelector((state) => state.chat.activeGroupId);
+
     const room = useSelector((state) => state.chat.rooms[activeGroupId]);
 
-    // initial Load
+    const activeChat = useSelector((state) =>
+        state.chat.inbox.find((c) => c.groupId === activeGroupId),
+    );
+
+    // Initial load
     useEffect(() => {
         if (!activeGroupId) return;
 
@@ -34,7 +39,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
         }
     }, [activeGroupId, dispatch, accessToken]);
 
-    //  Reverse infinite scroll
+    // Reverse infinite scroll
     useEffect(() => {
         const el = scrollRef.current;
         if (!el || !room) return;
@@ -54,6 +59,7 @@ function SideMessageRoom({ onChatRoom, onClose }) {
         }
 
         el.addEventListener("scroll", handleScroll);
+
         return () => el.removeEventListener("scroll", handleScroll);
     }, [
         room?.hasMore,
@@ -64,31 +70,30 @@ function SideMessageRoom({ onChatRoom, onClose }) {
         dispatch,
     ]);
 
-    /* Preserve scroll position after loading older messages */
+    // Preserve scroll position
     useEffect(() => {
         const el = scrollRef.current;
         if (!el) return;
 
         if (prevScrollHeightRef.current > 0) {
             const diff = el.scrollHeight - prevScrollHeightRef.current;
+
             el.scrollTop = diff;
             prevScrollHeightRef.current = 0;
         }
     }, [room?.messages.length]);
 
-    /* Scroll to bottom on first load or the some one send msgs */
+    // Scroll to bottom
     useLayoutEffect(() => {
         const el = scrollRef.current;
         if (!el || !room) return;
 
-        // Only run once per room
         if (!didInitialScrollRef.current && room.messages.length) {
             el.scrollTop = el.scrollHeight;
             didInitialScrollRef.current = true;
             return;
         }
 
-        // New message auto scroll (only if near bottom)
         const isNearBottom =
             el.scrollHeight - el.scrollTop - el.clientHeight < 80;
 
@@ -97,12 +102,12 @@ function SideMessageRoom({ onChatRoom, onClose }) {
         }
     }, [room?.messages.length]);
 
-    // reset the anchor when the room changes
+    // Reset when changing rooms
     useEffect(() => {
         didInitialScrollRef.current = false;
     }, [activeGroupId]);
 
-    // signalR
+    // SignalR
     useEffect(() => {
         if (!activeGroupId) return;
 
@@ -118,7 +123,8 @@ function SideMessageRoom({ onChatRoom, onClose }) {
         };
     }, [activeGroupId]);
 
-    if (!room || !room.messages.length) {
+    // Still fetching the room itself
+    if (!room) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-neutral-50">
                 <span className="text-neutral-500">Loading chat…</span>
@@ -128,21 +134,17 @@ function SideMessageRoom({ onChatRoom, onClose }) {
 
     return (
         <div className="flex h-[calc(100dvh-64px)] min-h-0 w-full flex-col border-l bg-neutral-50 md:h-[100dvh]">
-            {/* Header */}
             <MessageHeader
-                groupId={room.messages[0].groupId}
+                groupId={activeGroupId}
                 onChatRoom={onChatRoom}
                 onClose={onClose}
-                groupName={room.messages[0].groupName}
-                groupPic={getCleanImageUrl(
-                    room.messages[0].groupProfilePicture,
-                )}
+                groupName={activeChat?.groupName}
+                groupPic={getCleanImageUrl(activeChat?.groupProfilePicture)}
             />
 
-            {/* Messages */}
             <div
                 ref={scrollRef}
-                className="min-h-0 flex-1 gap-3 overflow-y-auto px-4 py-3 text-white"
+                className="min-h-0 flex-1 overflow-y-auto px-4 py-3 text-white"
             >
                 {room.isLoading && room.hasMore && (
                     <div className="py-2 text-center text-xs text-neutral-400">
@@ -150,49 +152,53 @@ function SideMessageRoom({ onChatRoom, onClose }) {
                     </div>
                 )}
 
-                {room.messages.map((msg, i) => {
-                    const prevMsg = room.messages[i - 1];
+                {room.messages.length === 0 ? (
+                    <div className="flex h-full items-center justify-center text-neutral-500">
+                        No messages yet. Start the conversation 👋
+                    </div>
+                ) : (
+                    room.messages.map((msg, i) => {
+                        const prevMsg = room.messages[i - 1];
 
-                    const isFirstMessageOfDay =
-                        !prevMsg ||
-                        new Date(prevMsg.sentAt).toDateString() !==
-                            new Date(msg.sentAt).toDateString();
+                        const isFirstMessageOfDay =
+                            !prevMsg ||
+                            new Date(prevMsg.sentAt).toDateString() !==
+                                new Date(msg.sentAt).toDateString();
 
-                    const isFirstInSenderGroup =
-                        !prevMsg ||
-                        isFirstMessageOfDay ||
-                        prevMsg.senderUserId !== msg.senderUserId;
+                        const isFirstInSenderGroup =
+                            !prevMsg ||
+                            isFirstMessageOfDay ||
+                            prevMsg.senderUserId !== msg.senderUserId;
 
-                    const isSameSenderAsPrev =
-                        prevMsg && prevMsg.senderUserId === msg.senderUserId;
+                        const isSameSenderAsPrev =
+                            prevMsg &&
+                            prevMsg.senderUserId === msg.senderUserId;
 
-                    return (
-                        <div key={i}>
-                            {/* Date Separator */}
-                            {isFirstMessageOfDay && (
-                                <div className="my-3 flex justify-center">
-                                    <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-900">
-                                        {getDateLabel(msg.sentAt)}
-                                    </span>
-                                </div>
-                            )}
+                        return (
+                            <div key={msg.id}>
+                                {isFirstMessageOfDay && (
+                                    <div className="my-3 flex justify-center">
+                                        <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-900">
+                                            {getDateLabel(msg.sentAt)}
+                                        </span>
+                                    </div>
+                                )}
 
-                            <MessageContent
-                                message={msg}
-                                content={msg.content}
-                                senderName={msg.senderName}
-                                senderUserId={msg.senderUserId}
-                                sentAt={msg.sentAt}
-                                senderProfilePic={msg.senderProfilePicture}
-                                showAvatar={isFirstInSenderGroup}
-                                isSameSenderAsPrev={isSameSenderAsPrev}
-                            />
-                        </div>
-                    );
-                })}
+                                <MessageContent
+                                    message={msg}
+                                    content={msg.content}
+                                    senderName={msg.senderName}
+                                    senderUserId={msg.senderUserId}
+                                    sentAt={msg.sentAt}
+                                    senderProfilePic={msg.senderProfilePicture}
+                                    showAvatar={isFirstInSenderGroup}
+                                    isSameSenderAsPrev={isSameSenderAsPrev}
+                                />
+                            </div>
+                        );
+                    })
+                )}
             </div>
-
-            {/* Input */}
 
             <MessageForm className="md:mb-0" />
         </div>
