@@ -181,31 +181,31 @@ function Account() {
             <div className="flex flex-col rounded-lg bg-white">
                 <div>
                     <div className="relative rounded-t-lg bg-neutral-200">
-                        <div>
+                        <div className="group relative">
                             <img
                                 src={getCleanImageUrl(coverPicture)}
                                 className="h-44 w-full rounded-t-lg object-cover"
                                 alt="Cover"
                             />
 
-                            <span
-                                className="icon-outlined absolute left-1/2 top-1/2 cursor-pointer text-xl text-neutral-950"
+                            <div
                                 onClick={coverFileDialog}
+                                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-t-lg bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/30 group-hover:opacity-100"
                             >
-                                add_a_photo
-                            </span>
-
-                            <input
-                                ref={coverInputRef}
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleCoverPic}
-                            />
+                                <span className="icon-outlined rounded-full bg-white/90 p-3 text-2xl text-neutral-800 shadow-lg">
+                                    photo_camera
+                                </span>
+                            </div>
                         </div>
-
+                        <input
+                            ref={coverInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleCoverPic}
+                        />
                         <div
-                            className="absolute -bottom-6 left-6 flex cursor-pointer"
+                            className="group absolute -bottom-6 left-6 cursor-pointer"
                             onClick={openFileDialog}
                         >
                             <img
@@ -214,9 +214,11 @@ function Account() {
                                 alt="Profile"
                             />
 
-                            <span className="icon-outlined absolute bottom-3 right-1 text-xl text-neutral-50">
-                                add_a_photo
-                            </span>
+                            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/40 group-hover:opacity-100">
+                                <span className="icon-outlined rounded-full bg-white/90 p-2 text-xl text-neutral-800 shadow-lg">
+                                    photo_camera
+                                </span>
+                            </div>
                         </div>
 
                         <input
