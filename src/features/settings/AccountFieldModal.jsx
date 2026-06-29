@@ -184,6 +184,19 @@ function AccountFieldModal({ field, isOpen, onClose, account }) {
         }
     }
 
+    const isChanged = (() => {
+        switch (field?.type) {
+            case "bio":
+                return form.bio !== (account?.bio || "");
+
+            case "phone":
+                return form.phoneNumber !== (account?.phoneNumber || "");
+
+            default:
+                return true;
+        }
+    })();
+
     const isSubmitting =
         updateNameMutation.isPending ||
         updateBioMutation.isPending ||
@@ -231,7 +244,7 @@ function AccountFieldModal({ field, isOpen, onClose, account }) {
                         <div className="flex justify-end gap-2">
                             <MainButton
                                 className="grow !py-3"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || !isChanged}
                                 onClick={handleCall}
                             >
                                 {isSubmitting ? "Updating..." : "Update"}

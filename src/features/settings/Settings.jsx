@@ -15,18 +15,6 @@ function Settings() {
                 description="Edit your profile information"
                 to="avatar"
             />
-
-            {/* <SettingCard
-                iconName="account_circle"
-                title="Privacy & Security"
-                description="Edit your profile information"
-                to="privacy"
-            /> */}
-            {/* <SettingCard
-                iconName="account_circle"
-                title="About"
-                description="Edit your profile information"
-            /> */}
         </div>
     );
 }
